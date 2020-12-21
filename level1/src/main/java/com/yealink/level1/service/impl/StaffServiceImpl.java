@@ -40,10 +40,5 @@ public class StaffServiceImpl implements StaffService {
         return staffMapper.findStaffList();
     }
 
-    /*
-    public int updateName(String name){
-        return staffMapper.updateName(name);
-    }
 
-     */
 }

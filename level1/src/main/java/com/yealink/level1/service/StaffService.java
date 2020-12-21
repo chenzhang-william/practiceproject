@@ -16,8 +16,5 @@ public interface StaffService {
 
     List<Staff> findStaffList();
 
-    /*
-    int updateName(String name);
 
-     */
 }

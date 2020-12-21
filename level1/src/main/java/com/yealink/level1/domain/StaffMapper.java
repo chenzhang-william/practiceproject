@@ -28,8 +28,5 @@ public interface StaffMapper {
     List<Staff> findStaffList();
 
 
-    /*
-    @Update("update staff set name = #{name}")
-    int updateName(@Param("name") String name);
-     */
+
 }

@@ -26,12 +26,7 @@ public class StaffController {
         return staffService.update(name,gender,mobile,email);
     }
 
-    /*测试put请求
-    @PutMapping("/updatename/{id}")
-    public int updateName(@PathVariable("id")String id, @RequestParam(value = "name",required = true) String name){
-        return staffService.updateName(name);
-    }
-     */
+
     @DeleteMapping("/delete/{id}")
     public void deleteStaff(@PathVariable("id") String id){
         staffService.delete(id);
