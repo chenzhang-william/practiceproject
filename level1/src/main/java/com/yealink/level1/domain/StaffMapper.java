@@ -4,6 +4,7 @@ import com.yealink.level1.bean.Staff;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
+
 import java.util.List;
 
 @Mapper
@@ -28,8 +29,20 @@ public interface StaffMapper {
     List<Staff> findStaffList();
 
 
-    /*
-    @Update("update staff set name = #{name}")
-    int updateName(@Param("name") String name);
-     */
+    //无法在staff中添加enterprise属性，该查询暂时无法实现
+    @Select("select * from staff where id = #{id}")
+    @Results({
+            @Result(property = "enterprise",column = "enterprise_id",
+            one = @One(select = "com.yealink.level1.domain.EnterpriseMapper.findEnterpriseById"))
+    })
+    Staff findStaffWithEnterprise(String id);
+
+    @Select("select * from staff where id = #{id}")
+    @Results({
+            @Result(property = "accounts",column = "id",
+            many = @Many(select = "com.yealink.level1.domain.AccountMapper.findAccountByStaffId"))
+    })
+    Staff getStaffWithAccount(String id);
+
+
 }

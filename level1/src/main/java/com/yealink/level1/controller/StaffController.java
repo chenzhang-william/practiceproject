@@ -47,5 +47,14 @@ public class StaffController {
         return staffService.findStaffList();
     }
 
+    @GetMapping("/find1/{id}")
+    public Staff findStaffWithEnterprise(@PathVariable("id") String id) {
+        return staffService.findStaffWithEnterprise(id);
+    }
+
+    @GetMapping("/getStaffWithAccount/{id}")
+    public Staff getStaffWithAccount(@PathVariable("id") String id){
+        return staffService.getStaffWithAccount(id);
+    }
 
 }

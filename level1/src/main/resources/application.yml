@@ -5,3 +5,6 @@ spring:
     url: jdbc:mysql://localhost:3306/ylyun_backup?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&useSSL=true
     username: root
     password:
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true  # 开启驼峰命名

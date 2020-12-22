@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-
 public class StaffServiceImpl implements StaffService {
 
     @Autowired
@@ -39,6 +38,17 @@ public class StaffServiceImpl implements StaffService {
     public List<Staff> findStaffList() {
         return staffMapper.findStaffList();
     }
+
+    @Override
+    public Staff findStaffWithEnterprise(String id) {
+        return staffMapper.findStaffWithEnterprise(id);
+    }
+
+    @Override
+    public Staff getStaffWithAccount(String id) {
+        return staffMapper.getStaffWithAccount(id);
+    }
+
 
     /*
     public int updateName(String name){
