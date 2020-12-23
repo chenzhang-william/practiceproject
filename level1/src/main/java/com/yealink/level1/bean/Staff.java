@@ -2,15 +2,15 @@ package com.yealink.level1.bean;
 
 
 
-import com.alibaba.druid.support.json.JSONUtils;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.ibatis.annotations.Many;
 
 import javax.persistence.*;
 
-import java.math.BigInteger;
+
 import java.util.List;
 
 
@@ -39,8 +39,8 @@ public class Staff {
     @OneToMany(targetEntity = Account.class)
     private List<Account> accounts;
 
-    private BigInteger createTime;
+    private long createTime;
 
-    private BigInteger modifyTime;
+    private long modifyTime;
 
 }

@@ -20,12 +20,19 @@ public class StaffController {
     }
 
     @PutMapping("/update/{id}")
-    public int updateStaff(@PathVariable("id") String id, @RequestParam(value = "name", required = true) String name,
-                           @RequestParam(value = "gender", required = true) int gender, @RequestParam(value = "mobile", required = true) String mobile,
+    public int updateStaff(@PathVariable("id") String id,
+                           @RequestParam(value = "name", required = true) String name,
+                           @RequestParam(value = "gender", required = true) int gender,
+                           @RequestParam(value = "mobile", required = true) String mobile,
                            @RequestParam(value = "email", required = true) String email){
-        return staffService.update(name,gender,mobile,email);
+        return staffService.update(id, name, mobile, email, gender);
     }
 
+    @PutMapping("/updateEnterprise/{id}")
+    public int updateEnterprise(@PathVariable("id")String id,
+                                @RequestParam(value = "enterpriseId",required = true) String enterpriseId){
+        return staffService.updateEnterprise(id,enterpriseId);
+    }
     /*测试put请求
     @PutMapping("/updatename/{id}")
     public int updateName(@PathVariable("id")String id, @RequestParam(value = "name",required = true) String name){

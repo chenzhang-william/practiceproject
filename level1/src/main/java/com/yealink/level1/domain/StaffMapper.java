@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Mapper
@@ -12,18 +13,20 @@ import java.util.List;
 public interface StaffMapper {
     @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
-    @Insert("insert into staff(id,name, gender, mobile, email) values(#{id}, #{name}, #{gender}, #{mobile}, #{email})")
+    @Insert("insert into staff(id, name, gender, mobile, email, create_time, modify_time) values (#{id}, #{name}, #{gender}, #{mobile}, #{email}, #{createTime}, #{modifyTime})")
     int add(Staff staff);
 
-
-    @Update("update staff set name = #{name}, gender = #{gender}, mobile = #{mobile}, email = #{email}")
-    int update(@Param("name") String name, @Param("gender") int gender, @Param("mobile") String mobile, @Param("email") String email);
+    @Update("update staff set name = #{name},enterprise_Id = #{enterpriseId}, gender = #{gender}, mobile = #{mobile}, email = #{email}, modify_time = #{modifyTime} where id = #{id}")
+    int update(Staff staff);
 
     @Delete("delete from staff where id = #{id}")
     int delete(String id);
 
     @Select("select id, name as name, gender as gender, mobile as mobile, email as email from staff where id = #{id}")
     Staff findStaffById(@Param("id") String id);
+
+    @Select("select id from staff where mobile = #{mobile}")
+    String findIdByMobile(@Param("mobile") String mobile);
 
     @Select("select id, name as name, gender as gender, mobile as mobile, email as email from staff")
     List<Staff> findStaffList();

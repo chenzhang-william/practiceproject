@@ -8,7 +8,9 @@ public interface StaffService {
 
     int add(Staff staff);
 
-    int update(String name,int gender,String mobile,String email);
+    int update(String id, String name, String mobile, String email, int gender);
+
+    int updateEnterprise(String id,String enterpriseId);
 
     int delete(String id);
 
@@ -19,5 +21,7 @@ public interface StaffService {
     Staff findStaffWithEnterprise(String id);
 
     Staff getStaffWithAccount(String id);
+
+
 
 }

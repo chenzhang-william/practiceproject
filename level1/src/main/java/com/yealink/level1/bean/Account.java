@@ -18,13 +18,13 @@ public class Account {
     @GeneratedValue
     private String id;
 
-    private String userName;
+    private String username;
 
-    private String passWord;
+    private String password;
 
-    private BigInteger createTime;
+    private long createTime;
 
-    private BigInteger modifyTime;
+    private long modifyTime;
 
     private String staffId;
 
