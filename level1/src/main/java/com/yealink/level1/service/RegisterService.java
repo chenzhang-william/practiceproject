@@ -10,9 +10,14 @@ import com.yealink.level1.bean.Staff;
  * @date 2020/12/23 11:41
  */
 public interface RegisterService {
-    int accountRegister(Account account);
+
+    int[] accountRegister(Account account,String mobile);
+
     int bindAccountStaff(String username, String mobile);
-    int enterpriseRegister(Enterprise enterprise);
+
+    int[] enterpriseRegister(Enterprise enterprise,String staffId);
+
     int bindAccountEnterprise(String username, String name);
+
     int bindStaffEnterprise(String name,String mobile);
 }

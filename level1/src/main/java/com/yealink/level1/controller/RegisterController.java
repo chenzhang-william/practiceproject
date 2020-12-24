@@ -20,8 +20,9 @@ public class RegisterController {
     private RegisterService registerService;
 
     @PostMapping("/account")
-    public int register(@RequestBody Account account){
-        return registerService.accountRegister(account);
+    public int[] register(@RequestBody Account account,
+                          @RequestParam(value = "mobile",required = true)String mobile){
+        return registerService.accountRegister(account,mobile);
     }
 
     @PostMapping("/bindStaff")
@@ -31,8 +32,9 @@ public class RegisterController {
     }
 
     @PostMapping("/enterprise")
-    public int registerEnterprise(@RequestBody Enterprise enterprise){
-        return registerService.enterpriseRegister(enterprise);
+    public int[] registerEnterprise(@RequestParam(value = "mobile", required = true)String mobile,
+                                  @RequestBody Enterprise enterprise){
+        return registerService.enterpriseRegister(enterprise,mobile);
     }
 
     @PostMapping("/bindEnterprise")

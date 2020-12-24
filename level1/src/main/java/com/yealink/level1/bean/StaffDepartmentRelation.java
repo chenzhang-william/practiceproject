@@ -24,7 +24,7 @@ public class StaffDepartmentRelation {
 
     private String position;
 
-    private BigInteger createTime;
+    private long createTime;
 
-    private BigInteger modifyTime;
+    private long modifyTime;
 }

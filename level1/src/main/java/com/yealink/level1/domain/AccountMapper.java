@@ -12,7 +12,7 @@ import java.util.List;
 public interface AccountMapper {
     @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
-    @Insert("insert into account(id,username,password) values(#{id},#{username},#{password})")
+    @Insert("insert into account(id,username,password,create_time,modify_time) values(#{id},#{username},#{password},#{createTime},#{modifyTime})")
     int add(Account account);
 
     @Select("select id, username as username, password as password, enterprise_id as enterpriseId, staff_id as staffId from account where id = #{id}")
@@ -21,7 +21,15 @@ public interface AccountMapper {
     @Select("select * from account where staff_id = #{staffId}")
     List<Account> findAccountByStaffId(String staffId);
 
-    @Update("update account set username = #{username},password = #{password},enterprise_id = #{enterpriseId},staff_id = #{staffId},modify_time = #{modifyTime} where id = #{id}")
+    @Update("<script>" +
+            "update account set" +
+            "<if test='username != null and username !=\"\"'> username = #{username}, </if>" +
+            "<if test='password != null and username !=\"\"'> password = #{password}, </if>" +
+            "<if test='enterpriseId != null and enterpriseId !=\"\"'> enterprise_id = #{enterpriseId}, </if>" +
+            "<if test='staffId != null and enterpriseId !=\"\"'> staff_id = #{staffId}, </if>" +
+            "modify_time = #{modifyTime} " +
+            "where id = #{id}" +
+            "</script>")
     int update(Account account);
 
     @Select("select id as id from account where username = #{username}")

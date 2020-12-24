@@ -5,7 +5,6 @@ import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Mapper
@@ -16,7 +15,16 @@ public interface StaffMapper {
     @Insert("insert into staff(id, name, gender, mobile, email, create_time, modify_time) values (#{id}, #{name}, #{gender}, #{mobile}, #{email}, #{createTime}, #{modifyTime})")
     int add(Staff staff);
 
-    @Update("update staff set name = #{name},enterprise_Id = #{enterpriseId}, gender = #{gender}, mobile = #{mobile}, email = #{email}, modify_time = #{modifyTime} where id = #{id}")
+    @Update("<script>" +
+            "update staff set" +
+            "<if test='name != null and name !=\"\"'> name = #{name}, </if>" +
+            "<if test='enterpriseId != null and enterpriseId != \"\"'> enterprise_Id = #{enterpriseId}, </if>" +
+            "<if test='gender != null and gender != \"\"'> gender = #{gender}, </if>" +
+            "<if test='mobile != null and mobile != \"\"'> mobile = #{mobile}, </if>" +
+            "<if test='email != null and mobile != \"\"'> email = #{email}, </if>" +
+            " modify_time = #{modifyTime} " +
+            " where id = #{id}" +
+            "</script>")
     int update(Staff staff);
 
     @Delete("delete from staff where id = #{id}")
@@ -27,6 +35,9 @@ public interface StaffMapper {
 
     @Select("select id from staff where mobile = #{mobile}")
     String findIdByMobile(@Param("mobile") String mobile);
+
+    @Select("select enterprise_id from staff where id = #{id}")
+    String findEnterpriseIdById(@Param("id")String id);
 
     @Select("select id, name as name, gender as gender, mobile as mobile, email as email from staff")
     List<Staff> findStaffList();

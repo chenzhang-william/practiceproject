@@ -22,8 +22,8 @@ public class StaffRoleRelation {
 
     private String roleId;
 
-    private BigInteger createTime;
+    private long createTime;
 
-    private BigInteger modifyTime;
+    private long modifyTime;
 }
 

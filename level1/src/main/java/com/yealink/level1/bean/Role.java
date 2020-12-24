@@ -22,7 +22,7 @@ public class Role {
 
     private String definition;
 
-    private BigInteger createTime;
+    private long createTime;
 
-    private BigInteger modifyTime;
+    private long modifyTime;
 }

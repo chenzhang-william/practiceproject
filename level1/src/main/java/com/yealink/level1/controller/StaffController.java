@@ -19,13 +19,9 @@ public class StaffController {
         return staffService.add(staff);
     }
 
-    @PutMapping("/update/{id}")
-    public int updateStaff(@PathVariable("id") String id,
-                           @RequestParam(value = "name", required = true) String name,
-                           @RequestParam(value = "gender", required = true) int gender,
-                           @RequestParam(value = "mobile", required = true) String mobile,
-                           @RequestParam(value = "email", required = true) String email){
-        return staffService.update(id, name, mobile, email, gender);
+    @PutMapping("/update/")
+    public int updateStaff(@RequestBody Staff staff){
+        return staffService.update(staff);
     }
 
     @PutMapping("/updateEnterprise/{id}")

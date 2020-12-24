@@ -8,7 +8,7 @@ public interface StaffService {
 
     int add(Staff staff);
 
-    int update(String id, String name, String mobile, String email, int gender);
+    int update(Staff staff);
 
     int updateEnterprise(String id,String enterpriseId);
 

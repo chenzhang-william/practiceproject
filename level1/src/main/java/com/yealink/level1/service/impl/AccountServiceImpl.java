@@ -5,10 +5,12 @@ import com.yealink.level1.domain.AccountMapper;
 import com.yealink.level1.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class AccountServiceImpl implements AccountService {
 
     @Autowired

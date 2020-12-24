@@ -20,9 +20,9 @@ public class Department {
 
     private String name;
 
-    private String enterprise_id;
+    private String enterpriseId;
 
-    private BigInteger createTime;
+    private long createTime;
 
-    private BigInteger modifyTime;
+    private long modifyTime;
 }
