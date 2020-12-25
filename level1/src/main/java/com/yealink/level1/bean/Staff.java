@@ -1,18 +1,10 @@
 package com.yealink.level1.bean;
 
-
-
-
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
-
-
 import java.util.List;
-
 
 /**
  * 员工的实体类

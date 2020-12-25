@@ -10,6 +10,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-mybatis:
+mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true  # 开启驼峰命名
+

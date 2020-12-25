@@ -1,6 +1,5 @@
 package com.yealink.level1.domain;
 
-import com.yealink.level1.bean.Staff;
 import com.yealink.level1.bean.StaffRoleRelation;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;

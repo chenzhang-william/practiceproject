@@ -17,6 +17,6 @@ public interface DepartmentMapper {
     @Insert("insert into department(id,enterprise_id,name,create_time,modify_time) values (#{id}, #{enterpriseId}, #{name},#{createTime}, #{modifyTime})")
     int add(Department department);
 
-    @Select("select id from department where name=#{name}")
+    @Select("select id from department where name = #{name}")
     String findIdByName(String name);
 }

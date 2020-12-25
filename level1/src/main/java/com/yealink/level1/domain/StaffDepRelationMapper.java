@@ -1,7 +1,6 @@
 package com.yealink.level1.domain;
 
 import com.yealink.level1.bean.StaffDepartmentRelation;
-import com.yealink.level1.bean.StaffRoleRelation;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;

@@ -18,4 +18,16 @@ public interface EnterpriseMapper {
 
     @Select("select id from enterprise where name = #{name}")
     String findIdByName(String name);
+
+    @Update("<script>" +
+            "update enterprise set" +
+            "<if test='no != null and no !=\"\"'> no = #{no}, </if>" +
+            "<if test='name != null and name !=\"\"'> name = #{name}, </if>" +
+            "modify_time = #{modifyTime} " +
+            "where id = #{id}" +
+            "</script>")
+    int update(Enterprise enterprise);
+
+    @Delete("delete from enterprise where id = #{id} ")
+    int delete(String id);
 }

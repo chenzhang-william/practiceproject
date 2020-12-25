@@ -3,8 +3,6 @@ package com.yealink.level1.domain;
 import com.yealink.level1.bean.Staff;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
-
-
 import java.util.List;
 
 @Mapper
@@ -19,7 +17,7 @@ public interface StaffMapper {
             "update staff set" +
             "<if test='name != null and name !=\"\"'> name = #{name}, </if>" +
             "<if test='enterpriseId != null and enterpriseId != \"\"'> enterprise_Id = #{enterpriseId}, </if>" +
-            "<if test='gender != null and gender != \"\"'> gender = #{gender}, </if>" +
+            "<if test='gender != null and gender != 0'> gender = #{gender}, </if>" +
             "<if test='mobile != null and mobile != \"\"'> mobile = #{mobile}, </if>" +
             "<if test='email != null and mobile != \"\"'> email = #{email}, </if>" +
             " modify_time = #{modifyTime} " +
@@ -30,16 +28,19 @@ public interface StaffMapper {
     @Delete("delete from staff where id = #{id}")
     int delete(String id);
 
-    @Select("select id, name as name, gender as gender, mobile as mobile, email as email from staff where id = #{id}")
-    Staff findStaffById(@Param("id") String id);
+    @Select("select id, enterprise_id, name, gender, mobile, email from staff where id = #{id}")
+    Staff findStaffById(String id);
 
-    @Select("select id from staff where mobile = #{mobile}")
-    String findIdByMobile(@Param("mobile") String mobile);
+    @Select("select id, enterprise_id, name, gender, mobile, email from staff where mobile = #{mobile}")
+    String findIdByMobile(String mobile);
 
-    @Select("select enterprise_id from staff where id = #{id}")
-    String findEnterpriseIdById(@Param("id")String id);
+    @Select("select id, enterprise_id, name, gender, mobile, email from staff where name = #{name}")
+    List<Staff> findStaffByName(String name);
 
-    @Select("select id, name as name, gender as gender, mobile as mobile, email as email from staff")
+    @Select("select id, enterprise_id, name, gender, mobile, email from staff where enterprise_id = (select id from enterprise where name = #{name})")
+    List<Staff> findStaffByEnterpriseName(String name);
+
+    @Select("select id, enterprise_id, name, gender, mobile, email from staff")
     List<Staff> findStaffList();
 
 
@@ -57,6 +58,8 @@ public interface StaffMapper {
             many = @Many(select = "com.yealink.level1.domain.AccountMapper.findAccountByStaffId"))
     })
     Staff getStaffWithAccount(String id);
+
+
 
 
 }

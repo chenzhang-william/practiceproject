@@ -25,11 +25,7 @@ public class RegisterController {
         return registerService.accountRegister(account,mobile);
     }
 
-    @PostMapping("/bindStaff")
-    public int bindStaff(@RequestParam(value = "username",required = true) String username,
-                         @RequestParam(value = "mobile",required = true) String mobile){
-        return registerService.bindAccountStaff(username,mobile);
-    }
+
 
     @PostMapping("/enterprise")
     public int[] registerEnterprise(@RequestParam(value = "mobile", required = true)String mobile,
@@ -37,16 +33,7 @@ public class RegisterController {
         return registerService.enterpriseRegister(enterprise,mobile);
     }
 
-    @PostMapping("/bindEnterprise")
-    public int bindEnterprise(@RequestParam(value = "username",required = true)String username,
-                              @RequestParam(value = "name",required = true)String name){
-        return registerService.bindAccountEnterprise(username,name);
-    }
 
-    @PostMapping("/bindStaffEnterprise")
-    public int bindStaffEnterprise(@RequestParam(value = "name",required = true) String name,
-                                   @RequestParam(value = "mobile", required = true) String mobile){
-        return registerService.bindStaffEnterprise(name,mobile);
-    }
+
 
 }
