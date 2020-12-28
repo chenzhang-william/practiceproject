@@ -28,9 +28,6 @@ public class Staff {
 
     private int gender;
 
-    @OneToMany(targetEntity = Account.class)
-    private List<Account> accounts;
-
     private long createTime;
 
     private long modifyTime;

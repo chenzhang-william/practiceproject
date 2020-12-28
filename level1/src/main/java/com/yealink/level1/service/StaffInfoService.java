@@ -7,7 +7,7 @@ public interface StaffInfoService {
 
     int add(Staff staff);
 
-    int update(Staff staff);
+    int update(Staff staff,String mobile);
 
     int delete(String id);
 
@@ -20,6 +20,8 @@ public interface StaffInfoService {
     List<Staff> findStaffByEnterpriseName(String name);
 
     String findIdByMobile(String mobile);
+
+    String findEnterpriseById(String id);
 
 
 }

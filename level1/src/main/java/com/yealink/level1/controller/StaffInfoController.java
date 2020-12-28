@@ -20,14 +20,15 @@ public class StaffInfoController {
     }
 
     @PostMapping("/update")
-    public int updateStaff(@RequestBody Staff staff){
-        return staffInfoService.update(staff);
+    public int updateStaff(@RequestParam(value = "mobile",required = true)String mobile,
+                           @RequestBody Staff staff){
+        return staffInfoService.update(staff,mobile);
     }
 
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteStaff(@PathVariable("id") String id){
-        staffInfoService.delete(id);
+    @DeleteMapping("/delete")
+    public void deleteStaff(@RequestParam(value = "mobile") String mobile){
+        staffInfoService.delete(mobile);
     }
 
     @PostMapping("/bindEnterprise")

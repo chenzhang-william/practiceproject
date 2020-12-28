@@ -18,34 +18,17 @@ public class AccountInfoController {
         return accountInfoService.add(account);
     }
 
-    @GetMapping("/findById")
-    public Account findAccountById(@RequestParam(value = "id",required = true)String id){
-        return accountInfoService.findAccountById(id);
-    }
 
-    @GetMapping("/findByStaffId")
-    public List<Account> findAccountByStaffId(@RequestParam(value = "staffId",required = true) String staffId){
-        return accountInfoService.findAccountByStaffId(staffId);
+
+    @DeleteMapping("/delete")
+    public void deleteAccount(@RequestParam(value = "username",required = true)String username){
+        accountInfoService.delete(username);
     }
 
     @PostMapping("/update")
-    public int updateAccount(@RequestBody Account account){
-        return accountInfoService.update(account);
-    }
-
-    @DeleteMapping("/delete")
-    public void deleteAccount(@RequestParam(value = "id",required = true)String id){
-        accountInfoService.delete(id);
-    }
-
-    @GetMapping("/findIdByUsername")
-    public String findIdByUsername(@RequestParam(value = "username",required = true)String username){
-        return accountInfoService.findIdByUsername(username);
-    }
-
-    @GetMapping("/findByEnterpriseName")
-    public List<Account> findByEnterpriseName(@RequestParam(value = "name",required = true)String name){
-        return accountInfoService.findAccountByEnterpriseName(name);
+    public int updateAccount(@RequestBody Account account,
+                             @RequestParam(value = "username",required = true)String username){
+        return accountInfoService.update(account,username);
     }
 
     @PostMapping("/bindStaff")
@@ -59,4 +42,21 @@ public class AccountInfoController {
                               @RequestParam(value = "name",required = true)String name){
         return accountInfoService.bindAccountEnterprise(username,name);
     }
+
+    @GetMapping("/findByUsername")
+    public Account findIdByUsername(@RequestParam(value = "username",required = true)String username){
+        return accountInfoService.findAccountByUsername(username);
+    }
+
+    @GetMapping("/findByMobile")
+    public List<Account> findAccountByStaffId(@RequestParam(value = "mobile",required = true) String mobile){
+        return accountInfoService.findAccountByMobile(mobile);
+    }
+
+    @GetMapping("/findByEnterpriseName")
+    public List<Account> findByEnterpriseName(@RequestParam(value = "name",required = true)String name){
+        return accountInfoService.findAccountByEnterpriseName(name);
+    }
+
+
 }

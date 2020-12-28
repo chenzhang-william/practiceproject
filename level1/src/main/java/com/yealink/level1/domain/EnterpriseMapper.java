@@ -30,4 +30,8 @@ public interface EnterpriseMapper {
 
     @Delete("delete from enterprise where id = #{id} ")
     int delete(String id);
+
+    @Select("select id,no,name from enterprise where no = #{no}")
+    Enterprise findByNo(String no);
+
 }

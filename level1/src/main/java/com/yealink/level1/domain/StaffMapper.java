@@ -40,24 +40,8 @@ public interface StaffMapper {
     @Select("select id, enterprise_id, name, gender, mobile, email from staff where enterprise_id = (select id from enterprise where name = #{name})")
     List<Staff> findStaffByEnterpriseName(String name);
 
-    @Select("select id, enterprise_id, name, gender, mobile, email from staff")
-    List<Staff> findStaffList();
-
-
-    //无法在staff中添加enterprise属性，该查询暂时无法实现
-    @Select("select * from staff where id = #{id}")
-    @Results({
-            @Result(property = "enterprise",column = "enterprise_id",
-            one = @One(select = "com.yealink.level1.domain.EnterpriseMapper.findEnterpriseById"))
-    })
-    Staff findStaffWithEnterprise(String id);
-
-    @Select("select * from staff where id = #{id}")
-    @Results({
-            @Result(property = "accounts",column = "id",
-            many = @Many(select = "com.yealink.level1.domain.AccountMapper.findAccountByStaffId"))
-    })
-    Staff getStaffWithAccount(String id);
+    @Select("select enterprise_id from staff where id = #{id}")
+    String findEnterpriseById(String id);
 
 
 

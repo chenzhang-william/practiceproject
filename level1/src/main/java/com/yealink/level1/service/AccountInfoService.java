@@ -13,7 +13,7 @@ public interface AccountInfoService {
 
     String findIdByUsername(String username);
 
-    int update(Account account);
+    int update(Account account,String username);
 
     int delete(String id);
 
@@ -22,4 +22,8 @@ public interface AccountInfoService {
     int bindAccountEnterprise(String username, String name);
 
     int bindAccountStaff(String username, String mobile);
+
+    Account findAccountByUsername(String username);
+
+    List<Account> findAccountByMobile(String mobile);
 }

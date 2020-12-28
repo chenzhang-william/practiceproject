@@ -32,33 +32,32 @@ public class StaffInfoServiceImpl implements StaffInfoService {
     }
 
     @Override
-    public int update(Staff staff) {
+    public int update(Staff staff,String mobile) {
+        staff.setId(findIdByMobile(mobile));
         staff.setModifyTime(new Date().getTime());
         return staffMapper.update(staff);
     }
 
 
     @Override
-    public int delete(String id) {
-        return staffMapper.delete(id);
+    public int delete(String mobile) {
+        return staffMapper.delete(findIdByMobile(mobile));
     }
 
+    @Override
     public int bindStaffEnterprise(String name,String mobile){
-        String enterpriseId = enterpriseMapper.findIdByName(name);
-        String staffId = staffMapper.findIdByMobile(mobile);
-        if(enterpriseId == null||staffId == null){
+        if(enterpriseMapper.findIdByName(name) == null||findIdByMobile(mobile) == null){
             return -1;
         }else{
-            Staff staff = staffMapper.findStaffById(staffId);
-            staff.setEnterpriseId(enterpriseId);
-            return update(staff);
+            Staff staff = findStaffByMobile(mobile);
+            staff.setEnterpriseId(enterpriseMapper.findIdByName(name));
+            return update(staff,mobile);
         }
     }
 
     @Override
     public Staff findStaffByMobile(String mobile) {
         return staffMapper.findStaffById(staffMapper.findIdByMobile(mobile));
-
     }
 
     @Override
@@ -74,6 +73,11 @@ public class StaffInfoServiceImpl implements StaffInfoService {
     @Override
     public String findIdByMobile(String mobile) {
         return staffMapper.findIdByMobile(mobile);
+    }
+
+    @Override
+    public String findEnterpriseById(String id) {
+        return staffMapper.findEnterpriseById(id);
     }
 
 

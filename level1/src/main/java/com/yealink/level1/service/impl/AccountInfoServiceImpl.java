@@ -47,14 +47,15 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     }
 
     @Override
-    public int update(Account account) {
+    public int update(Account account,String username) {
+        account.setId(findIdByUsername(username));
         account.setModifyTime(new Date().getTime());
         return accountMapper.update(account);
     }
 
     @Override
-    public int delete(String id) {
-        return accountMapper.delete(id);
+    public int delete(String username) {
+        return accountMapper.delete(findIdByUsername(username));
     }
 
     @Override
@@ -64,33 +65,34 @@ public class AccountInfoServiceImpl implements AccountInfoService {
 
     @Override
     public int bindAccountEnterprise(String username, String name) {
-        String id = findIdByUsername(username);
-        Account account = findAccountById(id);
-        String enterpriseId = enterpriseInfoService.findIdByName(name);
-        if(enterpriseId !=null){
-            account.setEnterpriseId(enterpriseId);
-            return update(account);
-        }else {
-            return -1;
-        }
+        if(findIdByUsername(username) !=null && enterpriseInfoService.findIdByName(name)!= null){
+            Account account = findAccountByUsername(username);
+            account.setEnterpriseId(enterpriseInfoService.findIdByName(name));
+            return update(account,username);
+        }else return -1;
     }
 
     @Override
     public int bindAccountStaff(String username, String mobile) {
-        String id = findIdByUsername(username);
-        Account account = findAccountById(id);
-        String staffId = null;
-        if(staffInfoService.findIdByMobile(mobile)!=null){
-
-        }else {
-            Staff staff = new Staff();
-            staff.setMobile(mobile);
-            staffInfoService.add(staff);
-        }
-        staffId = staffInfoService.findIdByMobile(mobile);
-        account.setStaffId(staffId);
-        return update(account);
+        Account account = findAccountByUsername(username);
+        if (account.getId() != null){
+            if(staffInfoService.findIdByMobile(mobile) == null){
+                Staff staff =new Staff();
+                staff.setMobile(mobile);
+                staffInfoService.add(staff);
+            }
+            account.setStaffId(staffInfoService.findIdByMobile(mobile));
+            return update(account,username);
+        }else return -1;
     }
 
+    @Override
+    public Account findAccountByUsername(String username) {
+        return findAccountById(findIdByUsername(username));
+    }
 
+    @Override
+    public List<Account> findAccountByMobile(String mobile) {
+        return findAccountByStaffId(staffInfoService.findIdByMobile(mobile));
+    }
 }

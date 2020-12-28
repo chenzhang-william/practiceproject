@@ -29,12 +29,13 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
     }
 
     @Override
-    public int delete(String id) {
-        return enterpriseMapper.delete(id);
+    public int delete(String name) {
+        return enterpriseMapper.delete(findIdByName(name));
     }
 
     @Override
-    public int update(Enterprise enterprise) {
+    public int update(Enterprise enterprise,String name) {
+        enterprise.setId(findIdByName(name));
         enterprise.setModifyTime(new Date().getTime());
         return enterpriseMapper.update(enterprise);
     }
@@ -42,5 +43,15 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
     @Override
     public String findIdByName(String name) {
         return enterpriseMapper.findIdByName(name);
+    }
+
+    @Override
+    public Enterprise findByNo(String no) {
+        return enterpriseMapper.findByNo(no);
+    }
+
+    @Override
+    public Enterprise findByName(String name) {
+        return findEnterpriseById(findIdByName(name));
     }
 }

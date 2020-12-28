@@ -8,11 +8,13 @@ public interface EnterpriseInfoService {
 
     int add(Enterprise enterprise);
 
-    int delete(String id);
+    int delete(String name);
 
-    int update(Enterprise enterprise);
+    int update(Enterprise enterprise,String name);
 
     String findIdByName(String name);
 
+    Enterprise findByNo(String no);
 
+    Enterprise findByName(String name);
 }

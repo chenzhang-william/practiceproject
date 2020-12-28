@@ -31,9 +31,10 @@ public class RegisterServiceImpl implements RegisterService {
     @Override
     public int[] accountRegister(Account account,String mobile) {
         int results[]=new int[2];
-        if(accountInfoService.findIdByUsername(account.getUsername())==null){
+        String username = account.getUsername();
+        if(accountInfoService.findIdByUsername(username)==null){
             results[0] = accountInfoService.add(account);
-            results[1] = accountInfoService.bindAccountStaff(account.getUsername(),mobile);
+            results[1] = accountInfoService.bindAccountStaff(username,mobile);
         }else {
             results[0]=-1;
         }
@@ -46,20 +47,20 @@ public class RegisterServiceImpl implements RegisterService {
     @Override
     public int[] enterpriseRegister(Enterprise enterprise,String mobile) {
         int[] results = new int[6];
-        String staffId = staffInfoService.findIdByMobile(mobile);
-        if(enterpriseInfoService.findIdByName(enterprise.getName())==null){
+        String enterpriseName = enterprise.getName();
+        if(enterpriseInfoService.findIdByName(enterpriseName)==null){
             results[0] = enterpriseInfoService.add(enterprise);
-            results[1] = staffInfoService.bindStaffEnterprise(enterprise.getName(),mobile);
-            List<Account> accounts = accountInfoService.findAccountByStaffId(staffId);
+            results[1] = staffInfoService.bindStaffEnterprise(enterpriseName,mobile);
+            List<Account> accounts = accountInfoService.findAccountByMobile(mobile);
             for(Account x:accounts) {
-                results[2] += accountInfoService.bindAccountEnterprise(x.getUsername(), enterprise.getName());
+                results[2] += accountInfoService.bindAccountEnterprise(x.getUsername(), enterpriseName);
             }
-            results[3] = roleManageService.addStaffRoleRelation(staffId, "创建者");
+            results[3] = roleManageService.addStaffRoleRelation(mobile, "创建者");
             Department department = new Department();
-            department.setEnterpriseId(enterpriseInfoService.findIdByName(enterprise.getName()));
-            department.setName(enterprise.getName());
+            department.setEnterpriseId(enterpriseInfoService.findIdByName(enterpriseName));
+            department.setName(enterpriseName);
             results[4] = depManageService.addDep(department);
-            results[5] = depManageService.addStaffDepRelation(staffId, enterprise.getName(),"Boss");
+            results[5] = depManageService.addStaffDepRelation(mobile, enterpriseName,"Boss");
             return results;
         }else {
             results[0]=-1;

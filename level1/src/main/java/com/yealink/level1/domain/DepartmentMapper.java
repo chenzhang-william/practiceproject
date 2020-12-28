@@ -19,4 +19,25 @@ public interface DepartmentMapper {
 
     @Select("select id from department where name = #{name}")
     String findIdByName(String name);
+
+    @Delete("delete from department where id = #{id}")
+    int delete(String id);
+
+    @Update("<script>" +
+            "update department set" +
+            "<if test ='name !=null and name !=\"\"'> name = #{name}, </if>" +
+            "<if test ='enterpriseId !=null and enterpriseId !=\"\"'>enterprise_id = #{enterpriseId}, </if>" +
+            " modify_time = #{modifyTime} " +
+            "where id = #{id}" +
+            "</script>")
+    int update(Department department);
+
+    @Select("select enterprise_id from department where id =#{id}")
+    String findEnterpriseById(String id);
+
+    @Select("select name from department where id = #{id}")
+    int findNameById(String id);
+
+
+
 }
