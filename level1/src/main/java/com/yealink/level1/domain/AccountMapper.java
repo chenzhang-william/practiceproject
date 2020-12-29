@@ -39,4 +39,7 @@ public interface AccountMapper {
     @Delete("delete from account where id = #{id}")
     int delete(String id);
 
+    @Select("select id,username,password,staff_id, enterprise_id from account where username = #{username}")
+    Account findAccountByUsername(String username);
+
 }

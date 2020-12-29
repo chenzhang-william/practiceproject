@@ -16,18 +16,27 @@ public interface DepManageService {
 
     int addStaffDepRelation(String mobile,String name,String position);
 
-    int deleteDep(String name);
+    int deleteDep(String depName,String enterprise);
 
     int deleteStaffDepRelation(String mobile,String name);
 
-    int updateDep(String name,Department dep);
+    int updateDep(String depName,String enterpriseName,Department dep);
 
-    int updateStaffDepRelation(String mobile,String oldDep,Map<String,String> newRelation);
+    int updateStaffDepRelation(String mobile,String oldDep,String enterpriseName,Map<String,String> newRelation);
+
+    int bindDepEnterprise(String depName, String enterpriseName);
 
     List<Map<String,String>> getPosition(String mobile);
 
     String findEnterpriseById(String id);
 
     List<Department> findDepByEnterprise(String name);
+
+    List getChildDep(String parentId);
+
+    List getChildStaff(String id);
+
+    List getTree(String id);
+
 
 }

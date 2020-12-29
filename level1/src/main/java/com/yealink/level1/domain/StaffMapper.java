@@ -10,7 +10,7 @@ import java.util.List;
 public interface StaffMapper {
     @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
-    @Insert("insert into staff(id, name, gender, mobile, email, create_time, modify_time) values (#{id}, #{name}, #{gender}, #{mobile}, #{email}, #{createTime}, #{modifyTime})")
+    @Insert("insert into staff(id, name, gender, enterprise_id, mobile, email, create_time, modify_time) values (#{id}, #{name}, #{gender}, #{enterpriseId},  #{mobile}, #{email}, #{createTime}, #{modifyTime})")
     int add(Staff staff);
 
     @Update("<script>" +

@@ -1,14 +1,18 @@
 package com.yealink.level1.service.impl;
 
 import com.yealink.level1.bean.Department;
+import com.yealink.level1.bean.Enterprise;
 import com.yealink.level1.bean.StaffDepartmentRelation;
 import com.yealink.level1.domain.DepartmentMapper;
 import com.yealink.level1.domain.StaffDepRelationMapper;
 import com.yealink.level1.service.DepManageService;
+import com.yealink.level1.service.EnterpriseInfoService;
 import com.yealink.level1.service.StaffInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +31,8 @@ public class DepManageServiceImpl implements DepManageService {
     private StaffDepRelationMapper staffDepRelationMapper;
     @Autowired
     private StaffInfoService staffInfoService;
+    @Autowired
+    private EnterpriseInfoService enterpriseInfoService;
 
     @Override
     public int addDep(Department dep) {
@@ -38,10 +44,12 @@ public class DepManageServiceImpl implements DepManageService {
 
     @Override
     public int addStaffDepRelation(String mobile, String name, String position) {
-        if(findEnterpriseById(departmentMapper.findIdByName(name)).equals(staffInfoService.findEnterpriseById(staffInfoService.findIdByMobile(mobile)))){
+        String enterpriseId = staffInfoService.findEnterpriseById(staffInfoService.findIdByMobile(mobile));
+        String id = departmentMapper.findId(name,enterpriseId);
+        if(id !=null){
             StaffDepartmentRelation staffDepartmentRelation = new StaffDepartmentRelation();
             staffDepartmentRelation.setStaffId(staffInfoService.findIdByMobile(mobile));
-            staffDepartmentRelation.setDepartmentId(departmentMapper.findIdByName(name));
+            staffDepartmentRelation.setDepartmentId(id);
             staffDepartmentRelation.setPosition(position);
             long now = new Date().getTime();
             staffDepartmentRelation.setCreateTime(now);
@@ -52,33 +60,40 @@ public class DepManageServiceImpl implements DepManageService {
     }
 
     @Override
-    public int deleteDep(String name) {
-        return departmentMapper.delete(departmentMapper.findIdByName(name));
+    public int deleteDep(String depName,String enterpriseName) {
+        return departmentMapper.delete(departmentMapper.findId(depName,enterpriseInfoService.findIdByName(enterpriseName)));
     }
 
     @Override
     public int deleteStaffDepRelation(String mobile, String name) {
-        return staffDepRelationMapper.delete(staffDepRelationMapper.findId(staffInfoService.findIdByMobile(mobile),departmentMapper.findIdByName(name)));
+        return staffDepRelationMapper.delete(staffDepRelationMapper.findId(staffInfoService.findIdByMobile(mobile),departmentMapper.findId(name,staffInfoService.findEnterpriseById(staffInfoService.findIdByMobile(mobile)))));
     }
 
     @Override
-    public int updateDep(String name, Department dep) {
-        dep.setId(departmentMapper.findIdByName(name));
+    public int updateDep(String depName,String enterpriseName, Department dep) {
+        dep.setId(departmentMapper.findId(depName,enterpriseInfoService.findIdByName(enterpriseName)));
         dep.setModifyTime(new Date().getTime());
         return departmentMapper.update(dep);
     }
 
     @Override
-    public int updateStaffDepRelation(String mobile, String oldDep, Map<String,String> newRelation) {
+    public int updateStaffDepRelation(String mobile, String oldDep,String enterpriseName, Map<String,String> newRelation) {
         String newMobile = newRelation.get("mobile");
         String newDep = newRelation.get("depName");
         String newPosition = newRelation.get("position");
-        StaffDepartmentRelation relation = staffDepRelationMapper.findRelationById(staffDepRelationMapper.findId(staffInfoService.findIdByMobile(mobile),departmentMapper.findIdByName(oldDep)));
+        StaffDepartmentRelation relation = staffDepRelationMapper.findRelationById(staffDepRelationMapper.findId(staffInfoService.findIdByMobile(mobile),departmentMapper.findId(oldDep,enterpriseName)));
         relation.setStaffId(staffInfoService.findIdByMobile(newMobile));
-        relation.setDepartmentId(departmentMapper.findIdByName(newDep));
+        relation.setDepartmentId(departmentMapper.findId(newDep,enterpriseName));
         relation.setPosition(newPosition);
         relation.setModifyTime(new Date().getTime());
         return staffDepRelationMapper.update(relation);
+    }
+
+    @Override
+    public int bindDepEnterprise(String depName, String enterpriseName) {
+        Department dep = departmentMapper.findById(departmentMapper.findId(depName,enterpriseName));
+        dep.setEnterpriseId(enterpriseInfoService.findIdByName(enterpriseName));
+        return updateDep(depName,enterpriseName,dep);
     }
 
     @Override
@@ -95,4 +110,31 @@ public class DepManageServiceImpl implements DepManageService {
     public List<Department> findDepByEnterprise(String name) {
         return null;
     }
+
+    @Override
+    public List getChildDep(String parentId) {
+        return departmentMapper.findByParentId(parentId);
+    }
+
+    @Override
+    public List getChildStaff(String id) {
+        return staffDepRelationMapper.getStaffOfDep(id);
+    }
+
+    public List getTree(String id){
+        List childNode =new ArrayList();
+        childNode.add(departmentMapper.findById(id));
+        List childStaff = getChildStaff(id);
+        List<Department> childDep = getChildDep(id);
+        if(childNode != null){
+            childNode.add(childStaff);
+            if (childDep != null){
+                for(Department dep:childDep){
+                    childNode.add(getTree(dep.getId()));
+                }
+            }
+        }
+        return childNode;
+    }
+
 }

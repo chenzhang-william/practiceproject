@@ -20,7 +20,7 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
-    @PostMapping("/accountLogin")
+    @PostMapping("/byAccount")
     public int login(@RequestBody Account account) {
         return loginService.login(account);
     }

@@ -88,7 +88,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
 
     @Override
     public Account findAccountByUsername(String username) {
-        return findAccountById(findIdByUsername(username));
+        return findAccountByUsername(username);
     }
 
     @Override

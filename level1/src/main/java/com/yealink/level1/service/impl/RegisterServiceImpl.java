@@ -57,7 +57,8 @@ public class RegisterServiceImpl implements RegisterService {
             }
             results[3] = roleManageService.addStaffRoleRelation(mobile, "创建者");
             Department department = new Department();
-            department.setEnterpriseId(enterpriseInfoService.findIdByName(enterpriseName));
+            String enterpriseId = enterpriseInfoService.findIdByName(enterpriseName);
+            department.setEnterpriseId(enterpriseId);
             department.setName(enterpriseName);
             results[4] = depManageService.addDep(department);
             results[5] = depManageService.addStaffDepRelation(mobile, enterpriseName,"Boss");

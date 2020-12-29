@@ -1,5 +1,6 @@
 package com.yealink.level1.domain;
 
+import com.yealink.level1.bean.Staff;
 import com.yealink.level1.bean.StaffDepartmentRelation;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
@@ -43,4 +44,7 @@ public interface StaffDepRelationMapper {
 
     @Select("select id,department_id,staff_id,position from staff_department_relation where id =#{id} ")
     StaffDepartmentRelation findRelationById(String id);
+
+    @Select("select id,name,mobile from staff where id in (select staff_id from staff_department_relation where department_id = #{departmentId}) order by name")
+    List<Staff> getStaffOfDep(String departmentId);
 }

@@ -20,9 +20,8 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public int login(Account account) {
-        String id = accountMapper.findIdByUsername(account.getUsername());
-        if(id != null) {
-            Account accountVerify = accountMapper.findAccountById(id);
+        Account accountVerify = accountMapper.findAccountByUsername(account.getUsername());
+        if(accountVerify.getId() != null) {
             if (accountVerify.getPassword().equals(account.getPassword())) {
                 return 1;
             } else {

@@ -34,8 +34,9 @@ public class DepManageController {
     }
 
     @DeleteMapping("/deleteDep")
-    public int deleteDep(@RequestParam(value = "name",required = true)String name){
-        return depManageService.deleteDep(name);
+    public int deleteDep(@RequestParam(value = "depName",required = true)String depName,
+                         @RequestParam(value = "enterpriseName",required = true)String enterpriseName){
+        return depManageService.deleteDep(depName,enterpriseName);
     }
 
     @DeleteMapping("/deleteRelation")
@@ -45,20 +46,37 @@ public class DepManageController {
     }
 
     @PostMapping("/updateDep")
-    public int updateDep(@RequestParam(value = "name",required = true)String name,
+    public int updateDep(@RequestParam(value = "depName",required = true)String depName,
+                         @RequestParam(value = "enterpriseName",required = true)String enterpriseName,
                          @RequestBody Department dep){
-        return depManageService.updateDep(name,dep);
+        return depManageService.updateDep(depName,enterpriseName,dep);
     }
 
     @PostMapping("/updateRelation")
     public int updateRelation(@RequestParam(value = "mobile",required = true)String mobile,
                       @RequestParam(value = "oldDep",required = true)String oldDep,
+                      @RequestParam(value = "enterpriseName",required = true)String enterpriseName,
                       @RequestBody Map<String,String> newRelation){
-        return depManageService.updateStaffDepRelation(mobile,oldDep,newRelation);
+        return depManageService.updateStaffDepRelation(mobile,oldDep,enterpriseName,newRelation);
     }
 
     @GetMapping("/getPosition")
     public List<Map<String,String>> getPosition(@RequestParam(value = "mobile",required = true)String mobile){
         return depManageService.getPosition(mobile);
+    }
+
+    @GetMapping("/getTree")
+    public List getTree(@RequestParam(value = "departmentId",required = true)String departmentId){
+        return depManageService.getTree(departmentId);
+    }
+
+    @GetMapping("/getChildStaff")
+    public List getChildStaff(@RequestParam(value = "departmentId",required = true)String departmentId){
+        return depManageService.getChildStaff(departmentId);
+    }
+
+    @GetMapping("/getChildDep")
+    public List getChildDep(@RequestParam(value = "departmentId",required = true)String departmentId){
+        return depManageService.getChildDep(departmentId);
     }
 }
