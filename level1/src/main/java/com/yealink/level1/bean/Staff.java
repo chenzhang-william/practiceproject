@@ -1,10 +1,15 @@
 package com.yealink.level1.bean;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.persistence.*;
-import java.util.List;
+
 
 /**
  * 员工的实体类
@@ -22,6 +27,7 @@ public class Staff {
 
     private String enterpriseId;
 
+    @NotNull(message = "手机不能为空")
     private String mobile;
 
     private String email;

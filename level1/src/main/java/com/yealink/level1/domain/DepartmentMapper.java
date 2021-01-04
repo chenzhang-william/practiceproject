@@ -50,4 +50,6 @@ public interface DepartmentMapper {
     @Select("select id,name,enterprise_id,parent_id from department where parent_id = #{parentId} order by name")
     List<Department> findByParentId(String parentId);
 
+    @Select("select id,name,enterprise_id,parent_id from department where name = #{name} and enterprise_id = #{enterpriseId}")
+    Department findDep(String name, String enterpriseId);
 }

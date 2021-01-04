@@ -40,4 +40,10 @@ public interface RoleMapper {
 
     @Select("select name from role where id = #{id}")
     String findNameById(String id);
+
+    @Select("select id,name,definition from role where id in (select role_id from staff_role_relation where staff_id = #{staffId})")
+    List<Role> findRoleOfStaff(String staffId);
+
+    @Select("select id,name,definition from role where name=#{name}")
+    Role findRoleByName(String name);
 }

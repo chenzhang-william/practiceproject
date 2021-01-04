@@ -1,7 +1,11 @@
 package com.yealink.level1.service;
 
 import com.yealink.level1.bean.Department;
+import com.yealink.level1.bean.Enterprise;
+import com.yealink.level1.bean.Staff;
 import com.yealink.level1.bean.StaffDepartmentRelation;
+
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -12,25 +16,25 @@ import java.util.Map;
  */
 public interface DepManageService {
 
-    int addDep(Department dep);
+    void addDep(@Valid Department dep);
 
-    int addStaffDepRelation(String mobile,String name,String position);
+    void addStaffDepRelation(@Valid StaffDepartmentRelation staffDepartmentRelation);
 
-    int deleteDep(String depName,String enterprise);
+    void deleteDep(@Valid Department dep);
 
-    int deleteStaffDepRelation(String mobile,String name);
+    void deleteStaffDepRelation(@Valid StaffDepartmentRelation staffDepartmentRelation);
 
-    int updateDep(String depName,String enterpriseName,Department dep);
+    void updateDep(@Valid Department oldDep,@Valid Department newDep);
 
-    int updateStaffDepRelation(String mobile,String oldDep,String enterpriseName,Map<String,String> newRelation);
+    void updateStaffDepRelation(@Valid StaffDepartmentRelation oldRelation, @Valid StaffDepartmentRelation newRelation);
 
-    int bindDepEnterprise(String depName, String enterpriseName);
+    StaffDepartmentRelation findRelation(StaffDepartmentRelation relation);
 
-    List<Map<String,String>> getPosition(String mobile);
+    Department findDep(Department dep);
 
-    String findEnterpriseById(String id);
+    List<Map<String,String>> getPosition(@Valid Staff staff);
 
-    List<Department> findDepByEnterprise(String name);
+    List<Department> findDepOfEnterprise(@Valid Enterprise enterprise);
 
     List getChildDep(String parentId);
 

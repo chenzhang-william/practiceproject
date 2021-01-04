@@ -1,20 +1,38 @@
 package com.yealink.level1.service;
 
-import com.yealink.level1.bean.Enterprise;
+import com.yealink.level1.bean.request.EnterpriseRequest;
+import com.yealink.level1.bean.request.PersonalRequest;
+import com.yealink.level1.bean.result.Result;
 
+/**
+ * @author zhangchen
+ * @description EnterpriseInfoservice
+ * @date 2021/1/4 18:50
+ */
 public interface EnterpriseInfoService {
 
-    Enterprise findEnterpriseById(String id);
+    Result updateEnterprise(EnterpriseRequest enterpriseRequest);
 
-    int add(Enterprise enterprise);
+    Result deleteEnterprise(EnterpriseRequest enterpriseRequest);
 
-    int delete(String name);
+    Result bindStaffEnterprise(EnterpriseRequest enterpriseRequest);
 
-    int update(Enterprise enterprise,String name);
+    Result bindAccountEnterprise(EnterpriseRequest enterpriseRequest);
 
-    String findIdByName(String name);
+    Result addStaff(EnterpriseRequest enterpriseRequest);
 
-    Enterprise findByNo(String no);
+    Result addAccount(EnterpriseRequest enterpriseRequest);
 
-    Enterprise findByName(String name);
+    Result unbindStaff(EnterpriseRequest enterpriseRequest);
+
+    Result unbindAccount(EnterpriseRequest enterpriseRequest);
+
+    Result addDep(EnterpriseRequest enterpriseRequest);
+
+    Result deleteDep(EnterpriseRequest enterpriseRequest);
+
+    Result updateDep(EnterpriseRequest enterpriseRequest);
+
+    Result updatePosition(EnterpriseRequest enterpriseRequest);
+
 }

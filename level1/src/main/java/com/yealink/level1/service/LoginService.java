@@ -1,6 +1,7 @@
 package com.yealink.level1.service;
 
-import com.yealink.level1.bean.Account;
+import com.yealink.level1.bean.request.PersonalRequest;
+import com.yealink.level1.bean.result.Result;
 
 /**
  * @author zhangchen
@@ -9,5 +10,5 @@ import com.yealink.level1.bean.Account;
  */
 public interface LoginService {
 
-    int login(Account account);
+    Result login(PersonalRequest personalRequest);
 }

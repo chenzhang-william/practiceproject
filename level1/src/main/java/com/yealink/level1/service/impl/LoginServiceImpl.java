@@ -1,11 +1,15 @@
 package com.yealink.level1.service.impl;
 
 import com.yealink.level1.bean.Account;
-import com.yealink.level1.domain.AccountMapper;
+import com.yealink.level1.service.AccountService;
 import com.yealink.level1.service.LoginService;
+import com.yealink.level1.bean.result.ErrorCode;
+import com.yealink.level1.bean.request.PersonalRequest;
+import com.yealink.level1.bean.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * @author zhangchen
@@ -14,21 +18,22 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
+@Validated
 public class LoginServiceImpl implements LoginService {
+
     @Autowired
-    private AccountMapper accountMapper;
+    private AccountService accountService;
 
     @Override
-    public int login(Account account) {
-        Account accountVerify = accountMapper.findAccountByUsername(account.getUsername());
-        if(accountVerify.getId() != null) {
-            if (accountVerify.getPassword().equals(account.getPassword())) {
-                return 1;
-            } else {
-                return -2;
-            }
-        }else {
-            return -1;
-        }
+    public Result login(PersonalRequest personalRequest) {
+        Account account = new Account();
+        account.setUsername(personalRequest.getUsername());
+        Account accountVerify = accountService.findAccountByUsername(account);
+        if(accountVerify!=null){
+            account.setPassword(personalRequest.getPassword());
+            if(accountVerify.getPassword().equals(account.getPassword())){
+                return Result.success();
+            }else return Result.failure(ErrorCode.PASSWORD_IS_WRONG);
+        }else return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
     }
 }

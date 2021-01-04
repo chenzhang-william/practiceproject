@@ -47,4 +47,7 @@ public interface StaffDepRelationMapper {
 
     @Select("select id,name,mobile from staff where id in (select staff_id from staff_department_relation where department_id = #{departmentId}) order by name")
     List<Staff> getStaffOfDep(String departmentId);
+
+    @Select("select id,staff_id,department_id,position from staff_department_relation where staff_id = #{staffId} and department_id = #{departmentId}")
+    StaffDepartmentRelation findRelation(String staffId, String departmentId);
 }

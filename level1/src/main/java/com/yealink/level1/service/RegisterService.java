@@ -1,7 +1,7 @@
 package com.yealink.level1.service;
 
-import com.yealink.level1.bean.Account;
-import com.yealink.level1.bean.Enterprise;
+import com.yealink.level1.bean.request.PersonalRequest;
+import com.yealink.level1.bean.result.Result;
 
 /**
  * @author zhangchen
@@ -10,9 +10,11 @@ import com.yealink.level1.bean.Enterprise;
  */
 public interface RegisterService {
 
-    int[] accountRegister(Account account,String mobile);
+    Result accountRegister(PersonalRequest personalRequest);
 
-    int[] enterpriseRegister(Enterprise enterprise,String staffId);
+    Result enterpriseRegister(PersonalRequest personalRequest);
+
+
 
 
 

@@ -1,13 +1,14 @@
 package com.yealink.level1.service.impl;
 
-import com.yealink.level1.bean.Account;
-import com.yealink.level1.bean.Department;
-import com.yealink.level1.bean.Enterprise;
+import com.yealink.level1.bean.*;
 import com.yealink.level1.service.*;
+import com.yealink.level1.bean.result.ErrorCode;
+import com.yealink.level1.bean.request.PersonalRequest;
+import com.yealink.level1.bean.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * @author zhangchen
@@ -16,57 +17,77 @@ import java.util.List;
  */
 @Service
 @Transactional
+@Validated
 public class RegisterServiceImpl implements RegisterService {
+
     @Autowired
-    private EnterpriseInfoService enterpriseInfoService;
+    private EnterpriseService enterpriseService;
     @Autowired
     private RoleManageService roleManageService;
     @Autowired
     private DepManageService depManageService;
     @Autowired
-    private StaffInfoService staffInfoService;
+    private StaffService staffService;
     @Autowired
-    private AccountInfoService accountInfoService;
+    private AccountService accountService;
 
     @Override
-    public int[] accountRegister(Account account,String mobile) {
-        int results[]=new int[2];
-        String username = account.getUsername();
-        if(accountInfoService.findIdByUsername(username)==null){
-            results[0] = accountInfoService.add(account);
-            results[1] = accountInfoService.bindAccountStaff(username,mobile);
-        }else {
-            results[0]=-1;
-        }
-        return results;
+    public Result accountRegister(PersonalRequest personalRequest) {
+        Account account =new Account();
+        account.setUsername(personalRequest.getUsername());
+        Staff staff =new Staff();
+        staff.setMobile(personalRequest.getMobile());
+        if(!accountService.isAccountExist(account)){
+            account.setPassword(personalRequest.getPassword());
+            accountService.add(account);
+            if(!staffService.isStaffExist(staff)){
+                staffService.add(staff);
+            }
+            accountService.bindAccountStaff(staff,account);
+        return Result.success();
+        }else return Result.failure(ErrorCode.ACCOUNT_HAS_EXIST);
     }
 
 
 
 
     @Override
-    public int[] enterpriseRegister(Enterprise enterprise,String mobile) {
-        int[] results = new int[6];
-        String enterpriseName = enterprise.getName();
-        if(enterpriseInfoService.findIdByName(enterpriseName)==null){
-            results[0] = enterpriseInfoService.add(enterprise);
-            results[1] = staffInfoService.bindStaffEnterprise(enterpriseName,mobile);
-            List<Account> accounts = accountInfoService.findAccountByMobile(mobile);
-            for(Account x:accounts) {
-                results[2] += accountInfoService.bindAccountEnterprise(x.getUsername(), enterpriseName);
-            }
-            results[3] = roleManageService.addStaffRoleRelation(mobile, "创建者");
-            Department department = new Department();
-            String enterpriseId = enterpriseInfoService.findIdByName(enterpriseName);
-            department.setEnterpriseId(enterpriseId);
-            department.setName(enterpriseName);
-            results[4] = depManageService.addDep(department);
-            results[5] = depManageService.addStaffDepRelation(mobile, enterpriseName,"Boss");
-            return results;
-        }else {
-            results[0]=-1;
-            return results;
-        }
+    public Result enterpriseRegister(PersonalRequest personalRequest) {
+        Staff staff =new Staff();
+        staff.setMobile(personalRequest.getMobile());
+        Enterprise enterprise =new Enterprise();
+        enterprise.setNo(personalRequest.getEnterpriseNo());
+        enterprise.setName(personalRequest.getEnterpriseName());
+        StaffRoleRelation staffRoleRelation = new StaffRoleRelation();
+
+
+        StaffDepartmentRelation staffDepartmentRelation = new StaffDepartmentRelation();
+        if(staffService.isStaffExist(staff)) {
+            if (enterpriseService.isEnterpriseExist(enterprise)) {
+                enterpriseService.add(enterprise);
+
+                staffService.bindStaffEnterprise(enterprise, staff);
+
+                String staffId = staffService.findStaffByMobile(staff).getId();
+
+                Role role = new Role();
+                role.setName("创建者");
+                staffRoleRelation.setStaffId(staffId);
+                staffRoleRelation.setRoleId(roleManageService.findRoleByName(role).getId());
+                roleManageService.addStaffRoleRelation(staffRoleRelation);
+
+                Department dep = new Department();
+                dep.setName(personalRequest.getEnterpriseName());
+                dep.setEnterpriseId(enterpriseService.findEnterpriseByNo(enterprise).getId());
+                depManageService.addDep(dep);
+
+                staffDepartmentRelation.setStaffId(staffId);
+                staffDepartmentRelation.setPosition("Boss");
+                staffDepartmentRelation.setDepartmentId(depManageService.findDep(dep).getId());
+                depManageService.addStaffDepRelation(staffDepartmentRelation);
+                return Result.success();
+            } else return Result.failure(ErrorCode.ENTERPRISE_HAS_EXIST);
+        }else return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
     }
 
 

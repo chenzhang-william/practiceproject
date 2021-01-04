@@ -33,8 +33,8 @@ public interface AccountMapper {
     @Select("select id as id from account where username = #{username}")
     String findIdByUsername(@Param("username") String username);
 
-    @Select("select id, username, staff_id, enterprise_id from account where enterprise_id = (select id from enterprise where name = #{name})")
-    List<Account> findAccountByEnterpriseName(String name);
+    @Select("select id, username, staff_id, enterprise_id from account where enterprise_id = (select id from enterprise where no = #{enterpriseNo})")
+    List<Account> findAccountByEnterpriseNo(String enterpriseNo);
 
     @Delete("delete from account where id = #{id}")
     int delete(String id);
@@ -42,4 +42,6 @@ public interface AccountMapper {
     @Select("select id,username,password,staff_id, enterprise_id from account where username = #{username}")
     Account findAccountByUsername(String username);
 
+    @Update("update account set enterprise_id = ''where username = #{username} ")
+    int unbindEnterprise(String username);
 }

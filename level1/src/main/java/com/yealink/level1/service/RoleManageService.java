@@ -1,8 +1,11 @@
 package com.yealink.level1.service;
 
+import com.yealink.level1.bean.Enterprise;
 import com.yealink.level1.bean.Role;
+import com.yealink.level1.bean.Staff;
 import com.yealink.level1.bean.StaffRoleRelation;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -12,27 +15,19 @@ import java.util.List;
  */
 public interface RoleManageService {
 
-    int addRole(Role role);
+    void addStaffRoleRelation(@Valid StaffRoleRelation staffRoleRelation);
 
-    int addStaffRoleRelation(String mobile,String name);
+    void deleteStaffRoleRelation(@Valid StaffRoleRelation staffRoleRelation);
 
-    int deleteRole(String name);
+    void updateStaffRoleRelation(@Valid StaffRoleRelation oldRelation,@Valid StaffRoleRelation newRelation);
 
-    int deleteRelation(String mobile,String name);
+    StaffRoleRelation findRelation(@Valid StaffRoleRelation staffRoleRelation);
 
-    int updateRole(Role role,String name);
+    Role findRoleByName(@Valid Role role);
 
-    int updateRoleOfStaff(String mobile, String oldName, String newName);
+    List<Role> findRoleOfStaff(@Valid Staff staff);
 
-    int updateStaffOfRole(String oldMobile, String name,String newMobile);
+    List<Staff> findStaffOfRoleInEnterprise(@Valid Role role,@Valid Enterprise enterprise);
 
-    String findRoleIdByName(String name);
-
-    String findRelationId(String staffId,String roleId);
-
-    StaffRoleRelation findRelationById(String id);
-
-    List<String> findRelationByMobile(String mobile);
-
-    List<String> listRoleOfEnterprise(String name);
+    List<Staff> findStaffOfRole(@Valid Role role);
 }

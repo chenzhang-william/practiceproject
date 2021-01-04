@@ -37,13 +37,21 @@ public interface StaffMapper {
     @Select("select id, enterprise_id, name, gender, mobile, email from staff where name = #{name}")
     List<Staff> findStaffByName(String name);
 
-    @Select("select id, enterprise_id, name, gender, mobile, email from staff where enterprise_id = (select id from enterprise where name = #{name})")
-    List<Staff> findStaffByEnterpriseName(String name);
+    @Select("select id, enterprise_id, name, gender, mobile, email from staff where enterprise_id = (select id from enterprise where no = #{enterpriseNo})")
+    List<Staff> findStaffByEnterpriseNo(String enterpriseNo);
 
     @Select("select enterprise_id from staff where id = #{id}")
     String findEnterpriseById(String id);
 
+    @Select("select id, enterprise_id, name, gender, mobile, email from staff where mobile = #{mobile}")
+    Staff findStaffByMobile(String mobile);
 
+    @Select("select id,name,mobile from staff where id in(select staff_id from staff_role_relation where role_id in (select roleId))")
+    List<Staff> findStaffOfRoleInEnterprise(String roleId, String enterpriseId);
 
+    @Select("select id,name,mobile from staff where id in (select staff_id from staff_role_relation where role_id = #{roleId})")
+    List<Staff> findStaffOfRole(String roleId);
 
+    @Update("update staff set enterprise_id = '' where mobile =#{mobile}")
+    int unbindEnterprise(String mobile);
 }

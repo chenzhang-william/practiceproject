@@ -4,20 +4,16 @@ import com.yealink.level1.bean.Enterprise;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Mapper
 @Component
 public interface EnterpriseMapper {
-
-    @Select("select * from enterprise where id = #{id}")
-    Enterprise findEnterpriseById(String id);
 
     @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
     @Insert("insert into enterprise(id, no, name, create_time, modify_time) values(#{id}, #{no}, #{name}, #{createTime}, #{modifyTime})")
     int add(Enterprise enterprise);
-
-    @Select("select id from enterprise where name = #{name}")
-    String findIdByName(String name);
 
     @Update("<script>" +
             "update enterprise set" +
@@ -34,4 +30,9 @@ public interface EnterpriseMapper {
     @Select("select id,no,name from enterprise where no = #{no}")
     Enterprise findByNo(String no);
 
+    @Select("select id,no,name from enterprise where name = #{name}")
+    List<Enterprise> findByName(String name);
+
+    @Select("select id from enterprise where no =#{no}")
+    String findIdByNo(String no);
 }

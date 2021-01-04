@@ -1,9 +1,10 @@
 package com.yealink.level1.controller;
 
-import com.yealink.level1.bean.Account;
-import com.yealink.level1.bean.Enterprise;
 import com.yealink.level1.service.RegisterService;
+import com.yealink.level1.bean.request.PersonalRequest;
+import com.yealink.level1.bean.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -20,17 +21,15 @@ public class RegisterController {
     private RegisterService registerService;
 
     @PostMapping("/account")
-    public int[] register(@RequestBody Account account,
-                          @RequestParam(value = "mobile",required = true)String mobile){
-        return registerService.accountRegister(account,mobile);
+    public Result register(@RequestBody@Validated({PersonalRequest.AccountInsert.class,PersonalRequest.StaffUpdate.class}) PersonalRequest personalRequest){
+        return registerService.accountRegister(personalRequest);
     }
 
 
 
     @PostMapping("/enterprise")
-    public int[] registerEnterprise(@RequestParam(value = "mobile", required = true)String mobile,
-                                  @RequestBody Enterprise enterprise){
-        return registerService.enterpriseRegister(enterprise,mobile);
+    public Result registerEnterprise(@RequestBody@Validated({PersonalRequest.EnterpriseInsert.class,PersonalRequest.StaffUpdate.class}) PersonalRequest personalRequest){
+        return registerService.enterpriseRegister(personalRequest);
     }
 
 

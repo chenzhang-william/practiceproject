@@ -1,16 +1,20 @@
 package com.yealink.level1.service.impl;
 
+import com.yealink.level1.bean.Enterprise;
 import com.yealink.level1.bean.Role;
+import com.yealink.level1.bean.Staff;
 import com.yealink.level1.bean.StaffRoleRelation;
 import com.yealink.level1.domain.RoleMapper;
-import com.yealink.level1.domain.StaffMapper;
 import com.yealink.level1.domain.StaffRoleRelationMapper;
+import com.yealink.level1.service.EnterpriseService;
 import com.yealink.level1.service.RoleManageService;
-import com.yealink.level1.service.StaffInfoService;
+import com.yealink.level1.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,98 +26,61 @@ import java.util.List;
  */
 @Service
 @Transactional
+@Validated
 public class RoleManageServiceImpl implements RoleManageService {
     @Autowired
     private RoleMapper roleMapper;
     @Autowired
     private StaffRoleRelationMapper staffRoleRelationMapper;
     @Autowired
-    private StaffInfoService staffInfoService;
+    private StaffService staffService;
+
 
     @Override
-    public int addRole(Role role) {
-        long now = new Date().getTime();
-        role.setCreateTime(now);
-        role.setModifyTime(now);
-        return roleMapper.add(role);
-    }
-
-    @Override
-    public int addStaffRoleRelation(String mobile, String name) {
-        StaffRoleRelation staffRoleRelation = new StaffRoleRelation();
-        staffRoleRelation.setStaffId(staffInfoService.findIdByMobile(mobile));
-        staffRoleRelation.setRoleId(findRoleIdByName(name));
+    public void addStaffRoleRelation(@Valid StaffRoleRelation staffRoleRelation) {
         long now = new Date().getTime();
         staffRoleRelation.setCreateTime(now);
         staffRoleRelation.setModifyTime(now);
-        return staffRoleRelationMapper.add(staffRoleRelation);
+        staffRoleRelationMapper.add(staffRoleRelation);
     }
 
     @Override
-    public int deleteRole(String name) {
-        return roleMapper.delete(findRoleIdByName(name));
+    public void deleteStaffRoleRelation(@Valid StaffRoleRelation staffRoleRelation) {
+        staffRoleRelationMapper.delete(findRelation(staffRoleRelation).getId());
     }
 
     @Override
-    public int deleteRelation(String mobile,String name) {
-        return staffRoleRelationMapper.delete(findRelationId(mobile,name));
+    public void updateStaffRoleRelation(@Valid StaffRoleRelation oldRelation, @Valid StaffRoleRelation newRelation) {
+        newRelation.setId(findRelation(oldRelation).getId());
+        newRelation.setModifyTime(new Date().getTime());
+        staffRoleRelationMapper.update(newRelation);
     }
 
     @Override
-    public int updateRole(Role role,String name) {
-        role.setId(findRoleIdByName(name));
-        role.setModifyTime(new Date().getTime());
-        return roleMapper.update(role);
+    public StaffRoleRelation findRelation(@Valid StaffRoleRelation staffRoleRelation) {
+        return staffRoleRelationMapper.findRelation(staffRoleRelation.getRoleId(),staffRoleRelation.getStaffId());
     }
 
     @Override
-    public int updateRoleOfStaff(String mobile, String oldName, String newName) {
-        StaffRoleRelation staffRoleRelation = findRelationById(findRelationId(mobile,oldName));
-        staffRoleRelation.setRoleId(findRoleIdByName(newName));
-        staffRoleRelation.setModifyTime(new Date().getTime());
-        return staffRoleRelationMapper.update(staffRoleRelation);
+    public Role findRoleByName(@Valid Role role) {
+        return roleMapper.findRoleByName(role.getName());
     }
 
     @Override
-    public int updateStaffOfRole(String oldMobile, String name, String newMobile) {
-        StaffRoleRelation staffRoleRelation = findRelationById(findRelationId(oldMobile,name));
-        staffRoleRelation.setStaffId(staffInfoService.findIdByMobile(newMobile));
-        staffRoleRelation.setModifyTime(new Date().getTime());
-        return staffRoleRelationMapper.update(staffRoleRelation);
+    public List<Role> findRoleOfStaff(@Valid Staff staff) {
+        return roleMapper.findRoleOfStaff(staffService.findStaffByMobile(staff).getId());
     }
 
+    //查找一个企业中某个角色的员工列表
     @Override
-    public String findRoleIdByName(String name) {
-        return roleMapper.findIdByName(name);
+    public List<Staff> findStaffOfRoleInEnterprise(@Valid Role role, @Valid Enterprise enterprise) {
+        List<Staff> staffsInEnterprise = staffService.findStaffByEnterpriseNo(enterprise);
+        List<Staff> staffsOfRole = findStaffOfRole(role);
+        staffsInEnterprise.retainAll(staffsOfRole);
+        return staffsInEnterprise;
     }
 
-
-
-    @Override
-    public String findRelationId(String mobile, String name) {
-        return staffRoleRelationMapper.findId(staffInfoService.findIdByMobile(mobile),roleMapper.findIdByName(name));
+    public List<Staff> findStaffOfRole(@Valid Role role) {
+        return staffService.findStaffOfRole(findRoleByName(role).getId());
     }
-
-
-    @Override
-    public StaffRoleRelation findRelationById(String id) {
-        return staffRoleRelationMapper.find(id);
-    }
-
-    @Override
-    public List<String> findRelationByMobile(String mobile) {
-        List<StaffRoleRelation> relations=staffRoleRelationMapper.findByStaffId(staffInfoService.findIdByMobile(mobile));
-        List<String> roles= new ArrayList();
-        for(StaffRoleRelation relation:relations){
-            roles.add(roleMapper.findNameById(relation.getRoleId()));
-        }
-        return roles;
-    }
-
-    @Override
-    public List<String> listRoleOfEnterprise(String name) {
-        return roleMapper.listRoleOfEnterprise(name);
-    }
-
-
 }

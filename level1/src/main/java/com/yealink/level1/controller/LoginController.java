@@ -1,8 +1,10 @@
 package com.yealink.level1.controller;
 
-import com.yealink.level1.bean.Account;
 import com.yealink.level1.service.LoginService;
+import com.yealink.level1.bean.request.PersonalRequest;
+import com.yealink.level1.bean.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +23,7 @@ public class LoginController {
     private LoginService loginService;
 
     @PostMapping("/byAccount")
-    public int login(@RequestBody Account account) {
-        return loginService.login(account);
+    public Result login(@RequestBody@Validated({PersonalRequest.Login.class}) PersonalRequest personalRequest) {
+        return loginService.login(personalRequest);
     }
 }

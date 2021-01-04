@@ -2,16 +2,19 @@ package com.yealink.level1.service.impl;
 
 import com.yealink.level1.bean.Department;
 import com.yealink.level1.bean.Enterprise;
+import com.yealink.level1.bean.Staff;
 import com.yealink.level1.bean.StaffDepartmentRelation;
 import com.yealink.level1.domain.DepartmentMapper;
 import com.yealink.level1.domain.StaffDepRelationMapper;
 import com.yealink.level1.service.DepManageService;
-import com.yealink.level1.service.EnterpriseInfoService;
-import com.yealink.level1.service.StaffInfoService;
+import com.yealink.level1.service.EnterpriseService;
+import com.yealink.level1.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,90 +27,79 @@ import java.util.Map;
  */
 @Service
 @Transactional
+@Validated
 public class DepManageServiceImpl implements DepManageService {
     @Autowired
     private DepartmentMapper departmentMapper;
     @Autowired
     private StaffDepRelationMapper staffDepRelationMapper;
     @Autowired
-    private StaffInfoService staffInfoService;
+    private StaffService staffService;
     @Autowired
-    private EnterpriseInfoService enterpriseInfoService;
+    private EnterpriseService enterpriseService;
 
+    //部门的企业字段为必要字段
     @Override
-    public int addDep(Department dep) {
+    public void addDep(@Valid Department dep) {
         long now = new Date().getTime();
         dep.setCreateTime(now);
         dep.setModifyTime(now);
-        return departmentMapper.add(dep);
+        departmentMapper.add(dep);
     }
 
     @Override
-    public int addStaffDepRelation(String mobile, String name, String position) {
-        String enterpriseId = staffInfoService.findEnterpriseById(staffInfoService.findIdByMobile(mobile));
-        String id = departmentMapper.findId(name,enterpriseId);
-        if(id !=null){
-            StaffDepartmentRelation staffDepartmentRelation = new StaffDepartmentRelation();
-            staffDepartmentRelation.setStaffId(staffInfoService.findIdByMobile(mobile));
-            staffDepartmentRelation.setDepartmentId(id);
-            staffDepartmentRelation.setPosition(position);
+    public void addStaffDepRelation(@Valid StaffDepartmentRelation staffDepartmentRelation) {
             long now = new Date().getTime();
             staffDepartmentRelation.setCreateTime(now);
             staffDepartmentRelation.setModifyTime(now);
-            return staffDepRelationMapper.add(staffDepartmentRelation);
-        }else return -1;
-
+            staffDepRelationMapper.add(staffDepartmentRelation);
     }
 
     @Override
-    public int deleteDep(String depName,String enterpriseName) {
-        return departmentMapper.delete(departmentMapper.findId(depName,enterpriseInfoService.findIdByName(enterpriseName)));
+    public void deleteDep(@Valid Department dep) {
+        departmentMapper.delete(findDep(dep).getId());
+    }
+
+
+
+    @Override
+    public void deleteStaffDepRelation(@Valid StaffDepartmentRelation relation) {
+        staffDepRelationMapper.delete(findRelation(relation).getId());
+    }
+
+
+
+    @Override
+    public void updateDep(@Valid Department oldDep,@Valid Department newDep) {
+        newDep.setId(findDep(oldDep).getId());
+        newDep.setModifyTime(new Date().getTime());
+        departmentMapper.update(newDep);
     }
 
     @Override
-    public int deleteStaffDepRelation(String mobile, String name) {
-        return staffDepRelationMapper.delete(staffDepRelationMapper.findId(staffInfoService.findIdByMobile(mobile),departmentMapper.findId(name,staffInfoService.findEnterpriseById(staffInfoService.findIdByMobile(mobile)))));
+    public void updateStaffDepRelation(@Valid StaffDepartmentRelation oldRelation, @Valid StaffDepartmentRelation newRelation) {
+        newRelation.setId(findRelation(oldRelation).getId());
+        newRelation.setModifyTime(new Date().getTime());
+        staffDepRelationMapper.update(newRelation);
     }
 
     @Override
-    public int updateDep(String depName,String enterpriseName, Department dep) {
-        dep.setId(departmentMapper.findId(depName,enterpriseInfoService.findIdByName(enterpriseName)));
-        dep.setModifyTime(new Date().getTime());
-        return departmentMapper.update(dep);
+    public StaffDepartmentRelation findRelation(StaffDepartmentRelation relation) {
+        return staffDepRelationMapper.findRelation(relation.getStaffId(),relation.getDepartmentId());
+    }
+
+    public Department findDep(Department dep) {
+        return departmentMapper.findDep(dep.getName(),dep.getEnterpriseId());
     }
 
     @Override
-    public int updateStaffDepRelation(String mobile, String oldDep,String enterpriseName, Map<String,String> newRelation) {
-        String newMobile = newRelation.get("mobile");
-        String newDep = newRelation.get("depName");
-        String newPosition = newRelation.get("position");
-        StaffDepartmentRelation relation = staffDepRelationMapper.findRelationById(staffDepRelationMapper.findId(staffInfoService.findIdByMobile(mobile),departmentMapper.findId(oldDep,enterpriseName)));
-        relation.setStaffId(staffInfoService.findIdByMobile(newMobile));
-        relation.setDepartmentId(departmentMapper.findId(newDep,enterpriseName));
-        relation.setPosition(newPosition);
-        relation.setModifyTime(new Date().getTime());
-        return staffDepRelationMapper.update(relation);
+    public List<Map<String,String>> getPosition(@Valid Staff staff) {
+        return staffDepRelationMapper.getPosition(staffService.findStaffByMobile(staff).getId());
     }
 
+    //和下面的查找组织架构树一起修改
     @Override
-    public int bindDepEnterprise(String depName, String enterpriseName) {
-        Department dep = departmentMapper.findById(departmentMapper.findId(depName,enterpriseName));
-        dep.setEnterpriseId(enterpriseInfoService.findIdByName(enterpriseName));
-        return updateDep(depName,enterpriseName,dep);
-    }
-
-    @Override
-    public List<Map<String,String>> getPosition(String mobile) {
-        return staffDepRelationMapper.getPosition(staffInfoService.findIdByMobile(mobile));
-    }
-
-    @Override
-    public String findEnterpriseById(String id) {
-        return departmentMapper.findEnterpriseById(id);
-    }
-
-    @Override
-    public List<Department> findDepByEnterprise(String name) {
+    public List<Department> findDepOfEnterprise(@Valid Enterprise enterprise) {
         return null;
     }
 

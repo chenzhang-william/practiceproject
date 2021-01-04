@@ -1,5 +1,6 @@
 package com.yealink.level1.domain;
 
+import com.yealink.level1.bean.Staff;
 import com.yealink.level1.bean.StaffRoleRelation;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
@@ -34,8 +35,8 @@ public interface StaffRoleRelationMapper {
             "</script>")
     int update (StaffRoleRelation staffRoleRelation);
 
-    @Select("select id,staff_id,role_id from staff_role_relation where id = #{id} ")
-    StaffRoleRelation find(String id);
+    @Select("select id,staff_id,role_id from staff_role_relation where role_id = #{RoleId} and staff_id = #{staffId}")
+    StaffRoleRelation findRelation(String roleId,String staffId);
 
     @Select("select id,staff_id,role_id from staff_role_relation where staff_id = #{staffId}")
     List<StaffRoleRelation> findByStaffId(String staffId);
