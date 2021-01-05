@@ -32,7 +32,7 @@ public class Staff {
 
     private String email;
 
-    private int gender;
+    private byte gender;
 
     private long createTime;
 

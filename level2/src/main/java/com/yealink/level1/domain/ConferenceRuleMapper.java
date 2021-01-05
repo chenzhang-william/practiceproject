@@ -1,0 +1,33 @@
+package com.yealink.level1.domain;
+
+import com.yealink.level1.bean.Conference;
+import com.yealink.level1.bean.ConferenceRule;
+import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Component;
+
+/**
+ * @author zhangchen
+ * @description ConferenceRuleMapper
+ * @date 2021/1/5 17:41
+ */
+@Mapper
+@Component
+public interface ConferenceRuleMapper {
+    @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
+    @Options(keyProperty = "id", useGeneratedKeys = true)
+    @Insert("insert into conference_rule(id,type,gap,day,week,ordinalWeek,ordinalMonth,startDay,endDay,create_time,modify_time) " +
+            "values(#{id},#{type} ,#{gap} ,#{day} ,#{week} ,#{ordinalWeek} ,#{ordinalMonth} ,#{startDay} ,#{endDay} ,#{createTime},#{modifyTime})")
+    int add(ConferenceRule conferenceRule);
+
+    @Delete("delete from conference_rule where id = #{id} ")
+    int delete(String id);
+
+    @Update("update conference_rule set " +
+            "type = #{type} ,gap = #{gap} ,day = #{day} ,week = #{week} ,ordinal_week = #{ordinalWeek},rodinalMonth = #{ordinalMonth} ,start_day = #{startDay} ,end_day = #{endDay} " +
+            "where id = #{id} ")
+    int update(ConferenceRule conferenceRule);
+
+    @Select("select id,type,gap,day,week,ordinalWeek,ordinalMonth,startDay,endDay from conference_rule where id = #{id} ")
+    ConferenceRule find(String id);
+
+}

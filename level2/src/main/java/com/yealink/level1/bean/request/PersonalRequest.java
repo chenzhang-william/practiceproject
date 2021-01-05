@@ -44,7 +44,7 @@ public class PersonalRequest {
 
     private String name;
 
-    private int gender;
+    private byte gender;
 
     private String email;
 

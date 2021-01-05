@@ -50,7 +50,7 @@ public class EnterpriseRequest {
     private String email;
 
     @NotNull(message = "性别不能为空",groups = {StaffInsert.class})
-    private int gender;
+    private byte gender;
 
     @NotNull(message = "姓名不能为空",groups = {StaffInsert.class,StaffName.class})
     private String name;
