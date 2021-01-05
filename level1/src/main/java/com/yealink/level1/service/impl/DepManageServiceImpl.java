@@ -36,8 +36,7 @@ public class DepManageServiceImpl implements DepManageService {
     private StaffDepRelationMapper staffDepRelationMapper;
     @Autowired
     private StaffService staffService;
-    @Autowired
-    private EnterpriseService enterpriseService;
+
 
     //部门的企业字段为必要字段
     @Override
@@ -133,6 +132,13 @@ public class DepManageServiceImpl implements DepManageService {
     @Override
     public boolean isDepExist(Department dep) {
         if(departmentMapper.findId(dep.getName(),dep.getEnterpriseId())!=null){
+            return true;
+        }else return false;
+    }
+
+    @Override
+    public boolean isRelationExist(StaffDepartmentRelation staffDepartmentRelation) {
+        if(staffDepRelationMapper.findId(staffDepartmentRelation.getStaffId(),staffDepartmentRelation.getDepartmentId())!=null){
             return true;
         }else return false;
     }

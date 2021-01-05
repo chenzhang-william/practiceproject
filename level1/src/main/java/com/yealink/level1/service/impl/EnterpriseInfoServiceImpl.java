@@ -225,12 +225,12 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         staff.setMobile(enterpriseRequest.getMobile());
         staff = staffService.findStaffByMobile(staff);
 
-        if(dep.getEnterpriseId() == staff.getEnterpriseId()){
+        if(dep.getEnterpriseId().equals(staff.getEnterpriseId())){
             StaffDepartmentRelation relation = new StaffDepartmentRelation();
             relation.setStaffId(staff.getId());
             relation.setDepartmentId(dep.getId());
             relation.setPosition(enterpriseRequest.getPosition());
-            if(depManageService.findRelation(relation)==null){
+            if(!depManageService.isRelationExist(relation)){
                 depManageService.addStaffDepRelation(relation);
                 return Result.success();
             }else return Result.failure(ErrorCode.DEPRELATION_HAS_EXIST);
@@ -251,7 +251,7 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         staff.setMobile(enterpriseRequest.getMobile());
         staff = staffService.findStaffByMobile(staff);
 
-        if(dep.getEnterpriseId() == staff.getEnterpriseId()){
+        if(dep.getEnterpriseId().equals(staff.getEnterpriseId())){
             StaffDepartmentRelation relation = new StaffDepartmentRelation();
             relation.setStaffId(staff.getId());
             relation.setDepartmentId(dep.getId());
@@ -275,7 +275,7 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         staff.setMobile(enterpriseRequest.getMobile());
         staff = staffService.findStaffByMobile(staff);
 
-        if(dep.getEnterpriseId() == staff.getEnterpriseId()){
+        if(dep.getEnterpriseId().equals(staff.getEnterpriseId())){
             StaffDepartmentRelation relation = new StaffDepartmentRelation();
             relation.setStaffId(staff.getId());
             relation.setDepartmentId(dep.getId());

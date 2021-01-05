@@ -63,7 +63,7 @@ public class RegisterServiceImpl implements RegisterService {
 
         StaffDepartmentRelation staffDepartmentRelation = new StaffDepartmentRelation();
         if(staffService.isStaffExist(staff)) {
-            if (enterpriseService.isEnterpriseExist(enterprise)) {
+            if (!enterpriseService.isEnterpriseExist(enterprise)) {
                 enterpriseService.add(enterprise);
 
                 staffService.bindStaffEnterprise(enterprise, staff);

@@ -100,7 +100,7 @@ public class EnterpriseInfoController {
     }
 
     @PostMapping("/findTree")
-    public Result findTree(@RequestBody@Validated({EnterpriseRequest.DepSelect.class,EnterpriseRequest.StaffSelect.class})EnterpriseRequest enterpriseRequest){
+    public Result findTree(@RequestBody@Validated({EnterpriseRequest.EnterpriseSelect.class})EnterpriseRequest enterpriseRequest){
         return enterpriseInfoService.findTree(enterpriseRequest);
     }
 

@@ -45,4 +45,6 @@ public interface DepManageService {
 
     boolean isDepExist(Department dep);
 
+    boolean isRelationExist(StaffDepartmentRelation staffDepartmentRelation);
+
 }
