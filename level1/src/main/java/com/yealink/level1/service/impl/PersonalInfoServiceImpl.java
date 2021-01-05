@@ -54,6 +54,12 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
     }
 
+    @Override
+    public Result findEnterprise(PersonalRequest personalRequest) {
+        Enterprise enterprise = new Enterprise();
+        enterprise.setName(personalRequest.getEnterpriseName());
+        return Result.success(enterpriseService.findEnterpriseByName(enterprise));
+    }
 
 
     @Override

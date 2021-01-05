@@ -14,6 +14,12 @@ public enum ErrorCode {
     STAFF_IS_NOT_EXIST("2004","员工不存在"),
     ENTERPRISE_IS_NOT_EXIST("2005","企业不存在"),
     STAFF_HAS_EXIST("2006","员工已存在"),
+    DEPARTMENT_HAS_EXIST("2007","部门已存在"),
+    DEPARTMENT_IS_NOT_EXIST("2008","部门不存在"),
+    ENTERPRISE_MISMATCH("2009","企业信息不匹配"),
+    DEPRELATION_HAS_EXIST("2010","已在该部门"),
+    ROLERELATION_HAS_EXIST("2011","角色关系已存在"),
+    ROLERELATION_IS_NOT_EXIST("2012","角色关系不存在"),
     ACCOUNT_HAS_EXIST("2002","账号已存在");
 
 

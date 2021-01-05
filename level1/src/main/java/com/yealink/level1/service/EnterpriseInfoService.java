@@ -21,6 +21,8 @@ public interface EnterpriseInfoService {
 
     Result addStaff(EnterpriseRequest enterpriseRequest);
 
+    Result findStaff(EnterpriseRequest enterpriseRequest);
+
     Result addAccount(EnterpriseRequest enterpriseRequest);
 
     Result unbindStaff(EnterpriseRequest enterpriseRequest);
@@ -33,6 +35,20 @@ public interface EnterpriseInfoService {
 
     Result updateDep(EnterpriseRequest enterpriseRequest);
 
-    Result updatePosition(EnterpriseRequest enterpriseRequest);
+    Result addStaffDepRelation(EnterpriseRequest enterpriseRequest);
+
+    Result deleteStaffDepRelation(EnterpriseRequest enterpriseRequest);
+
+    Result updateStaffDepRelation(EnterpriseRequest enterpriseRequest);
+
+    Result findTree(EnterpriseRequest enterpriseRequest);
+
+    Result updateStaffRoleRelation(EnterpriseRequest enterpriseRequest);
+
+    Result addStaffRoleRelation(EnterpriseRequest enterpriseRequest);
+
+    Result deleteStaffRoleRelation(EnterpriseRequest enterpriseRequest);
+
+    Result listRoleRelation(EnterpriseRequest enterpriseRequest);
 
 }

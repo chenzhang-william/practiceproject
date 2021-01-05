@@ -6,7 +6,6 @@ import com.yealink.level1.bean.Staff;
 import com.yealink.level1.bean.StaffRoleRelation;
 import com.yealink.level1.domain.RoleMapper;
 import com.yealink.level1.domain.StaffRoleRelationMapper;
-import com.yealink.level1.service.EnterpriseService;
 import com.yealink.level1.service.RoleManageService;
 import com.yealink.level1.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -73,7 +72,7 @@ public class RoleManageServiceImpl implements RoleManageService {
 
     //查找一个企业中某个角色的员工列表
     @Override
-    public List<Staff> findStaffOfRoleInEnterprise(@Valid Role role, @Valid Enterprise enterprise) {
+    public @NotNull(message = "该企业无角色关系") List<Staff> findStaffOfRoleInEnterprise(@Valid Role role, @Valid Enterprise enterprise) {
         List<Staff> staffsInEnterprise = staffService.findStaffByEnterpriseNo(enterprise);
         List<Staff> staffsOfRole = findStaffOfRole(role);
         staffsInEnterprise.retainAll(staffsOfRole);

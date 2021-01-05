@@ -42,7 +42,7 @@ public class EnterpriseServiceImpl implements EnterpriseService {
     }
 
     @Override
-    public List<Enterprise> findEnterpriseByName(@Valid Enterprise enterprise) {
+    public @NotNull(message = "无匹配企业") List<Enterprise> findEnterpriseByName(@Valid Enterprise enterprise) {
         return enterpriseMapper.findByName(enterprise.getName());
     }
 

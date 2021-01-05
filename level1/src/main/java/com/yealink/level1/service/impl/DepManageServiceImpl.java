@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -84,11 +85,11 @@ public class DepManageServiceImpl implements DepManageService {
     }
 
     @Override
-    public StaffDepartmentRelation findRelation(StaffDepartmentRelation relation) {
+    public @NotNull(message = "员工不在该部门") StaffDepartmentRelation findRelation(StaffDepartmentRelation relation) {
         return staffDepRelationMapper.findRelation(relation.getStaffId(),relation.getDepartmentId());
     }
 
-    public Department findDep(Department dep) {
+    public @NotNull(message = "部门不存在") Department findDep(Department dep) {
         return departmentMapper.findDep(dep.getName(),dep.getEnterpriseId());
     }
 
@@ -127,6 +128,13 @@ public class DepManageServiceImpl implements DepManageService {
             }
         }
         return childNode;
+    }
+
+    @Override
+    public boolean isDepExist(Department dep) {
+        if(departmentMapper.findId(dep.getName(),dep.getEnterpriseId())!=null){
+            return true;
+        }else return false;
     }
 
 }

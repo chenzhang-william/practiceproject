@@ -71,4 +71,9 @@ public class PersonalInfoController {
     public Result findTree(@RequestBody @Validated({PersonalRequest.EnterpriseSelect.class})PersonalRequest personalRequest){
         return personalInfoService.findTree(personalRequest);
     }
+
+    @PostMapping("/findEnterprise")
+    public Result findEnterprise(@RequestBody@Validated({PersonalRequest.EnterpriseName.class})PersonalRequest personalRequest){
+        return personalInfoService.findEnterprise(personalRequest);
+    }
 }

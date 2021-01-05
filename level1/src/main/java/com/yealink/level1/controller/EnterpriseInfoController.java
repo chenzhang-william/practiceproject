@@ -49,6 +49,11 @@ public class EnterpriseInfoController {
         return enterpriseInfoService.addStaff(enterpriseRequest);
     }
 
+    @PostMapping("/findStaffByName")
+    public Result findStaffByName(@RequestBody@Validated({EnterpriseRequest.StaffName.class})EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.findStaff(enterpriseRequest);
+    }
+
     @PostMapping("/addAccount")
     public Result addAccount(@RequestBody@Validated({EnterpriseRequest.AccountInsert.class,EnterpriseRequest.EnterpriseSelect.class})EnterpriseRequest enterpriseRequest){
         return enterpriseInfoService.addAccount(enterpriseRequest);
@@ -62,5 +67,60 @@ public class EnterpriseInfoController {
     @PostMapping("/unbindAccount")
     public Result unbindAccount(@RequestBody@Validated({EnterpriseRequest.AccountUpdate.class,EnterpriseRequest.EnterpriseSelect.class})EnterpriseRequest enterpriseRequest){
         return enterpriseInfoService.unbindAccount(enterpriseRequest);
+    }
+
+    @PostMapping("/addDepartment")
+    public Result addDepartment(@RequestBody@Validated({EnterpriseRequest.DepInsert.class,EnterpriseRequest.DepSelect.class})EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.addDep(enterpriseRequest);
+    }
+
+    @PostMapping("/deleteDepartment")
+    public Result deleteDepartment(@RequestBody @Validated({EnterpriseRequest.DepDelete.class,EnterpriseRequest.EnterpriseSelect.class})EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.deleteDep(enterpriseRequest);
+    }
+
+    @PostMapping("/updateDepartment")
+    public Result updateDepartment(@RequestBody @Validated({EnterpriseRequest.DepUpdate.class,EnterpriseRequest.EnterpriseSelect.class})EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.updateDep(enterpriseRequest);
+    }
+
+    @PostMapping("/addStaffDepRelation")
+    public Result addStaffDepRelation(@RequestBody@Validated({EnterpriseRequest.DepRelationInsert.class,EnterpriseRequest.StaffSelect.class,EnterpriseRequest.DepSelect.class,EnterpriseRequest.EnterpriseSelect.class})EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.addStaffDepRelation(enterpriseRequest);
+    }
+
+    @PostMapping("/deleteStaffDepRelation")
+    public Result deleteStaffDepRelation(@RequestBody@Validated({EnterpriseRequest.StaffSelect.class,EnterpriseRequest.DepSelect.class,EnterpriseRequest.EnterpriseSelect.class})EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.deleteStaffDepRelation(enterpriseRequest);
+    }
+
+    @PostMapping("/updateStaffDepRelation")
+    public Result updateStaffDepRelation(@RequestBody@Validated({EnterpriseRequest.StaffSelect.class,EnterpriseRequest.DepSelect.class,EnterpriseRequest.EnterpriseSelect.class})EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.updateStaffDepRelation(enterpriseRequest);
+    }
+
+    @PostMapping("/findTree")
+    public Result findTree(@RequestBody@Validated({EnterpriseRequest.DepSelect.class,EnterpriseRequest.StaffSelect.class})EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.findTree(enterpriseRequest);
+    }
+
+    @PostMapping("/updateStaffRoleRelation")
+    public Result updateStaffRoleRelation(@RequestBody@Validated({EnterpriseRequest.RoleSelect.class,EnterpriseRequest.StaffSelect.class})EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.updateStaffRoleRelation(enterpriseRequest);
+    }
+
+    @PostMapping("/addStaffRoleRelation")
+    public Result addStaffRoleRelation(@RequestBody@Validated({EnterpriseRequest.RoleSelect.class,EnterpriseRequest.StaffSelect.class})EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.addStaffRoleRelation(enterpriseRequest);
+    }
+
+    @PostMapping("/deleteStaffRoleRelation")
+    public Result deleteStaffRoleRelation(@RequestBody@Validated({EnterpriseRequest.RoleSelect.class,EnterpriseRequest.StaffSelect.class})EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.deleteStaffRoleRelation(enterpriseRequest);
+    }
+
+    @PostMapping("/listRoleRelation")
+    public Result listRoleRelation(@RequestBody@Validated({EnterpriseRequest.RoleSelect.class,EnterpriseRequest.EnterpriseSelect.class})EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.listRoleRelation(enterpriseRequest);
     }
 }

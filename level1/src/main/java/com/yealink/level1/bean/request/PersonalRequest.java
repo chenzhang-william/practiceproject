@@ -26,6 +26,7 @@ public class PersonalRequest {
     public interface AccountDelete{}
     public interface EnterpriseInsert{}
     public interface EnterpriseSelect{}
+    public interface EnterpriseName{}
 
 
     @NotNull(message = "手机号不能为空",groups = {StaffInsert.class,StaffUpdate.class,StaffSelect.class})
@@ -50,7 +51,7 @@ public class PersonalRequest {
     @NotNull(message = "企业号不能为空",groups = {EnterpriseInsert.class,EnterpriseSelect.class})
     private String enterpriseNo;
 
-    @NotNull(message = "企业名不能为空",groups = {EnterpriseInsert.class})
+    @NotNull(message = "企业名不能为空",groups = {EnterpriseInsert.class,EnterpriseName.class})
     private String enterpriseName;
 
 

@@ -1,11 +1,9 @@
 package com.yealink.level1.service.impl;
 
 import com.yealink.level1.bean.Enterprise;
-import com.yealink.level1.bean.Role;
 import com.yealink.level1.bean.Staff;
 import com.yealink.level1.domain.StaffMapper;
 import com.yealink.level1.service.EnterpriseService;
-import com.yealink.level1.service.RoleManageService;
 import com.yealink.level1.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,7 +61,7 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public List<Staff> findStaffByName(@Valid Staff staff) {
+    public @NotNull(message = "无匹配员工") List<Staff> findStaffByName(@Valid Staff staff) {
         return staffMapper.findStaffByName(findStaffByMobile(staff).getName());
     }
 

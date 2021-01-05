@@ -14,7 +14,7 @@ public interface EnterpriseService {
 
     void update(@Valid Enterprise oldEnterprise,@Valid Enterprise newEnterprise);
 
-    List<Enterprise> findEnterpriseByName(@Valid Enterprise enterprise);
+    @NotNull(message = "无匹配企业") List<Enterprise> findEnterpriseByName(@Valid Enterprise enterprise);
 
     @NotNull(message = "企业不存在") Enterprise findEnterpriseByNo(@Valid Enterprise enterprise);
 

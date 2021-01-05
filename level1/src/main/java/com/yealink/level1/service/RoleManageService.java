@@ -6,6 +6,7 @@ import com.yealink.level1.bean.Staff;
 import com.yealink.level1.bean.StaffRoleRelation;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ public interface RoleManageService {
 
     List<Role> findRoleOfStaff(@Valid Staff staff);
 
-    List<Staff> findStaffOfRoleInEnterprise(@Valid Role role,@Valid Enterprise enterprise);
+    @NotNull(message = "该企业无角色关系") List<Staff> findStaffOfRoleInEnterprise(@Valid Role role, @Valid Enterprise enterprise);
 
     List<Staff> findStaffOfRole(@Valid Role role);
 }
