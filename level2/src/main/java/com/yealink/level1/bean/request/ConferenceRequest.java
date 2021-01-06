@@ -15,29 +15,69 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConferenceRequest {
+
+
+    public interface ConferenceInsert{}
+    public interface ConferenceDelete{}
+    public interface ConferenceUpdate{}
+
+    public interface RuleInsert{}
+    public interface RuleUpdate{}
+
+    public interface ParticipantInsert{}
+    public interface ParticipantDelete{}
+    public interface ParticipantUpdate{}
+
+    public interface Mobile{}
+    public interface ConferenceNo{}
+
     private String staffId;
 
     private String title;
 
+    @NotNull(message = "会议号不能为空",groups = {
+            ConferenceInsert.class,ConferenceDelete.class,ConferenceUpdate.class,
+            RuleUpdate.class,
+            ParticipantInsert.class,ParticipantDelete.class,ParticipantUpdate.class,
+            ConferenceNo.class})
     private String conferenceNo;
 
+    private String newConferenceNo;
+
+    @NotNull(message = "手机号不能为空",groups = {
+            ConferenceInsert.class,ConferenceDelete.class,ConferenceUpdate.class,
+            RuleUpdate.class,
+            ParticipantInsert.class,ParticipantDelete.class,ParticipantUpdate.class,
+            Mobile.class})
+    private String mobile;
+
+    @NotNull(message = "开始时间不能为空",groups = {ConferenceInsert.class})
     private long startTime;
 
+    @NotNull(message = "结束时间不能为空",groups = {ConferenceInsert.class})
     private long endTime;
 
-    private byte type;
+    @NotNull(message = "类型不能为空",groups = {RuleInsert.class})
+    private int type;
 
-    private byte gap;
+    private int gap;
 
-    private byte day;
+    private int day;
 
-    private byte week;
+    private int week;
 
-    private byte ordinalWeek;
+    private int ordinalWeek;
 
-    private byte ordinalMonth;
+    private int ordinalMonth;
 
+    @NotNull(message = "开始日期不能为空",groups = {RuleInsert.class})
     private long startDay;
 
+    @NotNull(message = "结束日期不能为空",groups = {RuleInsert.class})
     private long endDay;
+
+
+    private int status;
+
+    private int role;
 }

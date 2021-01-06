@@ -28,4 +28,8 @@ public interface StaffService {
     Boolean isStaffExist(@Valid Staff staff);
 
     void unbindEnterprise(@Valid Staff staff);
+
+    int genderTransfer(String gender);
+
+    String findIdByMobile(String mobile);
 }

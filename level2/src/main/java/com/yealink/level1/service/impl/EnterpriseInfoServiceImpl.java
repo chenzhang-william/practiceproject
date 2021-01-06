@@ -91,7 +91,7 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
             if(!staffService.isStaffExist(staff)){
                 staff.setEmail(enterpriseRequest.getEmail());
                 staff.setName(enterpriseRequest.getName());
-                staff.setGender(enterpriseRequest.getGender());
+                staff.setGender(staffService.genderTransfer(enterpriseRequest.getGender()));
                 staffService.add(staff);
                 staffService.bindStaffEnterprise(enterprise,staff);
                 return Result.success();

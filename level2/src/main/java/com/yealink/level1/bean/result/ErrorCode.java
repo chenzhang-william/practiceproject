@@ -20,6 +20,13 @@ public enum ErrorCode {
     DEPRELATION_HAS_EXIST("2010","已在该部门"),
     ROLERELATION_HAS_EXIST("2011","角色关系已存在"),
     ROLERELATION_IS_NOT_EXIST("2012","角色关系不存在"),
+
+    TIME_IS_ILLEGAL("2018","时间不合法"),
+    CONFERENCE_HAS_EXIST("2013","会议已存在"),
+    CONFERENCE_IS_NOT_EXIST("2015","会议不存在"),
+    PARTICIPANT_HAS_EXIST("2016","参会者已存在"),
+    PARTICIPANT_IS_NOT_EXIST("2017","参会者不存在"),
+    NO_PERMISSION("2014","无权限"),
     ACCOUNT_HAS_EXIST("2002","账号已存在");
 
 

@@ -31,4 +31,7 @@ public interface ConferenceMapper {
 
     @Select("select id,title,conference_no,rule_id,start_time,end_time from conference where conference_no = #{conferenceNo} ")
     Conference findByNo(String conferenceNo);
+
+    @Select("select id,title,conference_no,rule_id,start_time,end_time from conference where id = #{id} ")
+    Conference findById(String id);
 }

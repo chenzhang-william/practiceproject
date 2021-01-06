@@ -88,6 +88,19 @@ public class StaffServiceImpl implements StaffService {
 
     }
 
+    @Override
+    public int genderTransfer(String gender) {
+        if(gender.equals("男")){
+            return 1;
+        }else if(gender.equals("女")){
+            return 2;
+        }else return 0;
+    }
+
+    @Override
+    public String findIdByMobile(String mobile) {
+        return staffMapper.findIdByMobile(mobile);
+    }
 
 }
 

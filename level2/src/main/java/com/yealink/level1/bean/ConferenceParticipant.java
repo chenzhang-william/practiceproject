@@ -26,7 +26,9 @@ public class ConferenceParticipant {
 
     private String participantId;
 
-    private byte status;
+    private int status;
+
+    private int role;
 
     private long createTime;
 

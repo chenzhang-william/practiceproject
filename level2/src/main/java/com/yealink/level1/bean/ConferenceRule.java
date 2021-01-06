@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author zhangchen
@@ -22,17 +23,18 @@ public class ConferenceRule {
     @GeneratedValue
     private String id;
 
-    private byte type;
+    @NotNull(message = "类型不能为空")
+    private int type;
 
-    private byte gap;
+    private int gap;
 
-    private byte day;
+    private int day;
 
-    private byte week;
+    private int week;
 
-    private byte ordinalWeek;
+    private int ordinalWeek;
 
-    private byte ordinalMonth;
+    private int ordinalMonth;
 
     private long startDay;
 

@@ -45,7 +45,7 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
         if(staffService.isStaffExist(staff)){
             Staff oldStaff = staffService.findStaffByMobile(staff);
             if(personalRequest.getNewMobile()!=null) staff.setMobile(personalRequest.getNewMobile());
-            staff.setGender(personalRequest.getGender());
+            if(personalRequest.getGender()!=null) staff.setGender(staffService.genderTransfer(personalRequest.getGender()));
             staff.setEmail(personalRequest.getEmail());
             staff.setName(personalRequest.getName());
             staffService.update(oldStaff,staff);
