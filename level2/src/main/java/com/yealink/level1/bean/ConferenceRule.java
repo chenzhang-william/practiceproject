@@ -30,7 +30,7 @@ public class ConferenceRule {
 
     private int day;
 
-    private int week;
+    private String week;
 
     private int ordinalWeek;
 

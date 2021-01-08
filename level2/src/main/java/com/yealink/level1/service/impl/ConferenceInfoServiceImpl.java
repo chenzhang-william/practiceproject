@@ -4,6 +4,7 @@ import com.yealink.level1.bean.*;
 import com.yealink.level1.bean.request.ConferenceRequest;
 import com.yealink.level1.bean.result.ErrorCode;
 import com.yealink.level1.bean.result.Result;
+import com.yealink.level1.bean.result.Schedule;
 import com.yealink.level1.service.ConferenceInfoService;
 import com.yealink.level1.service.ConferenceManageService;
 import com.yealink.level1.service.ConferenceParticipantService;
@@ -15,6 +16,8 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.yealink.level1.util.DateUtil.*;
 
 /**
  * @author zhangchen
@@ -52,13 +55,17 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
                 conferenceRule.setWeek(conferenceRequest.getWeek());
                 conferenceRule.setOrdinalWeek(conferenceRequest.getOrdinalWeek());
                 conferenceRule.setOrdinalMonth(conferenceRequest.getOrdinalMonth());
-                if(conferenceRequest.getStartDay()<conferenceRequest.getEndDay()) {
-                    conferenceRule.setStartDay(conferenceRequest.getStartDay());
-                    conferenceRule.setEndDay(conferenceRequest.getEndDay());
+                Long startDay = getYMDTimeStamp(conferenceRequest.getStartDay());
+                long endDay = getYMDTimeStamp(conferenceRequest.getEndDay());
+                if(startDay<endDay) {
+                    conferenceRule.setStartDay(startDay);
+                    conferenceRule.setEndDay(endDay);
                 }else return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
                 conference.setTitle(conferenceRequest.getTitle());
-                conference.setStartTime(conferenceRequest.getStartTime());
-                conference.setEndTime(conferenceRequest.getEndTime());
+                if(mergeYMDHMTimeStamp(conferenceRequest.getStartDay(),conferenceRequest.getStartTime())<=mergeYMDHMTimeStamp(conferenceRequest.getEndDay(),conferenceRequest.getEndTime())){
+                    conference.setStartTime(conferenceRequest.getStartTime());
+                    conference.setEndTime(conferenceRequest.getEndTime());
+                }else return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
                 conferenceManageService.addConference(conference,conferenceRule);
 
                 //3.将创建者添加进participant,角色为创建者，状态为未在会议中
@@ -100,8 +107,16 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
             //3.将新的不为空的信息封装进conference
             if(conferenceRequest.getNewConferenceNo()!=null) conference.setConferenceNo(conferenceRequest.getNewConferenceNo());
             if(conferenceRequest.getTitle()!=null) conference.setTitle(conferenceRequest.getTitle());
-            if(conferenceRequest.getStartTime()!=0&&conferenceRequest.getStartTime()<conference.getEndTime()) conference.setStartTime(conferenceRequest.getStartTime());
-            if(conferenceRequest.getEndTime()!=0&&conferenceRequest.getEndTime()>conference.getStartTime()) conference.setEndTime(conferenceRequest.getEndTime());
+            if(conferenceRequest.getStartTime()!=null && conferenceRequest.getEndTime()!=null){
+                String startDay = getYMDDate(conferenceManageService.findRuleByNo(conference).getStartDay());
+                long startTime = mergeYMDHMTimeStamp(startDay,conferenceRequest.getStartTime());
+                long endTime = mergeYMDHMTimeStamp(startDay,conferenceRequest.getEndTime());
+                if(startTime<endTime){
+                    conference.setStartTime(conferenceRequest.getStartTime());
+                    conference.setEndTime(conferenceRequest.getEndTime());
+                }
+            }
+
             //4.判断新的no不冲突，调用更新服务
             if(!conferenceManageService.isConferenceExist(conference)){
                 conferenceManageService.updateConference(conference);
@@ -125,11 +140,19 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
             if(conferenceRequest.getType()!=0) conferenceRule.setType(conferenceRequest.getType());
             if(conferenceRequest.getGap()!=0) conferenceRule.setGap(conferenceRequest.getGap());
             if(conferenceRequest.getDay()!=0) conferenceRule.setDay(conferenceRequest.getDay());
-            if(conferenceRequest.getWeek()!=0) conferenceRule.setWeek(conferenceRequest.getWeek());
+            if(conferenceRequest.getWeek()!=null) conferenceRule.setWeek(conferenceRequest.getWeek());
             if(conferenceRequest.getOrdinalWeek()!=0) conferenceRule.setOrdinalWeek(conferenceRequest.getOrdinalWeek());
             if(conferenceRequest.getOrdinalMonth()!=0) conferenceRule.setOrdinalMonth(conferenceRequest.getOrdinalMonth());
-            if(conferenceRequest.getStartDay()!=0&&conferenceRequest.getStartDay()<conferenceRule.getEndDay()) conferenceRule.setStartDay(conferenceRequest.getStartDay());
-            if(conferenceRequest.getEndDay()!=0&&conferenceRequest.getEndTime()>conferenceRule.getStartDay()) conferenceRule.setEndDay(conferenceRequest.getEndDay());
+            if(conferenceRequest.getStartDay()!=null){
+                long startDay = getYMDTimeStamp(conferenceRequest.getStartDay());
+                if(startDay<=conferenceRule.getEndDay()) conferenceRule.setStartDay(startDay);
+                else return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
+            }
+            if(conferenceRequest.getEndDay()!=null){
+                long endDay = getYMDTimeStamp(conferenceRequest.getEndDay());
+                if (endDay>=conferenceRule.getStartDay()) conferenceRule.setEndDay(endDay);
+                else return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
+            }
             //4.调用更新服务
             conferenceManageService.updateRule(conferenceRule);
             return Result.success();
@@ -158,12 +181,8 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         //1.在participant查出conferenceId的list
         List<String> conferenceIdList= conferenceParticipantService.findConferenceIdList(conferenceRequest.getMobile());
         //2.查出所有rule的idList
-        List<String> ruleIdList = new ArrayList<>();
-        for(String id:conferenceIdList){
-            ruleIdList.add(conferenceManageService.findRuleIdById(id));
-        }
         //3.算出所有的会议包含title，No，时间，日期，加入list
-        List<Schedule> scheduleList= conferenceManageService.findScheduleOfStaff(ruleIdList);
+        List<Schedule> scheduleList= conferenceManageService.findScheduleOfStaff(conferenceIdList);
         //4.排序
 
         return Result.success(scheduleList);

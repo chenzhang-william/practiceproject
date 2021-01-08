@@ -52,10 +52,10 @@ public class ConferenceRequest {
     private String mobile;
 
     @NotNull(message = "开始时间不能为空",groups = {ConferenceInsert.class})
-    private long startTime;
+    private String startTime;
 
     @NotNull(message = "结束时间不能为空",groups = {ConferenceInsert.class})
-    private long endTime;
+    private String endTime;
 
     @NotNull(message = "类型不能为空",groups = {RuleInsert.class})
     private int type;
@@ -64,17 +64,17 @@ public class ConferenceRequest {
 
     private int day;
 
-    private int week;
+    private String week;
 
     private int ordinalWeek;
 
     private int ordinalMonth;
 
     @NotNull(message = "开始日期不能为空",groups = {RuleInsert.class})
-    private long startDay;
+    private String startDay;
 
     @NotNull(message = "结束日期不能为空",groups = {RuleInsert.class})
-    private long endDay;
+    private String endDay;
 
 
     private int status;

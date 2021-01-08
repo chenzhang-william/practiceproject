@@ -1,8 +1,12 @@
-package com.yealink.level1.bean;
+package com.yealink.level1.bean.result;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Comparator;
+
+import static com.yealink.level1.util.DateUtil.*;
 
 /**
  * @author zhangchen
@@ -19,9 +23,9 @@ public class Schedule {
 
     private String conferenceNo;
 
-    private long startTime;
+    private String startTime;
 
-    private long endTime;
+    private String endTime;
 
-    private long conferenceDay;
+
 }

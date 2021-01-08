@@ -27,7 +27,7 @@ public interface ConferenceRuleMapper {
             "where id = #{id} ")
     int update(ConferenceRule conferenceRule);
 
-    @Select("select id,type,gap,day,week,ordinal_week,ordinal_month,startDay,endDay from conference_rule where id = #{id} ")
+    @Select("select id,type,gap,day,week,ordinal_week,ordinal_month,start_day,end_day from conference_rule where id = #{id} ")
     ConferenceRule find(String id);
 
 }

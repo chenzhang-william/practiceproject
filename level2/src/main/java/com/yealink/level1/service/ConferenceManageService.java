@@ -2,7 +2,7 @@ package com.yealink.level1.service;
 
 import com.yealink.level1.bean.Conference;
 import com.yealink.level1.bean.ConferenceRule;
-import com.yealink.level1.bean.Schedule;
+import com.yealink.level1.bean.result.Schedule;
 
 import java.util.List;
 
@@ -38,19 +38,21 @@ public interface ConferenceManageService {
 
     String findIdByNo(String conferenceNo);
 
-    List<Schedule> findScheduleOfStaff(List<String> ruleIdList);
+    List<Schedule> findScheduleOfStaff(List<String> conferenceIdList);
 
-    List<Schedule> singleConference(ConferenceRule conferenceRule);
+    List<Schedule> singleConference(Conference conference,ConferenceRule conferenceRule);
 
-    List<Schedule> cycleByDay(ConferenceRule conferenceRule);
+    List<Schedule> cycleByDay(Conference conference,ConferenceRule conferenceRule);
 
-    List<Schedule> cycleByWeek(ConferenceRule conferenceRule);
+    List<Schedule> cycleByWeek(Conference conference,ConferenceRule conferenceRule);
 
-    List<Schedule> cycleByMonthDay(ConferenceRule conferenceRule);
+    List<Schedule> cycleByMonthDay(Conference conference,ConferenceRule conferenceRule);
 
-    List<Schedule> cycleByMonthWeek(ConferenceRule conferenceRule);
+    List<Schedule> cycleByMonthWeek(Conference conference,ConferenceRule conferenceRule);
 
-    List<Schedule> cycleByYearDay(ConferenceRule conferenceRule);
+    List<Schedule> cycleByYearDay(Conference conference,ConferenceRule conferenceRule);
 
-    List<Schedule> cycleByYearMonth(ConferenceRule conferenceRule);
+    List<Schedule> cycleByYearMonth(Conference conference,ConferenceRule conferenceRule);
+
+    List<Schedule> scheduleSort(List<Schedule> scheduleList);
 }

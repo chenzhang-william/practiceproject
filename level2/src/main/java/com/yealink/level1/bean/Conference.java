@@ -30,9 +30,9 @@ public class Conference {
 
     private String ruleId;
 
-    private long startTime;
+    private String startTime;
 
-    private long endTime;
+    private String endTime;
 
     private long createTime;
 

@@ -1,6 +1,7 @@
 package com.yealink.level1.service.impl;
 
 import com.yealink.level1.bean.ConferenceParticipant;
+import com.yealink.level1.domain.ConferenceMapper;
 import com.yealink.level1.domain.ConferenceParticipantMapper;
 import com.yealink.level1.service.ConferenceManageService;
 import com.yealink.level1.service.ConferenceParticipantService;
@@ -24,8 +25,9 @@ import java.util.List;
 @Transactional
 @Validated
 public class ConferenceParticipantServiceImpl implements ConferenceParticipantService {
+
     @Autowired
-    private ConferenceManageService conferenceManageService;
+    ConferenceMapper conferenceMapper;
     @Autowired
     private ConferenceParticipantMapper conferenceParticipantMapper;
     @Autowired
@@ -47,7 +49,7 @@ public class ConferenceParticipantServiceImpl implements ConferenceParticipantSe
 
     @Override
     public void deleteParticipant(String conferenceNo) {
-        String conferenceId = conferenceManageService.findIdByNo(conferenceNo);
+        String conferenceId = conferenceMapper.findIdByNo(conferenceNo);
 
         conferenceParticipantMapper.deleteAllParticipantOfConference(conferenceId);
     }
@@ -73,13 +75,13 @@ public class ConferenceParticipantServiceImpl implements ConferenceParticipantSe
 
     @Override
     public List<String> findParticipantIdList(String conferenceNo) {
-        return conferenceParticipantMapper.findParticipant(conferenceManageService.findIdByNo(conferenceNo));
+        return conferenceParticipantMapper.findParticipant(conferenceMapper.findIdByNo(conferenceNo));
     }
 
     @Override
     public ConferenceParticipant findParticipant(String conferenceNo, String mobile) {
         ConferenceParticipant conferenceParticipant = new ConferenceParticipant();
-        conferenceParticipant.setConferenceId(conferenceManageService.findIdByNo(conferenceNo));
+        conferenceParticipant.setConferenceId(conferenceMapper.findIdByNo(conferenceNo));
         conferenceParticipant.setParticipantId(staffService.findIdByMobile(mobile));
         return conferenceParticipantMapper.find(conferenceParticipant);
     }
