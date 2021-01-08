@@ -5,13 +5,17 @@ import com.yealink.level2.bean.ConferenceRule;
 import com.yealink.level2.bean.result.Schedule;
 import com.yealink.level2.service.ConferenceManageService;
 import com.yealink.level2.util.ScheduleComparator;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
 
 import static com.yealink.level2.util.DateUtil.*;
+
+
 
 /**
  * @author zhangchen
@@ -23,6 +27,7 @@ class ConferenceManageServiceImplTest {
 
     @Autowired
     private ConferenceManageService conferenceManageService;
+
 
     @Test
     void cycleByYearMonth(){
@@ -44,7 +49,7 @@ class ConferenceManageServiceImplTest {
         conferenceRule.setEndDay(getYMDTimeStamp(endDay));
 
         List<Schedule> scheduleList = conferenceManageService.cycleByYearMonth(conference, conferenceRule);
-
+        System.out.println(scheduleList);
     }
 
     @Test
@@ -132,8 +137,6 @@ class ConferenceManageServiceImplTest {
 
         List<Schedule> scheduleList = conferenceManageService.cycleByWeek(conference,conferenceRule);
 
-        ScheduleComparator scheduleComparator = new ScheduleComparator();
-        Collections.sort(scheduleList,scheduleComparator);
         System.out.println(scheduleList);
     }
     @Test
@@ -215,8 +218,11 @@ class ConferenceManageServiceImplTest {
 
         conferenceManageService.addConference(conference1,conferenceRule1);
         idList.add(conference1.getId());
+        for(Schedule s:conferenceManageService.findScheduleOfStaff(idList)){
+            System.out.println(s);
+        }
 
-        System.out.println(conferenceManageService.findScheduleOfStaff(idList));
+
 
     }
 }

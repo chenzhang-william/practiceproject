@@ -1,10 +1,16 @@
 package com.yealink.level2.service.impl;
 
+import com.yealink.level2.bean.Account;
+import com.yealink.level2.service.AccountService;
 import com.yealink.level2.service.LoginService;
 import com.yealink.level2.bean.request.PersonalRequest;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author zhangchen
@@ -14,13 +20,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class LoginServiceImplTest {
 
-    @Autowired
+
     private LoginService loginService;
+    private AccountService accountService;
+    private Account account;
+    private PersonalRequest personalRequest;
+
+
+    @Before
+    public void setUp() throws Exception{
+        account = mock(Account.class);
+        personalRequest = new PersonalRequest();
+    }
+
     @Test
     void login() {
-        PersonalRequest personalRequest = new PersonalRequest();
-        personalRequest.setUsername("test");
-        personalRequest.setPassword("123456");
-        loginService.login(personalRequest);
+
+
     }
 }
