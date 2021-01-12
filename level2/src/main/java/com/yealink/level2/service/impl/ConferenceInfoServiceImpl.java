@@ -42,90 +42,101 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         Staff staff = new Staff();
         staff.setMobile(conferenceRequest.getMobile());
 
-        if(staffService.isStaffExist(staff)){
+        if(!staffService.isStaffExist(staff)) return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
 
-            Conference conference = new Conference();
-            conference.setConferenceNo(conferenceRequest.getConferenceNo());
-            if(!conferenceManageService.isConferenceExist(conference)){
-                //2.判断无重复会议后，添加进数据库
-                ConferenceRule conferenceRule = new ConferenceRule();
-                conferenceRule.setType(conferenceRequest.getType());
-                conferenceRule.setGap(conferenceRequest.getGap());
-                conferenceRule.setDay(conferenceRequest.getDay());
-                conferenceRule.setWeek(conferenceRequest.getWeek());
-                conferenceRule.setOrdinalWeek(conferenceRequest.getOrdinalWeek());
-                conferenceRule.setOrdinalMonth(conferenceRequest.getOrdinalMonth());
-                Long startDay = getYMDTimeStamp(conferenceRequest.getStartDay());
-                long endDay = getYMDTimeStamp(conferenceRequest.getEndDay());
-                if(startDay<endDay) {
-                    conferenceRule.setStartDay(startDay);
-                    conferenceRule.setEndDay(endDay);
-                }else return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
-                conference.setTitle(conferenceRequest.getTitle());
-                if(mergeYMDHMTimeStamp(conferenceRequest.getStartDay(),conferenceRequest.getStartTime())<=mergeYMDHMTimeStamp(conferenceRequest.getEndDay(),conferenceRequest.getEndTime())){
-                    conference.setStartTime(conferenceRequest.getStartTime());
-                    conference.setEndTime(conferenceRequest.getEndTime());
-                }else return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
-                conferenceManageService.addConference(conference,conferenceRule);
+        if(conferenceManageService.isConferenceExist(conferenceRequest.getConferenceNo())) return Result.failure(ErrorCode.CONFERENCE_HAS_EXIST);
+        Conference conference = new Conference();
+        conference.setConferenceNo(conferenceRequest.getConferenceNo());
+        conference.setTitle(conferenceRequest.getTitle());
+        if(!(mergeYMDHMTimeStamp(conferenceRequest.getStartDay(),conferenceRequest.getStartTime())<=mergeYMDHMTimeStamp(conferenceRequest.getEndDay(),conferenceRequest.getEndTime()))){
+            return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
+        }
+        conference.setStartTime(conferenceRequest.getStartTime());
+        conference.setEndTime(conferenceRequest.getEndTime());
 
-                //3.将创建者添加进participant,角色为创建者，状态为未在会议中
-                ConferenceParticipant conferenceParticipant = new ConferenceParticipant();
-                conferenceParticipant.setConferenceId(conferenceManageService.findConferenceByNo(conference).getId());
-                conferenceParticipant.setParticipantId(staffService.findStaffByMobile(staff).getId());
-                conferenceParticipant.setStatus(0);
-                conferenceParticipant.setRole(0);
-                conferenceParticipantService.addParticipant(conferenceParticipant);
-                return Result.success();
-            }else return Result.failure(ErrorCode.CONFERENCE_HAS_EXIST);
-        }else return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
+        ConferenceRule conferenceRule = new ConferenceRule();
+        if(ruleValuation(conferenceRule,conferenceRequest)!= Result.success()) return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
+
+        conferenceManageService.addConference(conference,conferenceRule);
+
+        String conferenceId =conference.getId();
+        //3.将创建者添加进participant,角色为创建者，状态为未在会议中
+        addAdminParticipant(staff.getMobile(), conferenceId);
+
+        return Result.success();
+    }
+
+    private Result ruleValuation(ConferenceRule conferenceRule,ConferenceRequest conferenceRequest){
+
+        conferenceRule.setType(conferenceRequest.getType());
+        conferenceRule.setGap(conferenceRequest.getGap());
+        conferenceRule.setDay(conferenceRequest.getDay());
+        conferenceRule.setWeek(conferenceRequest.getWeek());
+        conferenceRule.setOrdinalWeek(conferenceRequest.getOrdinalWeek());
+        conferenceRule.setOrdinalMonth(conferenceRequest.getOrdinalMonth());
+        Long startDay = getYMDTimeStamp(conferenceRequest.getStartDay());
+        long endDay = getYMDTimeStamp(conferenceRequest.getEndDay());
+
+        if(startDay>endDay) return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
+        conferenceRule.setStartDay(startDay);
+        conferenceRule.setEndDay(endDay);
+        return Result.success();
+    }
+
+    private void addAdminParticipant(String mobile, String conferenceId) {
+        ConferenceParticipant conferenceParticipant = new ConferenceParticipant();
+        conferenceParticipant.setConferenceId(conferenceId);
+        conferenceParticipant.setParticipantId(staffService.findIdByMobile(mobile));
+        conferenceParticipant.setStatus(0);
+        conferenceParticipant.setRole(0);
+        conferenceParticipantService.addParticipant(conferenceParticipant);
     }
 
     @Override
     public Result deleteConference(ConferenceRequest conferenceRequest) {
         //1.判断是否是创建者，会议号和创建者是否吻合
         String no = conferenceRequest.getConferenceNo();
-        if(conferenceManageService.hasPermission(no,conferenceRequest.getMobile())){
-            //2.获取ruleid
-            String ruleId = conferenceManageService.findRuleIdByNo(no);
-            //3.删除参会人
-            conferenceParticipantService.deleteParticipant(no);
-            //4.删除会议
-            conferenceManageService.deleteConference(no);
-            //4.删除rule
-            conferenceManageService.deleteRule(ruleId);
-            return Result.success();
-        }else return Result.failure(ErrorCode.NO_PERMISSION);
+        if(!conferenceManageService.hasPermission(no,conferenceRequest.getMobile())) return Result.failure(ErrorCode.NO_PERMISSION);
+        //2.获取ruleid
+        String ruleId = conferenceManageService.findRuleIdByNo(no);
+        //3.删除参会人
+        conferenceParticipantService.deleteParticipant(no);
+        //4.删除会议
+        conferenceManageService.deleteConference(no);
+        //4.删除rule
+        conferenceManageService.deleteRule(ruleId);
+        return Result.success();
     }
 
     @Override
     public Result updateConferenceInfo(ConferenceRequest conferenceRequest) {
         //1.判断是否是创建者，会议号和创建者是否吻合
         String no = conferenceRequest.getConferenceNo();
-        if(conferenceManageService.hasPermission(no,conferenceRequest.getMobile())){
+        if(!conferenceManageService.hasPermission(no,conferenceRequest.getMobile())) return Result.failure(ErrorCode.NO_PERMISSION);
             //2.通过会议号获取oldConference
-            Conference conference = new Conference();
-            conference.setConferenceNo(no);
-            conference = conferenceManageService.findConferenceByNo(conference);
-            //3.将新的不为空的信息封装进conference
-            if(conferenceRequest.getNewConferenceNo()!=null) conference.setConferenceNo(conferenceRequest.getNewConferenceNo());
-            if(conferenceRequest.getTitle()!=null) conference.setTitle(conferenceRequest.getTitle());
-            if(conferenceRequest.getStartTime()!=null && conferenceRequest.getEndTime()!=null){
-                String startDay = getYMDDate(conferenceManageService.findRuleByNo(conference).getStartDay());
-                long startTime = mergeYMDHMTimeStamp(startDay,conferenceRequest.getStartTime());
-                long endTime = mergeYMDHMTimeStamp(startDay,conferenceRequest.getEndTime());
-                if(startTime<endTime){
-                    conference.setStartTime(conferenceRequest.getStartTime());
-                    conference.setEndTime(conferenceRequest.getEndTime());
-                }
+        Conference conference = new Conference();
+        conference.setConferenceNo(no);
+        conference = conferenceManageService.findConferenceByNo(conference);
+        //3.将新的不为空的信息封装进conference
+        conferenceValuation(conferenceRequest, conference);
+        //4.判断新的no不冲突，调用更新服务
+        if(conferenceManageService.isConferenceExist(conference.getConferenceNo())) return Result.failure(ErrorCode.CONFERENCE_HAS_EXIST);
+        conferenceManageService.updateConference(conference);
+        return Result.success();
+    }
+
+    private void conferenceValuation(ConferenceRequest conferenceRequest, Conference conference) {
+        if(conferenceRequest.getNewConferenceNo()!=null) conference.setConferenceNo(conferenceRequest.getNewConferenceNo());
+        if(conferenceRequest.getTitle()!=null) conference.setTitle(conferenceRequest.getTitle());
+        if(conferenceRequest.getStartTime()!=null && conferenceRequest.getEndTime()!=null){
+            String startDay = getYMDDate(conferenceManageService.findRuleByNo(conference).getStartDay());
+            long startTime = mergeYMDHMTimeStamp(startDay,conferenceRequest.getStartTime());
+            long endTime = mergeYMDHMTimeStamp(startDay,conferenceRequest.getEndTime());
+            if(startTime<endTime){
+                conference.setStartTime(conferenceRequest.getStartTime());
+                conference.setEndTime(conferenceRequest.getEndTime());
             }
-
-            //4.判断新的no不冲突，调用更新服务
-            if(!conferenceManageService.isConferenceExist(conference)){
-                conferenceManageService.updateConference(conference);
-                return Result.success();
-            }else return Result.failure(ErrorCode.CONFERENCE_HAS_EXIST);
-        }else return Result.failure(ErrorCode.NO_PERMISSION);
-
+        }
     }
 
     @Override
@@ -139,27 +150,32 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
             ConferenceRule conferenceRule = new ConferenceRule();
             conferenceRule = conferenceManageService.findRuleByNo(conference);
             //3.将新的规则封装进rule
-            if(conferenceRequest.getType()!=0) conferenceRule.setType(conferenceRequest.getType());
-            if(conferenceRequest.getGap()!=0) conferenceRule.setGap(conferenceRequest.getGap());
-            if(conferenceRequest.getDay()!=0) conferenceRule.setDay(conferenceRequest.getDay());
-            if(conferenceRequest.getWeek()!=null) conferenceRule.setWeek(conferenceRequest.getWeek());
-            if(conferenceRequest.getOrdinalWeek()!=0) conferenceRule.setOrdinalWeek(conferenceRequest.getOrdinalWeek());
-            if(conferenceRequest.getOrdinalMonth()!=0) conferenceRule.setOrdinalMonth(conferenceRequest.getOrdinalMonth());
-            if(conferenceRequest.getStartDay()!=null){
-                long startDay = getYMDTimeStamp(conferenceRequest.getStartDay());
-                if(startDay<=conferenceRule.getEndDay()) conferenceRule.setStartDay(startDay);
-                else return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
-            }
-            if(conferenceRequest.getEndDay()!=null){
-                long endDay = getYMDTimeStamp(conferenceRequest.getEndDay());
-                if (endDay>=conferenceRule.getStartDay()) conferenceRule.setEndDay(endDay);
-                else return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
-            }
+            if (newRuleValuation(conferenceRequest, conferenceRule)) return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
             //4.调用更新服务
             conferenceManageService.updateRule(conferenceRule);
             return Result.success();
         }else return Result.failure(ErrorCode.NO_PERMISSION);
 
+    }
+
+    private boolean newRuleValuation(ConferenceRequest conferenceRequest, ConferenceRule conferenceRule) {
+        if(conferenceRequest.getType()!=0) conferenceRule.setType(conferenceRequest.getType());
+        if(conferenceRequest.getGap()!=0) conferenceRule.setGap(conferenceRequest.getGap());
+        if(conferenceRequest.getDay()!=0) conferenceRule.setDay(conferenceRequest.getDay());
+        if(conferenceRequest.getWeek()!=null) conferenceRule.setWeek(conferenceRequest.getWeek());
+        if(conferenceRequest.getOrdinalWeek()!=0) conferenceRule.setOrdinalWeek(conferenceRequest.getOrdinalWeek());
+        if(conferenceRequest.getOrdinalMonth()!=0) conferenceRule.setOrdinalMonth(conferenceRequest.getOrdinalMonth());
+        if(conferenceRequest.getStartDay()!=null){
+            long startDay = getYMDTimeStamp(conferenceRequest.getStartDay());
+            if(startDay<=conferenceRule.getEndDay()) conferenceRule.setStartDay(startDay);
+            else return true;
+        }
+        if(conferenceRequest.getEndDay()!=null){
+            long endDay = getYMDTimeStamp(conferenceRequest.getEndDay());
+            if (endDay>=conferenceRule.getStartDay()) conferenceRule.setEndDay(endDay);
+            else return true;
+        }
+        return false;
     }
 
     @Override
@@ -195,27 +211,22 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         //1.获取会议号和手机号，分别判断是否存在
         Conference conference = new Conference();
         conference.setConferenceNo(conferenceRequest.getConferenceNo());
-        if(conferenceManageService.isConferenceExist(conference)){
-            Staff staff = new Staff();
-            staff.setMobile(conferenceRequest.getMobile());
-            if(staffService.isStaffExist(staff)){
-                if(!conferenceParticipantService.isParticipantExist(conference.getConferenceNo(),staff.getMobile())){
-
-                    //2.存在的话取出会议id和staffId封装进participant
-                    ConferenceParticipant conferenceParticipant = new ConferenceParticipant();
-                    conferenceParticipant.setConferenceId(conferenceManageService.findConferenceByNo(conference).getId());
-                    conferenceParticipant.setParticipantId(staffService.findStaffByMobile(staff).getId());
-                    //3.将status设为0
-                    conferenceParticipant.setStatus(0);
-                    //4.将role设为3
-                    conferenceParticipant.setStatus(3);
-                    //5.调用add
-                    conferenceParticipantService.addParticipant(conferenceParticipant);
-                    return Result.success();
-                }else return Result.failure(ErrorCode.PARTICIPANT_HAS_EXIST);
-            }else return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
-        }else return Result.failure(ErrorCode.CONFERENCE_IS_NOT_EXIST);
-
+        if(!conferenceManageService.isConferenceExist(conference.getConferenceNo())) return Result.failure(ErrorCode.CONFERENCE_IS_NOT_EXIST);
+        Staff staff = new Staff();
+        staff.setMobile(conferenceRequest.getMobile());
+        if(!staffService.isStaffExist(staff)) return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
+        if(conferenceParticipantService.isParticipantExist(conference.getConferenceNo(),staff.getMobile())) return Result.failure(ErrorCode.PARTICIPANT_HAS_EXIST);
+        //2.存在的话取出会议id和staffId封装进participant
+        ConferenceParticipant conferenceParticipant = new ConferenceParticipant();
+        conferenceParticipant.setConferenceId(conferenceManageService.findConferenceByNo(conference).getId());
+        conferenceParticipant.setParticipantId(staffService.findStaffByMobile(staff).getId());
+        //3.将status设为0
+        conferenceParticipant.setStatus(0);
+        //4.将role设为3
+        conferenceParticipant.setStatus(3);
+        //5.调用add
+        conferenceParticipantService.addParticipant(conferenceParticipant);
+        return Result.success();
 
     }
 
@@ -224,18 +235,16 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         //1.获取会议号和手机号，分别判断是否存在
         Conference conference = new Conference();
         conference.setConferenceNo(conferenceRequest.getConferenceNo());
-        if(conferenceManageService.isConferenceExist(conference)){
-                    conferenceParticipantService.deleteParticipant(conference.getConferenceNo());
-                    return Result.success();
-        }else return Result.failure(ErrorCode.CONFERENCE_IS_NOT_EXIST);
+        if(!conferenceManageService.isConferenceExist(conference.getConferenceNo())) return Result.failure(ErrorCode.CONFERENCE_IS_NOT_EXIST);
+        conferenceParticipantService.deleteParticipant(conference.getConferenceNo());
+        return Result.success();
     }
 
     @Override
     public Result deleteOneParticipant(ConferenceRequest conferenceRequest) {
-        if(conferenceParticipantService.isParticipantExist(conferenceRequest.getConferenceNo(),conferenceRequest.getMobile())){
-            conferenceParticipantService.deleteOneParticipant(conferenceRequest.getConferenceNo(),conferenceRequest.getMobile());
-            return Result.success();
-        }else return Result.failure(ErrorCode.CONFERENCE_IS_NOT_EXIST);
+        if(!conferenceParticipantService.isParticipantExist(conferenceRequest.getConferenceNo(),conferenceRequest.getMobile())) return Result.failure(ErrorCode.CONFERENCE_IS_NOT_EXIST);
+        conferenceParticipantService.deleteOneParticipant(conferenceRequest.getConferenceNo(),conferenceRequest.getMobile());
+        return Result.success();
     }
 
     @Override
@@ -244,13 +253,12 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         //2.存在的话取出会议id和staffId封装进participant
         //3.设置status
         //4.调用update
-        if(conferenceParticipantService.isParticipantExist(conferenceRequest.getConferenceNo(),conferenceRequest.getMobile())){
-            ConferenceParticipant conferenceParticipant = conferenceParticipantService.findParticipant(conferenceRequest.getConferenceNo(),conferenceRequest.getMobile());
-            if(conferenceRequest.getStatus()!=0) conferenceParticipant.setStatus(conferenceRequest.getStatus());
-            if(conferenceRequest.getRole()!=0) conferenceParticipant.setRole(conferenceRequest.getRole());
-            conferenceParticipantService.updateParticipant(conferenceParticipant);
-            return Result.success();
-        }else return Result.failure(ErrorCode.CONFERENCE_IS_NOT_EXIST);
+        if(!conferenceParticipantService.isParticipantExist(conferenceRequest.getConferenceNo(),conferenceRequest.getMobile())) return Result.failure(ErrorCode.CONFERENCE_IS_NOT_EXIST);
+        ConferenceParticipant conferenceParticipant = conferenceParticipantService.findParticipant(conferenceRequest.getConferenceNo(),conferenceRequest.getMobile());
+        if(conferenceRequest.getStatus()!=0) conferenceParticipant.setStatus(conferenceRequest.getStatus());
+        if(conferenceRequest.getRole()!=0) conferenceParticipant.setRole(conferenceRequest.getRole());
+        conferenceParticipantService.updateParticipant(conferenceParticipant);
+        return Result.success();
     }
 
     @Override
@@ -260,8 +268,7 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         //3.查出participantList
         Conference conference = new Conference();
         conference.setConferenceNo(conferenceRequest.getConferenceNo());
-        if(conferenceManageService.isConferenceExist(conference)){
-            return Result.success(conferenceParticipantService.findParticipantIdList(conference.getConferenceNo()));
-        }else return Result.failure(ErrorCode.CONFERENCE_IS_NOT_EXIST);
+        if(conferenceManageService.isConferenceExist(conference.getConferenceNo())) return Result.failure(ErrorCode.CONFERENCE_IS_NOT_EXIST);
+        return Result.success(conferenceParticipantService.findParticipantIdList(conference.getConferenceNo()));
     }
 }

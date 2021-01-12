@@ -39,15 +39,18 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
     public Result updateStaff(PersonalRequest personalRequest) {
         Staff staff = new Staff();
         staff.setMobile(personalRequest.getMobile());
-        if(staffService.isStaffExist(staff)){
-            Staff oldStaff = staffService.findStaffByMobile(staff);
-            if(personalRequest.getNewMobile()!=null) staff.setMobile(personalRequest.getNewMobile());
-            if(personalRequest.getGender()!=null) staff.setGender(staffService.genderTransfer(personalRequest.getGender()));
-            staff.setEmail(personalRequest.getEmail());
-            staff.setName(personalRequest.getName());
-            staffService.update(oldStaff,staff);
-            return Result.success();
-        }else return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
+
+        if(!staffService.isStaffExist(staff)) return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
+
+        Staff oldStaff = staffService.findStaffByMobile(staff);
+
+        if(personalRequest.getNewMobile()!=null) staff.setMobile(personalRequest.getNewMobile());
+        if(personalRequest.getGender()!=null) staff.setGender(staffService.genderTransfer(personalRequest.getGender()));
+        staff.setEmail(personalRequest.getEmail());
+        staff.setName(personalRequest.getName());
+
+        staffService.update(oldStaff,staff);
+        return Result.success();
 
     }
 
@@ -65,10 +68,10 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
         enterprise.setNo(personalRequest.getEnterpriseNo());
         Account account = new Account();
         account.setUsername(personalRequest.getUsername());
-        if(accountService.isAccountExist(account)){
-            accountService.bindAccountEnterprise(enterprise,account);
-            return Result.success();
-        }else return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
+        if(!accountService.isAccountExist(account.getUsername())) return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
+
+        accountService.bindAccountEnterprise(enterprise,account);
+        return Result.success();
     }
 
     @Override
@@ -77,33 +80,34 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
         staff.setMobile(personalRequest.getMobile());
         Account account = new Account();
         account.setUsername(personalRequest.getUsername());
-        if(accountService.isAccountExist(account)){
-            accountService.bindAccountStaff(staff,account);
-            return Result.success();
-        }else return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
+        if(!accountService.isAccountExist(account.getUsername())) return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
+
+        accountService.bindAccountStaff(staff,account);
+        return Result.success();
     }
 
     @Override
     public Result updateAccount(PersonalRequest personalRequest) {
         Account account = new Account();
         account.setUsername(personalRequest.getUsername());
-        if(accountService.isAccountExist(account)){
-            Account oldAccount = accountService.findAccountByUsername(account);
-            if(personalRequest.getNewUsername()!=null) account.setUsername(personalRequest.getNewUsername());
-            account.setPassword(personalRequest.getPassword());
-            accountService.update(oldAccount,account);
-            return Result.success();
-        }else return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
+
+        if(!accountService.isAccountExist(account.getUsername())) return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
+
+        Account oldAccount = accountService.findAccountByUsername(account);
+        if(personalRequest.getNewUsername()!=null) account.setUsername(personalRequest.getNewUsername());
+        account.setPassword(personalRequest.getPassword());
+
+        accountService.update(oldAccount,account);
+        return Result.success();
     }
 
     @Override
     public Result getAllAccounts(PersonalRequest personalRequest) {
         Staff staff = new Staff();
         staff.setMobile(personalRequest.getMobile());
-        if(staffService.isStaffExist(staff)){
-            return Result.success(accountService.findAccountOfStaff(staff));
-        }else return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
+        if(!staffService.isStaffExist(staff)) return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
 
+        return Result.success(accountService.findAccountOfStaff(staff));
     }
 
     @Override
@@ -111,12 +115,10 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
         Account account = new Account();
         account.setUsername(personalRequest.getUsername());
         Account accountVerify = accountService.findAccountByUsername(account);
-        if(accountVerify!=null){
-            if(accountVerify.getPassword()==personalRequest.getPassword()){
-                accountService.delete(account);
-                return Result.success();
-            }else return Result.failure(ErrorCode.PASSWORD_IS_WRONG);
-        }else return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
+        if(accountVerify==null) return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
+        if(accountVerify.getPassword()!=personalRequest.getPassword()) return Result.failure(ErrorCode.PASSWORD_IS_WRONG);
+        accountService.delete(account);
+        return Result.success();
     }
 
     @Override
@@ -130,10 +132,8 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
     public Result findRoleOfStaff(PersonalRequest personalRequest) {
         Staff staff =new Staff();
         staff.setMobile(personalRequest.getMobile());
-        if(staffService.isStaffExist(staff)){
-            return Result.success(roleManageService.findRoleOfStaff(staff));
-        }else return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
-
+        if(!staffService.isStaffExist(staff)) return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
+        return Result.success(roleManageService.findRoleOfStaff(staff));
     }
 
     @Override
@@ -145,10 +145,11 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
     @Override
     public Result findTree(PersonalRequest personalRequest) {
-        Department dep = new Department();
         Enterprise enterprise = new Enterprise();
         enterprise .setNo(personalRequest.getEnterpriseNo());
         enterprise = enterpriseService.findEnterpriseByNo(enterprise);
+
+        Department dep = new Department();
         dep.setName(enterprise.getName());
         dep.setEnterpriseId(enterprise.getId());
         return Result.success(depManageService.getTree(depManageService.findDep(dep).getId()));

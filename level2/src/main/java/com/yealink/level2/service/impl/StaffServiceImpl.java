@@ -77,9 +77,7 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public Boolean isStaffExist(@Valid Staff staff) {
-        if(staffMapper.findIdByMobile(staff.getMobile())!=null){
-            return true;
-        }else return false;
+        return staffMapper.findIdByMobile(staff.getMobile())!=null?true:false;
     }
 
     @Override
@@ -90,11 +88,14 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public int genderTransfer(String gender) {
-        if(gender.equals("男")){
-            return 1;
-        }else if(gender.equals("女")){
-            return 2;
-        }else return 0;
+        switch (gender){
+            case "男":
+                return 1;
+            case "女":
+                return 2;
+            default:
+                return 0;
+        }
     }
 
     @Override

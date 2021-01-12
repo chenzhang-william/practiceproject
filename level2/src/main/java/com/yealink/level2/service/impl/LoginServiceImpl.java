@@ -28,12 +28,15 @@ public class LoginServiceImpl implements LoginService {
     public Result login(PersonalRequest personalRequest) {
         Account account = new Account();
         account.setUsername(personalRequest.getUsername());
+
         Account accountVerify = accountService.findAccountByUsername(account);
-        if(accountVerify!=null){
-            account.setPassword(personalRequest.getPassword());
-            if(accountVerify.getPassword().equals(account.getPassword())){
-                return Result.success();
-            }else return Result.failure(ErrorCode.PASSWORD_IS_WRONG);
-        }else return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
+
+        if(accountVerify!=null) return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
+
+        account.setPassword(personalRequest.getPassword());
+
+        if(accountVerify.getPassword().equals(account.getPassword())) return Result.failure(ErrorCode.PASSWORD_IS_WRONG);
+
+        return Result.success();
     }
 }

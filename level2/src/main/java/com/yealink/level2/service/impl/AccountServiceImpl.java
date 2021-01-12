@@ -82,10 +82,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean isAccountExist(@Valid Account account) {
-        if(accountMapper.findIdByUsername(account.getUsername())!=null){
-            return true;
-        }else return false;
+    public boolean isAccountExist(@Valid String username) {
+        boolean result = accountMapper.findIdByUsername(username) != null?true:false;
+        return result;
     }
 
     @Override

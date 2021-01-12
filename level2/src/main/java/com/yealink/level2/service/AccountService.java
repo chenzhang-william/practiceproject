@@ -26,7 +26,7 @@ public interface AccountService {
 
     List<Account> findAccountOfEnterprise(@Valid Enterprise enterprise);
 
-    boolean isAccountExist(@Valid Account account);
+    boolean isAccountExist(@Valid String username);
 
     void unbindEnterprise(@Valid Account account);
 }

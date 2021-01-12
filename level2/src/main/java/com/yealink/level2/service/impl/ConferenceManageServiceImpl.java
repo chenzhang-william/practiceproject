@@ -39,10 +39,8 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
     private StaffService staffService;
 
     @Override
-    public boolean isConferenceExist(Conference conference) {
-        if(conferenceMapper.findIdByNo(conference.getConferenceNo())!=null){
-            return true;
-        }else return false;
+    public boolean isConferenceExist(String conferenceNo) {
+        return conferenceMapper.findIdByNo(conferenceNo)!=null?true:false;
     }
 
     @Override
@@ -62,14 +60,13 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
 
     @Override
     public boolean hasPermission(String conferenceNo, String mobile) {
-        if(conferenceParticipantService.isParticipantExist(conferenceNo,mobile)){
-            ConferenceParticipant conferenceParticipant = new ConferenceParticipant();
-            conferenceParticipant.setConferenceId(conferenceMapper.findIdByNo(conferenceNo));
-            conferenceParticipant.setParticipantId(staffService.findIdByMobile(mobile));
-            conferenceParticipant = conferenceParticipantService.findParticipant(conferenceNo,mobile);
-            if(conferenceParticipant.getRole()==1) return true;
-            else return false;
-        }else return false;
+        if(!conferenceParticipantService.isParticipantExist(conferenceNo,mobile)) return false;
+        ConferenceParticipant conferenceParticipant = new ConferenceParticipant();
+        conferenceParticipant.setConferenceId(conferenceMapper.findIdByNo(conferenceNo));
+        conferenceParticipant.setParticipantId(staffService.findIdByMobile(mobile));
+        conferenceParticipant = conferenceParticipantService.findParticipant(conferenceNo,mobile);
+        if(conferenceParticipant.getRole()!=1) return false;
+        return true;
     }
 
     @Override
@@ -85,7 +82,6 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
 
     @Override
     public void updateConference(Conference conference) {
-
         conference.setModifyTime(new Date().getTime());
         conferenceMapper.update(conference);
     }
@@ -152,8 +148,8 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
 
     @Override
     public List<Schedule> singleConference(Conference conference, ConferenceRule conferenceRule) {
-        List<Schedule> scheduleList= new ArrayList<>();
 
+        List<Schedule> scheduleList= new ArrayList<>();
         long scheduleDay = conferenceRule.getStartDay();
 
         saveSchedule(scheduleList,conference.getStartTime(),conference.getEndTime(),scheduleDay);
@@ -164,11 +160,11 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
     @Override
     public List<Schedule> cycleByDay(Conference conference,ConferenceRule conferenceRule) {
         if(conferenceRule.getGap()<=0) return singleConference(conference,conferenceRule);
-        List<Schedule> scheduleList= new ArrayList<>();
 
+        List<Schedule> scheduleList= new ArrayList<>();
         long scheduleDay = conferenceRule.getStartDay();
 
-        while (scheduleDay <= conferenceRule.getEndDay()){
+        while (scheduleDay < conferenceRule.getEndDay()){
 
             saveSchedule(scheduleList, conference.getStartTime(), conference.getEndTime(), scheduleDay);
             scheduleDay = addDay(scheduleDay,conferenceRule.getGap());
@@ -181,28 +177,23 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
     @Override
     public List<Schedule> cycleByWeek(Conference conference,ConferenceRule conferenceRule) {
         if (!(conferenceRule.getGap()>0&&conferenceRule.getWeek()!=null)) return singleConference(conference,conferenceRule);
-        List<Schedule> scheduleList= new ArrayList<>();
 
+        List<Schedule> scheduleList= new ArrayList<>();
         long scheduleDay = conferenceRule.getStartDay();
+
         int gap = conferenceRule.getGap();
         int[] week = weekTransferToInt(conferenceRule.getWeek());
-
         Arrays.sort(week);
-        if(!(getDayOfWeek(scheduleDay)<week[0])){
-            for(int i = 0;i<week.length;i++){
-                if(getDayOfWeek(scheduleDay)<week[i]){
-                    for(int j=i;j<week.length;j++){
-                        scheduleDay = addDay(scheduleDay,week[i]-getDayOfWeek(scheduleDay));
-                        saveSchedule(scheduleList, conference.getStartTime(), conference.getEndTime(), scheduleDay);
-                    }
-                    break;
-                }
+
+        //获取第一周的schedule
+        if(getDayOfWeek(scheduleDay)<week[week.length-1]){
+            for(int i = week.length-1;getDayOfWeek(scheduleDay)<week[i];i--){
+                saveSchedule(scheduleList,conference.getStartTime(), conference.getEndTime(),addDay(scheduleDay,week[i]-getDayOfWeek(scheduleDay)));
             }
-            scheduleDay = addWeek(scheduleDay,gap);
         }
 
+        scheduleDay = addWeek(scheduleDay,gap);
         long firstDay = addDay(scheduleDay,-getDayOfWeek(scheduleDay)+1);
-
         for(int i = 0;i<week.length;i++){
             scheduleDay = addDay(firstDay,week[i]-1);
             while(scheduleDay<conferenceRule.getEndDay()){
@@ -218,16 +209,16 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
     @Override
     public List<Schedule> cycleByMonthDay(Conference conference,ConferenceRule conferenceRule) {
         if(!(conferenceRule.getGap()>0&&conferenceRule.getDay()>0)) return singleConference(conference,conferenceRule);
-        List<Schedule> scheduleList= new ArrayList<>();
 
+        List<Schedule> scheduleList= new ArrayList<>();
         long scheduleDay = conferenceRule.getStartDay();
+
         int gap = conferenceRule.getGap();
         int day = conferenceRule.getDay();
 
         if(getDayOfMonth(scheduleDay)>day) scheduleDay = addMonth(scheduleDay,gap);
 
         scheduleDay = addDay(scheduleDay,day-getDayOfMonth(scheduleDay));
-
         while (scheduleDay<conferenceRule.getEndDay()){
             saveSchedule(scheduleList,conference.getStartTime(), conference.getEndTime(), scheduleDay);
             scheduleDay = addMonth(scheduleDay, gap);
@@ -240,9 +231,10 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
     @Override
     public List<Schedule> cycleByMonthWeek(Conference conference,ConferenceRule conferenceRule) {
         if(!(conferenceRule.getGap()>0&&conferenceRule.getOrdinalWeek()>0&&conferenceRule.getWeek()!=null)) return singleConference(conference,conferenceRule);
-        List<Schedule> scheduleList= new ArrayList<>();
 
+        List<Schedule> scheduleList= new ArrayList<>();
         long scheduleDay = conferenceRule.getStartDay();
+
         int gap = conferenceRule.getGap();
         int ordinalWeek = conferenceRule.getOrdinalWeek();
         int[] week = weekTransferToInt(conferenceRule.getWeek());
@@ -251,7 +243,6 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
 
         scheduleDay = addDay(scheduleDay,-getDayOfMonth(scheduleDay)+1);
         long firstDay = scheduleDay;
-
         while (scheduleDay<conferenceRule.getEndDay()){
             scheduleDay = firstDay;
             scheduleDay = addWeek(scheduleDay,ordinalWeek-1);
@@ -271,8 +262,8 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
         if(!(conferenceRule.getGap()>0&&conferenceRule.getOrdinalMonth()>0&&conferenceRule.getDay()>0)) return singleConference(conference,conferenceRule);
 
         List<Schedule> scheduleList= new ArrayList<>();
-
         long scheduleDay = conferenceRule.getStartDay();
+
         int gap = conferenceRule.getGap();
         int ordinalMonth = conferenceRule.getOrdinalMonth();
         int day = conferenceRule.getDay();
@@ -281,7 +272,6 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
 
         scheduleDay = addMonth(scheduleDay,ordinalMonth-getMonth(scheduleDay));
         scheduleDay = addDay(scheduleDay,day-getDayOfMonth(scheduleDay));
-
         while (scheduleDay<conferenceRule.getEndDay()){
             saveSchedule(scheduleList, conference.getStartTime(), conference.getEndTime(), scheduleDay);
 
@@ -289,7 +279,6 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
         }
 
         updateSchedule(conference, scheduleList);
-
         return scheduleList;
     }
 
@@ -298,8 +287,8 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
         if(!(conferenceRule.getGap()>0&&conferenceRule.getOrdinalMonth()>0&&conferenceRule.getOrdinalWeek()>0&&conferenceRule.getWeek()!=null)) return singleConference(conference,conferenceRule);
 
         List<Schedule> scheduleList= new ArrayList<>();
-
         long scheduleDay = conferenceRule.getStartDay();
+
         int gap = conferenceRule.getGap();
         int ordinalMonth = conferenceRule.getOrdinalMonth();
         int ordinalWeek = conferenceRule.getOrdinalWeek();
@@ -321,7 +310,6 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
         }
 
         updateSchedule(conference, scheduleList);
-
         return scheduleList;
 
     }

@@ -53,9 +53,7 @@ public class EnterpriseServiceImpl implements EnterpriseService {
 
     @Override
     public boolean isEnterpriseExist(@Valid Enterprise enterprise) {
-        if(enterpriseMapper.findIdByNo(enterprise.getNo())!=null){
-            return true;
-        }else return false;
+        return enterpriseMapper.findIdByNo(enterprise.getNo())!=null?true:false;
     }
 
 

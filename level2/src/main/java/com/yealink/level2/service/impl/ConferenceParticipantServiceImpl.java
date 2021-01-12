@@ -47,21 +47,17 @@ public class ConferenceParticipantServiceImpl implements ConferenceParticipantSe
 
     @Override
     public void deleteParticipant(String conferenceNo) {
-        String conferenceId = conferenceMapper.findIdByNo(conferenceNo);
-
-        conferenceParticipantMapper.deleteAllParticipantOfConference(conferenceId);
+        conferenceParticipantMapper.deleteAllParticipantOfConference(conferenceMapper.findIdByNo(conferenceNo));
     }
 
     @Override
     public @NotNull(message = "无相关会议") List<String> findConferenceIdList(String mobile) {
         return conferenceParticipantMapper.findConference(staffService.findIdByMobile(mobile));
-
     }
 
     @Override
     public boolean isParticipantExist(String conferenceNo, String mobile) {
-        if(findParticipant(conferenceNo,mobile)!=null) return true;
-        else return false;
+        return findParticipant(conferenceNo,mobile)!=null?true:false;
     }
 
     @Override

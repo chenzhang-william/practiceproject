@@ -31,4 +31,5 @@ public interface RoleManageService {
     @NotNull(message = "该企业无角色关系") List<Staff> findStaffOfRoleInEnterprise(@Valid Role role, @Valid Enterprise enterprise);
 
     List<Staff> findStaffOfRole(@Valid Role role);
+
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public interface ConferenceManageService {
 
 
-    boolean isConferenceExist(Conference conference);
+    boolean isConferenceExist(String conferenceNo);
 
     void addConference(Conference conference, ConferenceRule conferenceRule);
 

@@ -48,10 +48,10 @@ public class DepManageServiceImpl implements DepManageService {
 
     @Override
     public void addStaffDepRelation(@Valid StaffDepartmentRelation staffDepartmentRelation) {
-            long now = new Date().getTime();
-            staffDepartmentRelation.setCreateTime(now);
-            staffDepartmentRelation.setModifyTime(now);
-            staffDepRelationMapper.add(staffDepartmentRelation);
+        long now = new Date().getTime();
+        staffDepartmentRelation.setCreateTime(now);
+        staffDepartmentRelation.setModifyTime(now);
+        staffDepRelationMapper.add(staffDepartmentRelation);
     }
 
     @Override
@@ -117,12 +117,12 @@ public class DepManageServiceImpl implements DepManageService {
         childNode.add(departmentMapper.findById(id));
         List childStaff = getChildStaff(id);
         List<Department> childDep = getChildDep(id);
-        if(childNode != null){
+        if(childStaff != null) {
             childNode.add(childStaff);
-            if (childDep != null){
-                for(Department dep:childDep){
-                    childNode.add(getTree(dep.getId()));
-                }
+        }
+        if (childDep != null){
+            for(Department dep:childDep){
+                childNode.add(getTree(dep.getId()));
             }
         }
         return childNode;
@@ -130,16 +130,12 @@ public class DepManageServiceImpl implements DepManageService {
 
     @Override
     public boolean isDepExist(Department dep) {
-        if(departmentMapper.findId(dep.getName(),dep.getEnterpriseId())!=null){
-            return true;
-        }else return false;
+        return departmentMapper.findId(dep.getName(),dep.getEnterpriseId())!=null?true:false;
     }
 
     @Override
     public boolean isRelationExist(StaffDepartmentRelation staffDepartmentRelation) {
-        if(staffDepRelationMapper.findId(staffDepartmentRelation.getStaffId(),staffDepartmentRelation.getDepartmentId())!=null){
-            return true;
-        }else return false;
+        return staffDepRelationMapper.findId(staffDepartmentRelation.getStaffId(),staffDepartmentRelation.getDepartmentId())!=null?true:false;
     }
 
 }
