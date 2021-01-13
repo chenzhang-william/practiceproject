@@ -12,7 +12,7 @@ public interface EnterpriseService {
 
     void delete(@Valid Enterprise enterprise);
 
-    void update(@Valid Enterprise oldEnterprise,@Valid Enterprise newEnterprise);
+    void update(@Valid Enterprise oldEnterprise, @Valid Enterprise newEnterprise);
 
     @NotNull(message = "无匹配企业") List<Enterprise> findEnterpriseByName(@Valid Enterprise enterprise);
 

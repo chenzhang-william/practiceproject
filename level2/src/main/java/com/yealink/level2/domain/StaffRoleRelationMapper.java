@@ -14,7 +14,7 @@ import java.util.List;
 @Mapper
 @Component
 public interface StaffRoleRelationMapper {
-    @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
+    @SelectKey(keyProperty = "id", resultType = String.class, before = true, statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
     @Insert("insert into staff_role_relation(id, staff_id, role_id, create_time, modify_time) values (#{id}, #{staffId}, #{roleId}, #{createTime}, #{modifyTime})")
     int add(StaffRoleRelation staffRoleRelation);
@@ -23,7 +23,7 @@ public interface StaffRoleRelationMapper {
     int delete(String id);
 
     @Select("select id from staff_role_relation where staff_id = #{staffId} and role_id = #{roleId}")
-    String findId(String staffId,String roleId);
+    String findId(String staffId, String roleId);
 
     @Update("<script>" +
             "update staff_role_relation set " +
@@ -32,10 +32,10 @@ public interface StaffRoleRelationMapper {
             "modify_time = #{modifyTime} " +
             "where id = #{id} " +
             "</script>")
-    int update (StaffRoleRelation staffRoleRelation);
+    int update(StaffRoleRelation staffRoleRelation);
 
     @Select("select id,staff_id,role_id from staff_role_relation where role_id = #{RoleId} and staff_id = #{staffId}")
-    StaffRoleRelation findRelation(String roleId,String staffId);
+    StaffRoleRelation findRelation(String roleId, String staffId);
 
     @Select("select id,staff_id,role_id from staff_role_relation where staff_id = #{staffId}")
     List<StaffRoleRelation> findByStaffId(String staffId);

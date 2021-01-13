@@ -32,72 +32,87 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
 
     @Override
     public Result updateEnterprise(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(enterpriseRequest.getEnterpriseNo());
+        Enterprise enterprise = getEnterprise(enterpriseRequest);
         enterprise.setName(enterpriseRequest.getEnterpriseName());
         Enterprise oldEnterprise = enterpriseService.findEnterpriseByNo(enterprise);
 
-        if(!enterpriseService.isEnterpriseExist(enterprise)) return Result.failure(ErrorCode.ENTERPRISE_IS_NOT_EXIST);
+        if (!enterpriseService.isEnterpriseExist(enterprise)) {
+            return Result.failure(ErrorCode.ENTERPRISE_IS_NOT_EXIST);
+        }
 
-        if(enterpriseRequest.getNewEnterpriseNo()!=null) enterprise.setNo(enterpriseRequest.getNewEnterpriseNo());
+        if (enterpriseRequest.getNewEnterpriseNo() != null) {
+            enterprise.setNo(enterpriseRequest.getNewEnterpriseNo());
+        }
 
-        enterpriseService.update(oldEnterprise,enterprise);
+        enterpriseService.update(oldEnterprise, enterprise);
         return Result.success();
     }
 
     @Override
     public Result deleteEnterprise(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(enterpriseRequest.getEnterpriseNo());
+        Enterprise enterprise = getEnterprise(enterpriseRequest);
 
-        if(!enterpriseService.isEnterpriseExist(enterprise)) return Result.failure(ErrorCode.ENTERPRISE_IS_NOT_EXIST);
+        if (!enterpriseService.isEnterpriseExist(enterprise)) {
+            return Result.failure(ErrorCode.ENTERPRISE_IS_NOT_EXIST);
+        }
 
         enterpriseService.delete(enterprise);
         return Result.success();
+    }
+
+    private Enterprise getEnterprise(EnterpriseRequest enterpriseRequest) {
+        Enterprise enterprise = new Enterprise();
+        enterprise.setNo(enterpriseRequest.getEnterpriseNo());
+        return enterprise;
     }
 
     @Override
     public Result bindStaffEnterprise(EnterpriseRequest enterpriseRequest) {
         Staff staff = new Staff();
         staff.setMobile(enterpriseRequest.getMobile());
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(enterpriseRequest.getEnterpriseNo());
+        Enterprise enterprise = getEnterprise(enterpriseRequest);
 
-        if(!staffService.isStaffExist(staff)) return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
+        if (!staffService.isStaffExist(staff)) {
+            return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
+        }
 
-        staffService.bindStaffEnterprise(enterprise,staff);
+        staffService.bindStaffEnterprise(enterprise, staff);
         return Result.success();
     }
 
     @Override
     public Result bindAccountEnterprise(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(enterpriseRequest.getEnterpriseNo());
+        Enterprise enterprise = getEnterprise(enterpriseRequest);
+        Account account = getAccount(enterpriseRequest);
+
+        if (!accountService.isAccountExist(account.getUsername()))
+            return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
+
+        accountService.bindAccountEnterprise(enterprise, account);
+        return Result.success();
+    }
+
+    private Account getAccount(EnterpriseRequest enterpriseRequest) {
         Account account = new Account();
         account.setUsername(enterpriseRequest.getUsername());
-
-        if(!accountService.isAccountExist(account.getUsername())) return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
-
-        accountService.bindAccountEnterprise(enterprise,account);
-        return Result.success();
+        return account;
     }
 
     @Override
     public Result addStaff(EnterpriseRequest enterpriseRequest) {
 
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(enterpriseRequest.getEnterpriseNo());
+        Enterprise enterprise = getEnterprise(enterpriseRequest);
         Staff staff = new Staff();
         staff.setMobile(enterpriseRequest.getMobile());
         staff.setEmail(enterpriseRequest.getEmail());
         staff.setName(enterpriseRequest.getName());
         staff.setGender(staffService.genderTransfer(enterpriseRequest.getGender()));
 
-        if(!enterpriseService.isEnterpriseExist(enterprise)) return Result.failure(ErrorCode.ENTERPRISE_IS_NOT_EXIST);
-        if(staffService.isStaffExist(staff)) return Result.failure(ErrorCode.STAFF_HAS_EXIST);
+        if (!enterpriseService.isEnterpriseExist(enterprise)) return Result.failure(ErrorCode.ENTERPRISE_IS_NOT_EXIST);
+        if (staffService.isStaffExist(staff)) return Result.failure(ErrorCode.STAFF_HAS_EXIST);
 
         staffService.add(staff);
-        staffService.bindStaffEnterprise(enterprise,staff);
+        staffService.bindStaffEnterprise(enterprise, staff);
         return Result.success();
     }
 
@@ -110,17 +125,15 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
 
     @Override
     public Result addAccount(EnterpriseRequest enterpriseRequest) {
-        Account account = new Account();
-        account.setUsername(enterpriseRequest.getUsername());
+        Account account = getAccount(enterpriseRequest);
         account.setPassword(enterpriseRequest.getPassword());
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(enterpriseRequest.getEnterpriseNo());
+        Enterprise enterprise = getEnterprise(enterpriseRequest);
 
-        if(!enterpriseService.isEnterpriseExist(enterprise)) return Result.failure(ErrorCode.ENTERPRISE_IS_NOT_EXIST);
-        if(accountService.isAccountExist(account.getUsername())) return Result.failure(ErrorCode.ACCOUNT_HAS_EXIST);
+        if (!enterpriseService.isEnterpriseExist(enterprise)) return Result.failure(ErrorCode.ENTERPRISE_IS_NOT_EXIST);
+        if (accountService.isAccountExist(account.getUsername())) return Result.failure(ErrorCode.ACCOUNT_HAS_EXIST);
 
         accountService.add(account);
-        accountService.bindAccountEnterprise(enterprise,account);
+        accountService.bindAccountEnterprise(enterprise, account);
         return Result.success();
     }
 
@@ -128,10 +141,9 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
     public Result unbindStaff(EnterpriseRequest enterpriseRequest) {
         Staff staff = new Staff();
         staff.setMobile(enterpriseRequest.getMobile());
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(enterpriseRequest.getEnterpriseNo());
+        Enterprise enterprise = getEnterprise(enterpriseRequest);
 
-        if(!(staffService.isStaffExist(staff)&&staffService.findStaffByMobile(staff).getEnterpriseId() == enterpriseService.findEnterpriseByNo(enterprise).getId())){
+        if (!(staffService.isStaffExist(staff) && staffService.findStaffByMobile(staff).getEnterpriseId().equals(enterpriseService.findEnterpriseByNo(enterprise).getId()))) {
             return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
         }
 
@@ -141,13 +153,11 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
 
     @Override
     public Result unbindAccount(EnterpriseRequest enterpriseRequest) {
-        Account account = new Account();
-        account.setUsername(enterpriseRequest.getUsername());
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo((enterpriseRequest.getEnterpriseNo()));
+        Account account = getAccount(enterpriseRequest);
+        Enterprise enterprise = getEnterprise(enterpriseRequest);
 
-        if(!(accountService.isAccountExist(account.getUsername())&&
-                accountService.findAccountByUsername(account).getEnterpriseId() == enterpriseService.findEnterpriseByNo(enterprise).getId())){
+        if (!(accountService.isAccountExist(account.getUsername()) &&
+                accountService.findAccountByUsername(account).getEnterpriseId().equals(enterpriseService.findEnterpriseByNo(enterprise).getId()))) {
             return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
         }
 
@@ -157,13 +167,17 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
 
     @Override
     public Result addDep(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = getEnterprise(enterpriseRequest);
+        Enterprise enterprise = getExistEnterprise(enterpriseRequest);
 
         Department dep = getDepartment(enterpriseRequest, enterprise);
 
-        if(depManageService.isDepExist(dep)) return Result.failure(ErrorCode.DEPARTMENT_HAS_EXIST);
+        if (depManageService.isDepExist(dep)) {
+            return Result.failure(ErrorCode.DEPARTMENT_HAS_EXIST);
+        }
 
-        if (setParentId(enterpriseRequest.getParentDepName(), enterprise, dep)) return Result.failure(ErrorCode.DEPARTMENT_IS_NOT_EXIST);
+        if (setParentId(enterpriseRequest.getParentDepName(), enterprise, dep)) {
+            return Result.failure(ErrorCode.DEPARTMENT_IS_NOT_EXIST);
+        }
 
         depManageService.addDep(dep);
         return Result.success();
@@ -176,9 +190,8 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         return dep;
     }
 
-    private Enterprise getEnterprise(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(enterpriseRequest.getEnterpriseNo());
+    private Enterprise getExistEnterprise(EnterpriseRequest enterpriseRequest) {
+        Enterprise enterprise = getEnterprise(enterpriseRequest);
         enterprise = enterpriseService.findEnterpriseByNo(enterprise);
         return enterprise;
     }
@@ -188,7 +201,7 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         parentDep.setEnterpriseId(enterprise.getId());
         if (parentDepName != null) {
             parentDep.setName(parentDepName);
-            if(!depManageService.isDepExist(parentDep)) return true;
+            if (!depManageService.isDepExist(parentDep)) return true;
         } else {
             parentDep.setName(enterprise.getName());
         }
@@ -198,10 +211,12 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
 
     @Override
     public Result deleteDep(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = getEnterprise(enterpriseRequest);
+        Enterprise enterprise = getExistEnterprise(enterpriseRequest);
         Department dep = getDepartment(enterpriseRequest, enterprise);
 
-        if(depManageService.isDepExist(dep)) return Result.failure(ErrorCode.DEPARTMENT_IS_NOT_EXIST);
+        if (depManageService.isDepExist(dep)) {
+            return Result.failure(ErrorCode.DEPARTMENT_IS_NOT_EXIST);
+        }
         depManageService.deleteDep(dep);
         return Result.success();
     }
@@ -209,34 +224,44 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
     @Override
     public Result updateDep(EnterpriseRequest enterpriseRequest) {
 
-        Enterprise enterprise = getEnterprise(enterpriseRequest);
+        Enterprise enterprise = getExistEnterprise(enterpriseRequest);
 
-        Department dep = getDepartment(enterpriseRequest,enterprise);
+        Department dep = getDepartment(enterpriseRequest, enterprise);
 
-        if(depManageService.isDepExist(dep)) return Result.failure(ErrorCode.DEPARTMENT_IS_NOT_EXIST);
+        if (depManageService.isDepExist(dep)) {
+            return Result.failure(ErrorCode.DEPARTMENT_IS_NOT_EXIST);
+        }
         Department oldDep = depManageService.findDep(dep);
-        if(enterpriseRequest.getNewDepName()!=null) dep.setName(enterpriseRequest.getNewDepName());
+        if (enterpriseRequest.getNewDepName() != null) {
+            dep.setName(enterpriseRequest.getNewDepName());
+        }
 
-        if (setParentId(enterpriseRequest.getParentDepName(), enterprise, dep)) return Result.failure(ErrorCode.DEPARTMENT_IS_NOT_EXIST);
+        if (setParentId(enterpriseRequest.getParentDepName(), enterprise, dep)) {
+            return Result.failure(ErrorCode.DEPARTMENT_IS_NOT_EXIST);
+        }
 
-        depManageService.updateDep(oldDep,dep);
+        depManageService.updateDep(oldDep, dep);
         return Result.success();
     }
 
     @Override
     public Result addStaffDepRelation(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = getEnterprise(enterpriseRequest);
+        Enterprise enterprise = getExistEnterprise(enterpriseRequest);
 
-        Department dep = getDepartment(enterpriseRequest,enterprise);
+        Department dep = getDepartment(enterpriseRequest, enterprise);
         dep = depManageService.findDep(dep);
 
         Staff staff = getStaff(enterpriseRequest);
 
-        if(!dep.getEnterpriseId().equals(staff.getEnterpriseId())) return Result.failure(ErrorCode.ENTERPRISE_MISMATCH);
+        if (!dep.getEnterpriseId().equals(staff.getEnterpriseId())) {
+            return Result.failure(ErrorCode.ENTERPRISE_MISMATCH);
+        }
 
         StaffDepartmentRelation relation = getStaffDepartmentRelation(enterpriseRequest.getPosition(), dep, staff);
 
-        if(depManageService.isRelationExist(relation)) return Result.failure(ErrorCode.DEPRELATION_HAS_EXIST);
+        if (depManageService.isRelationExist(relation)) {
+            return Result.failure(ErrorCode.DEPRELATION_HAS_EXIST);
+        }
 
         depManageService.addStaffDepRelation(relation);
         return Result.success();
@@ -257,7 +282,7 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
 
     @Override
     public Result deleteStaffDepRelation(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = getEnterprise(enterpriseRequest);
+        Enterprise enterprise = getExistEnterprise(enterpriseRequest);
         Department dep = new Department();
         dep.setName(enterpriseRequest.getDepName());
         dep.setEnterpriseId(enterprise.getId());
@@ -265,7 +290,9 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
 
         Staff staff = getStaff(enterpriseRequest);
 
-        if(!dep.getEnterpriseId().equals(staff.getEnterpriseId())) return Result.failure(ErrorCode.ENTERPRISE_MISMATCH);
+        if (!dep.getEnterpriseId().equals(staff.getEnterpriseId())) {
+            return Result.failure(ErrorCode.ENTERPRISE_MISMATCH);
+        }
 
         StaffDepartmentRelation relation = getStaffDepartmentRelation(enterpriseRequest.getPosition(), dep, staff);
         depManageService.deleteStaffDepRelation(relation);
@@ -274,23 +301,25 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
 
     @Override
     public Result updateStaffDepRelation(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = getEnterprise(enterpriseRequest);
-        Department dep = getDepartment(enterpriseRequest,enterprise);
+        Enterprise enterprise = getExistEnterprise(enterpriseRequest);
+        Department dep = getDepartment(enterpriseRequest, enterprise);
         dep = depManageService.findDep(dep);
         Staff staff = getStaff(enterpriseRequest);
 
-        if(!dep.getEnterpriseId().equals(staff.getEnterpriseId())) return Result.failure(ErrorCode.ENTERPRISE_MISMATCH);
+        if (!dep.getEnterpriseId().equals(staff.getEnterpriseId())) {
+            return Result.failure(ErrorCode.ENTERPRISE_MISMATCH);
+        }
 
         StaffDepartmentRelation relation = getStaffDepartmentRelation(dep, staff);
         StaffDepartmentRelation oldRelation = depManageService.findRelation(relation);
 
         relation.setPosition(enterpriseRequest.getPosition());
-        if(enterpriseRequest.getNewDepName()!=null){
+        if (enterpriseRequest.getNewDepName() != null) {
             dep.setName(enterpriseRequest.getNewDepName());
             dep = depManageService.findDep(dep);
             relation.setDepartmentId(dep.getId());
         }
-        depManageService.updateStaffDepRelation(oldRelation,relation);
+        depManageService.updateStaffDepRelation(oldRelation, relation);
         return Result.success();
     }
 
@@ -304,7 +333,7 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
     @Override
     public Result findTree(EnterpriseRequest enterpriseRequest) {
         Department dep = new Department();
-        Enterprise enterprise = getEnterprise(enterpriseRequest);
+        Enterprise enterprise = getExistEnterprise(enterpriseRequest);
         dep.setName(enterprise.getName());
         dep.setEnterpriseId(enterprise.getId());
         return Result.success(depManageService.getTree(depManageService.findDep(dep).getId()));
@@ -327,7 +356,7 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         staff = staffService.findStaffByMobile(staff);
         relation.setStaffId(staff.getId());
         relation.setRoleId(role.getId());
-        roleManageService.updateStaffRoleRelation(oldRelation,relation);
+        roleManageService.updateStaffRoleRelation(oldRelation, relation);
         return Result.success();
     }
 
@@ -348,7 +377,9 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
 
         StaffRoleRelation relation = getStaffRoleRelation(role, staff);
 
-        if(roleManageService.findRelation(relation)!=null) return Result.failure(ErrorCode.ROLERELATION_HAS_EXIST);
+        if (roleManageService.findRelation(relation) != null) {
+            return Result.failure(ErrorCode.ROLERELATION_HAS_EXIST);
+        }
 
         roleManageService.addStaffRoleRelation(relation);
         return Result.success();
@@ -364,7 +395,9 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
 
         StaffRoleRelation relation = getStaffRoleRelation(role, staff);
 
-        if(roleManageService.findRelation(relation)==null) return Result.failure(ErrorCode.ROLERELATION_IS_NOT_EXIST);
+        if (roleManageService.findRelation(relation) == null) {
+            return Result.failure(ErrorCode.ROLERELATION_IS_NOT_EXIST);
+        }
 
         roleManageService.deleteStaffRoleRelation(relation);
         return Result.success();
@@ -376,6 +409,6 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         Enterprise enterprise = new Enterprise();
         role.setName(enterpriseRequest.getRoleName());
         enterprise.setNo(enterpriseRequest.getEnterpriseNo());
-        return Result.success(roleManageService.findStaffOfRoleInEnterprise(role,enterprise));
+        return Result.success(roleManageService.findStaffOfRoleInEnterprise(role, enterprise));
     }
 }

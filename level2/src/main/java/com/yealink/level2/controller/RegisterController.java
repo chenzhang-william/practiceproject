@@ -21,18 +21,15 @@ public class RegisterController {
     private RegisterService registerService;
 
     @PostMapping("/account")
-    public Result register(@RequestBody@Validated({PersonalRequest.AccountInsert.class,PersonalRequest.StaffUpdate.class}) PersonalRequest personalRequest){
+    public Result register(@RequestBody @Validated({PersonalRequest.AccountInsert.class, PersonalRequest.StaffUpdate.class}) PersonalRequest personalRequest) {
         return registerService.accountRegister(personalRequest);
     }
 
 
-
     @PostMapping("/enterprise")
-    public Result registerEnterprise(@RequestBody@Validated({PersonalRequest.EnterpriseInsert.class,PersonalRequest.StaffUpdate.class}) PersonalRequest personalRequest){
+    public Result registerEnterprise(@RequestBody @Validated({PersonalRequest.EnterpriseInsert.class, PersonalRequest.StaffUpdate.class}) PersonalRequest personalRequest) {
         return registerService.enterpriseRegister(personalRequest);
     }
-
-
 
 
 }

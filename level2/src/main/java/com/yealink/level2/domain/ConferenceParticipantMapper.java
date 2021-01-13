@@ -14,7 +14,7 @@ import java.util.List;
 @Mapper
 @Component
 public interface ConferenceParticipantMapper {
-    @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
+    @SelectKey(keyProperty = "id", resultType = String.class, before = true, statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
     @Insert("insert into conference_participant(id,conference_id,participant_id,status,role,create_time,modify_time) values(#{id},#{conferenceId},#{participant_id},#{status},#{role} ,#{createTime},#{modifyTime})")
     int add(ConferenceParticipant conferenceParticipant);

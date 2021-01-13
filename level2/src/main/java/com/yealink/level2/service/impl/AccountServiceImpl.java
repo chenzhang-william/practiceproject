@@ -45,7 +45,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void update(@Valid Account oldAccount,@Valid Account newAccount) {
+    public void update(@Valid Account oldAccount, @Valid Account newAccount) {
         newAccount.setId(findAccountByUsername(oldAccount).getId());
         newAccount.setModifyTime(new Date().getTime());
         accountMapper.update(newAccount);
@@ -56,14 +56,14 @@ public class AccountServiceImpl implements AccountService {
     public void bindAccountEnterprise(@Valid Enterprise enterprise, @Valid Account account) {
         Account newAccount = new Account();
         newAccount.setEnterpriseId(enterpriseService.findEnterpriseByNo(enterprise).getId());
-        update(account,newAccount);
+        update(account, newAccount);
     }
 
     @Override
-    public void bindAccountStaff(@Valid Staff staff,@Valid Account account) {
+    public void bindAccountStaff(@Valid Staff staff, @Valid Account account) {
         Account newAccount = new Account();
         newAccount.setStaffId(staffService.findStaffByMobile(staff).getId());
-        update(account,newAccount);
+        update(account, newAccount);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean isAccountExist(@Valid String username) {
-        boolean result = accountMapper.findIdByUsername(username) != null?true:false;
+        boolean result = accountMapper.findIdByUsername(username) != null ? true : false;
         return result;
     }
 

@@ -14,7 +14,7 @@ import java.util.List;
 @Mapper
 @Component
 public interface RoleMapper {
-    @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
+    @SelectKey(keyProperty = "id", resultType = String.class, before = true, statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
     @Insert("insert into role(id, name, definition, create_time, modify_time) values (#{id}, #{name}, #{definition}, #{createTime}, #{modifyTime})")
     int add(Role role);
@@ -30,7 +30,7 @@ public interface RoleMapper {
             "<if test ='name !=null and name !=\"\"'> name = #{name}, </if>" +
             "<if test ='definition !=null and definition !=\"\"'> definition = #{definition}, </if>" +
             " modify_time = #{modifyTime} " +
-            "where id = #{id}"+
+            "where id = #{id}" +
             "</script>")
     int update(Role role);
 

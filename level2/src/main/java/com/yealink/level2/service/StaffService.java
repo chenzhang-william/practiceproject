@@ -11,11 +11,11 @@ public interface StaffService {
 
     void add(@Valid Staff staff);
 
-    void update(@Valid Staff oldStaff,@Valid Staff newStaff);
+    void update(@Valid Staff oldStaff, @Valid Staff newStaff);
 
     void delete(@Valid Staff staff);
 
-    void bindStaffEnterprise(@Valid Enterprise enterprise,@Valid Staff staff);
+    void bindStaffEnterprise(@Valid Enterprise enterprise, @Valid Staff staff);
 
     @NotNull(message = "员工不存在") Staff findStaffByMobile(@Valid Staff staff);
 

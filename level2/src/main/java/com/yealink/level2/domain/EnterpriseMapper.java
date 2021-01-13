@@ -10,7 +10,7 @@ import java.util.List;
 @Component
 public interface EnterpriseMapper {
 
-    @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
+    @SelectKey(keyProperty = "id", resultType = String.class, before = true, statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
     @Insert("insert into enterprise(id, no, name, create_time, modify_time) values(#{id}, #{no}, #{name}, #{createTime}, #{modifyTime})")
     int add(Enterprise enterprise);

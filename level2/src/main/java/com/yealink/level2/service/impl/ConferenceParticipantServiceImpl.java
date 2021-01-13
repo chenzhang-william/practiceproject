@@ -42,7 +42,7 @@ public class ConferenceParticipantServiceImpl implements ConferenceParticipantSe
 
     @Override
     public void deleteOneParticipant(String conferenceNo, String mobile) {
-        conferenceParticipantMapper.delete(findParticipant(conferenceNo,mobile).getId());
+        conferenceParticipantMapper.delete(findParticipant(conferenceNo, mobile).getId());
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ConferenceParticipantServiceImpl implements ConferenceParticipantSe
 
     @Override
     public boolean isParticipantExist(String conferenceNo, String mobile) {
-        return findParticipant(conferenceNo,mobile)!=null?true:false;
+        return findParticipant(conferenceNo, mobile) != null;
     }
 
     @Override

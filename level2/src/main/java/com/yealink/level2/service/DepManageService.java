@@ -25,7 +25,7 @@ public interface DepManageService {
 
     void deleteStaffDepRelation(@Valid StaffDepartmentRelation staffDepartmentRelation);
 
-    void updateDep(@Valid Department oldDep,@Valid Department newDep);
+    void updateDep(@Valid Department oldDep, @Valid Department newDep);
 
     void updateStaffDepRelation(@Valid StaffDepartmentRelation oldRelation, @Valid StaffDepartmentRelation newRelation);
 
@@ -33,7 +33,7 @@ public interface DepManageService {
 
     @NotNull(message = "部门不存在") Department findDep(Department dep);
 
-    List<Map<String,String>> getPosition(@Valid Staff staff);
+    List<Map<String, String>> getPosition(@Valid Staff staff);
 
     List<Department> findDepOfEnterprise(@Valid Enterprise enterprise);
 

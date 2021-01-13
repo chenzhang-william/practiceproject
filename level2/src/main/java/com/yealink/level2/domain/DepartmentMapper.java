@@ -14,13 +14,13 @@ import java.util.List;
 @Mapper
 @Component
 public interface DepartmentMapper {
-    @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
+    @SelectKey(keyProperty = "id", resultType = String.class, before = true, statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
     @Insert("insert into department(id,enterprise_id,name,parent_id,create_time,modify_time) values (#{id}, #{enterpriseId}, #{name},#{parentId},#{createTime}, #{modifyTime})")
     int add(Department department);
 
     @Select("select id from department where name = #{name} and enterprise_id = #{enterpriseId}")
-    String findId(String name,String enterpriseId);
+    String findId(String name, String enterpriseId);
 
     @Delete("delete from department where id = #{id}")
     int delete(String id);

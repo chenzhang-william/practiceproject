@@ -4,6 +4,8 @@ import com.yealink.level2.bean.ConferenceRule;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author zhangchen
  * @description ConferenceRuleMapper
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Mapper
 @Component
 public interface ConferenceRuleMapper {
-    @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
+    @SelectKey(keyProperty = "id", resultType = String.class, before = true, statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
     @Insert("insert into conference_rule(id,type,gap,day,week,ordinal_week,ordinal_month,start_day,end_day,create_time,modify_time) " +
             "values(#{id},#{type} ,#{gap} ,#{day} ,#{week} ,#{ordinalWeek} ,#{ordinalMonth} ,#{startDay} ,#{endDay} ,#{createTime},#{modifyTime})")
@@ -29,4 +31,6 @@ public interface ConferenceRuleMapper {
     @Select("select id,type,gap,day,week,ordinal_week,ordinal_month,start_day,end_day from conference_rule where id = #{id} ")
     ConferenceRule find(String id);
 
+    @Select("select id,type,gap,day,week,ordinal_week,ordinal_month,start_day,end_day from conference_rule where id in #{ruleIdList} ")
+    List<ConferenceRule> findByIdList(List<String> ruleIdList);
 }

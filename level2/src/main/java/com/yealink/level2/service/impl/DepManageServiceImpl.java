@@ -60,16 +60,14 @@ public class DepManageServiceImpl implements DepManageService {
     }
 
 
-
     @Override
     public void deleteStaffDepRelation(@Valid StaffDepartmentRelation relation) {
         staffDepRelationMapper.delete(findRelation(relation).getId());
     }
 
 
-
     @Override
-    public void updateDep(@Valid Department oldDep,@Valid Department newDep) {
+    public void updateDep(@Valid Department oldDep, @Valid Department newDep) {
         newDep.setId(findDep(oldDep).getId());
         newDep.setModifyTime(new Date().getTime());
         departmentMapper.update(newDep);
@@ -84,15 +82,15 @@ public class DepManageServiceImpl implements DepManageService {
 
     @Override
     public @NotNull(message = "员工不在该部门") StaffDepartmentRelation findRelation(StaffDepartmentRelation relation) {
-        return staffDepRelationMapper.findRelation(relation.getStaffId(),relation.getDepartmentId());
+        return staffDepRelationMapper.findRelation(relation.getStaffId(), relation.getDepartmentId());
     }
 
     public @NotNull(message = "部门不存在") Department findDep(Department dep) {
-        return departmentMapper.findDep(dep.getName(),dep.getEnterpriseId());
+        return departmentMapper.findDep(dep.getName(), dep.getEnterpriseId());
     }
 
     @Override
-    public List<Map<String,String>> getPosition(@Valid Staff staff) {
+    public List<Map<String, String>> getPosition(@Valid Staff staff) {
         return staffDepRelationMapper.getPosition(staffService.findStaffByMobile(staff).getId());
     }
 
@@ -103,25 +101,25 @@ public class DepManageServiceImpl implements DepManageService {
     }
 
     @Override
-    public List getChildDep(String parentId) {
+    public List<Department> getChildDep(String parentId) {
         return departmentMapper.findByParentId(parentId);
     }
 
     @Override
-    public List getChildStaff(String id) {
+    public List<Staff> getChildStaff(String id) {
         return staffDepRelationMapper.getStaffOfDep(id);
     }
 
-    public List getTree(String id){
-        List childNode =new ArrayList();
+    public List getTree(String id) {
+        List childNode = new ArrayList<>();
         childNode.add(departmentMapper.findById(id));
-        List childStaff = getChildStaff(id);
+        List<Staff> childStaff = getChildStaff(id);
         List<Department> childDep = getChildDep(id);
-        if(childStaff != null) {
+        if (childStaff != null) {
             childNode.add(childStaff);
         }
-        if (childDep != null){
-            for(Department dep:childDep){
+        if (childDep != null) {
+            for (Department dep : childDep) {
                 childNode.add(getTree(dep.getId()));
             }
         }
@@ -130,12 +128,12 @@ public class DepManageServiceImpl implements DepManageService {
 
     @Override
     public boolean isDepExist(Department dep) {
-        return departmentMapper.findId(dep.getName(),dep.getEnterpriseId())!=null?true:false;
+        return departmentMapper.findId(dep.getName(), dep.getEnterpriseId()) != null;
     }
 
     @Override
     public boolean isRelationExist(StaffDepartmentRelation staffDepartmentRelation) {
-        return staffDepRelationMapper.findId(staffDepartmentRelation.getStaffId(),staffDepartmentRelation.getDepartmentId())!=null?true:false;
+        return staffDepRelationMapper.findId(staffDepartmentRelation.getStaffId(), staffDepartmentRelation.getDepartmentId()) != null;
     }
 
 }

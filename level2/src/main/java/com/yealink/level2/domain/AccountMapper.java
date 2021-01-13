@@ -3,12 +3,13 @@ package com.yealink.level2.domain;
 import com.yealink.level2.bean.Account;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
+
 import java.util.List;
 
 @Mapper
 @Component
 public interface AccountMapper {
-    @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
+    @SelectKey(keyProperty = "id", resultType = String.class, before = true, statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
     @Insert("insert into account(id,username,password,create_time,modify_time) values(#{id},#{username},#{password},#{createTime},#{modifyTime})")
     int add(Account account);

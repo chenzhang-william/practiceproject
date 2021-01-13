@@ -23,7 +23,7 @@ public class LoginController {
     private LoginService loginService;
 
     @PostMapping("/byAccount")
-    public Result login(@RequestBody@Validated({PersonalRequest.Login.class}) PersonalRequest personalRequest) {
+    public Result login(@RequestBody @Validated({PersonalRequest.Login.class}) PersonalRequest personalRequest) {
         return loginService.login(personalRequest);
     }
 }

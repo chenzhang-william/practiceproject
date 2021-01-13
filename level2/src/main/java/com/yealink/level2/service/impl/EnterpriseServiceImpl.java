@@ -35,7 +35,7 @@ public class EnterpriseServiceImpl implements EnterpriseService {
     }
 
     @Override
-    public void update(@Valid Enterprise oldEnterprise,@Valid Enterprise newEnterprise) {
+    public void update(@Valid Enterprise oldEnterprise, @Valid Enterprise newEnterprise) {
         newEnterprise.setId(findEnterpriseByNo(oldEnterprise).getId());
         newEnterprise.setModifyTime(new Date().getTime());
         enterpriseMapper.update(newEnterprise);
@@ -53,7 +53,7 @@ public class EnterpriseServiceImpl implements EnterpriseService {
 
     @Override
     public boolean isEnterpriseExist(@Valid Enterprise enterprise) {
-        return enterpriseMapper.findIdByNo(enterprise.getNo())!=null?true:false;
+        return enterpriseMapper.findIdByNo(enterprise.getNo()) != null;
     }
 
 

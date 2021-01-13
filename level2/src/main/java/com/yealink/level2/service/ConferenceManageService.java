@@ -20,7 +20,7 @@ public interface ConferenceManageService {
 
     Conference findConferenceByNo(Conference conference);
 
-    boolean hasPermission(String conferenceNo,String mobile);
+    boolean hasPermission(String conferenceNo, String mobile);
 
     void deleteRule(String ruleId);
 
@@ -40,19 +40,19 @@ public interface ConferenceManageService {
 
     List<Schedule> findScheduleOfStaff(List<String> conferenceIdList);
 
-    List<Schedule> singleConference(Conference conference,ConferenceRule conferenceRule);
+    List<Schedule> singleConference(Conference conference, ConferenceRule conferenceRule);
 
-    List<Schedule> cycleByDay(Conference conference,ConferenceRule conferenceRule);
+    List<Schedule> cycleByDay(Conference conference, ConferenceRule conferenceRule);
 
-    List<Schedule> cycleByWeek(Conference conference,ConferenceRule conferenceRule);
+    List<Schedule> cycleByWeek(Conference conference, ConferenceRule conferenceRule);
 
-    List<Schedule> cycleByMonthDay(Conference conference,ConferenceRule conferenceRule);
+    List<Schedule> cycleByMonthDay(Conference conference, ConferenceRule conferenceRule);
 
-    List<Schedule> cycleByMonthWeek(Conference conference,ConferenceRule conferenceRule);
+    List<Schedule> cycleByMonthWeek(Conference conference, ConferenceRule conferenceRule);
 
-    List<Schedule> cycleByYearDay(Conference conference,ConferenceRule conferenceRule);
+    List<Schedule> cycleByYearDay(Conference conference, ConferenceRule conferenceRule);
 
-    List<Schedule> cycleByYearMonth(Conference conference,ConferenceRule conferenceRule);
+    List<Schedule> cycleByYearMonth(Conference conference, ConferenceRule conferenceRule);
 
     List<Schedule> scheduleSort(List<Schedule> scheduleList);
 }

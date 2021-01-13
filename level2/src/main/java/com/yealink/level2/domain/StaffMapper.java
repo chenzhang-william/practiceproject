@@ -3,12 +3,13 @@ package com.yealink.level2.domain;
 import com.yealink.level2.bean.Staff;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
+
 import java.util.List;
 
 @Mapper
 @Component
 public interface StaffMapper {
-    @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
+    @SelectKey(keyProperty = "id", resultType = String.class, before = true, statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
     @Insert("insert into staff(id, name, gender, enterprise_id, mobile, email, create_time, modify_time) values (#{id}, #{name}, #{gender}, #{enterpriseId},  #{mobile}, #{email}, #{createTime}, #{modifyTime})")
     int add(Staff staff);

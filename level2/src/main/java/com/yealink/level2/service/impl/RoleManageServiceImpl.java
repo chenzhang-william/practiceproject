@@ -57,7 +57,7 @@ public class RoleManageServiceImpl implements RoleManageService {
 
     @Override
     public StaffRoleRelation findRelation(@Valid StaffRoleRelation staffRoleRelation) {
-        return staffRoleRelationMapper.findRelation(staffRoleRelation.getRoleId(),staffRoleRelation.getStaffId());
+        return staffRoleRelationMapper.findRelation(staffRoleRelation.getRoleId(), staffRoleRelation.getStaffId());
     }
 
     @Override

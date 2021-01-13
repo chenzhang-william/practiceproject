@@ -16,13 +16,13 @@ import java.util.Map;
 @Mapper
 @Component
 public interface StaffDepRelationMapper {
-    @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
+    @SelectKey(keyProperty = "id", resultType = String.class, before = true, statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
     @Insert("insert into staff_department_relation(id, staff_id, department_id, position, create_time, modify_time) values (#{id}, #{staffId}, #{departmentId} , #{position}, #{createTime}, #{modifyTime})")
     int add(StaffDepartmentRelation staffDepartmentRelation);
 
     @Select("select id from staff_department_relation where staff_id=#{staffId} and department_id = #{departmentId}")
-    String findId(String staffId,String departmentId);
+    String findId(String staffId, String departmentId);
 
     @Delete("delete from staff_department_relation where id = #{id}")
     int delete(String id);
@@ -35,12 +35,12 @@ public interface StaffDepRelationMapper {
             "modify_time = #{modifyTime} " +
             "where id = #{id}" +
             "</script>")
-    int update (StaffDepartmentRelation staffDepartmentRelation);
+    int update(StaffDepartmentRelation staffDepartmentRelation);
 
     @Select("select a.name as depName, b.position from department as a, " +
             "(SELECT department_id,position from staff_department_relation where staff_id = #{staffId}) as b " +
             "where a.id = b.department_id")
-    List<Map<String,String>> getPosition(String id);
+    List<Map<String, String>> getPosition(String id);
 
     @Select("select id,department_id,staff_id,position from staff_department_relation where id =#{id} ")
     StaffDepartmentRelation findRelationById(String id);

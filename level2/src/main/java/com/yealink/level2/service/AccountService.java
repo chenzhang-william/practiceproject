@@ -14,11 +14,11 @@ public interface AccountService {
 
     void delete(@Valid Account account);
 
-    void update(@Valid Account oldAccount,@Valid Account newAccount);
+    void update(@Valid Account oldAccount, @Valid Account newAccount);
 
     void bindAccountEnterprise(@Valid Enterprise enterprise, @Valid Account account);
 
-    void bindAccountStaff(@Valid Staff staff,@Valid Account account);
+    void bindAccountStaff(@Valid Staff staff, @Valid Account account);
 
     @NotNull(message = "账号不存在") Account findAccountByUsername(@Valid Account account);
 

@@ -24,14 +24,14 @@ import java.util.stream.Collectors;
 @ResponseBody
 public class CtrlAdvice {
     @ExceptionHandler
-    public Result exceptionHandler(MethodArgumentNotValidException e){
-        Map<String,String> collect = e.getBindingResult().getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
-        return Result.failure(ErrorCode.PARAM_IS_INVALID,collect);
+    public Result exceptionHandler(MethodArgumentNotValidException e) {
+        Map<String, String> collect = e.getBindingResult().getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
+        return Result.failure(ErrorCode.PARAM_IS_INVALID, collect);
     }
 
     @ExceptionHandler
-    public Result exceptionHandler(ConstraintViolationException e){
+    public Result exceptionHandler(ConstraintViolationException e) {
         Map<Path, String> collect = e.getConstraintViolations().stream().collect(Collectors.toMap(ConstraintViolation::getPropertyPath, ConstraintViolation::getMessage));
-        return Result.failure(ErrorCode.PARAM_IS_INVALID,collect);
+        return Result.failure(ErrorCode.PARAM_IS_INVALID, collect);
     }
 }

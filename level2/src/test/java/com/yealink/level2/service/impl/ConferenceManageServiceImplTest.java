@@ -147,13 +147,24 @@ class ConferenceManageServiceImplTest {
         idList.add("100");
         idList.add("200");
 
-        when(mockConferenceMapper.findById("000")).thenReturn(conferenceTable.get("singleConference"));
-        when(mockConferenceMapper.findById("100")).thenReturn(conferenceTable.get("cycleByDay"));
-        when(mockConferenceMapper.findById("200")).thenReturn(conferenceTable.get("cycleByWeek"));
+        List<Conference> conferenceList = new ArrayList<>();
+        conferenceList.add(conferenceTable.get("singleConference"));
+        conferenceList.add(conferenceTable.get("cycleByDay"));
+        conferenceList.add(conferenceTable.get("cycleByWeek"));
+        when(mockConferenceMapper.findByIdList(idList)).thenReturn(conferenceList);
 
-        when(mockConferenceRuleMapper.find("000")).thenReturn(ruleTable.get("singleConference"));
-        when(mockConferenceRuleMapper.find("100")).thenReturn(ruleTable.get("cycleByDay"));
-        when(mockConferenceRuleMapper.find("200")).thenReturn(ruleTable.get("cycleByWeek"));
+        List<String> ruleIdList = new ArrayList<>();
+        for(Conference s: conferenceList){
+            ruleIdList.add(s.getRuleId());
+        }
+        List<ConferenceRule> ruleList = new ArrayList<>();
+        ruleList.add(ruleTable.get("singleConference"));
+        ruleList.add(ruleTable.get("cycleByDay"));
+        ruleList.add(ruleTable.get("cycleByWeek"));
+        when(mockConferenceRuleMapper.findByIdList(ruleIdList)).thenReturn(ruleList);
+
+
+
 
         assertEquals(10,conferenceManageService.findScheduleOfStaff(idList).size());
     }

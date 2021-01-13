@@ -20,7 +20,7 @@ public interface RoleManageService {
 
     void deleteStaffRoleRelation(@Valid StaffRoleRelation staffRoleRelation);
 
-    void updateStaffRoleRelation(@Valid StaffRoleRelation oldRelation,@Valid StaffRoleRelation newRelation);
+    void updateStaffRoleRelation(@Valid StaffRoleRelation oldRelation, @Valid StaffRoleRelation newRelation);
 
     StaffRoleRelation findRelation(@Valid StaffRoleRelation staffRoleRelation);
 

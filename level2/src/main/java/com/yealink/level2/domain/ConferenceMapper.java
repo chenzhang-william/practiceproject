@@ -4,6 +4,8 @@ import com.yealink.level2.bean.Conference;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author zhangchen
  * @description ConferenceMapper
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Mapper
 @Component
 public interface ConferenceMapper {
-    @SelectKey(keyProperty = "id",resultType = String.class, before = true,statement = "select replace(uuid(), '-', '')")
+    @SelectKey(keyProperty = "id", resultType = String.class, before = true, statement = "select replace(uuid(), '-', '')")
     @Options(keyProperty = "id", useGeneratedKeys = true)
     @Insert("insert into conference(id,title,conference_no,rule_id,start_time,end_time,create_time,modify_time) values(#{id},#{title},#{conferenceNo},#{ruleId},#{startTime},#{endTime},#{createTime},#{modifyTime})")
     int add(Conference conference);
@@ -36,4 +38,7 @@ public interface ConferenceMapper {
 
     @Select("select rule_id from conference where conference_no = #{conferenceNo} ")
     String findRuleIdByNo(String conferenceNo);
+
+    @Select("select title,conference_no,rule_id,start_time,end_time from conference where id in #{conferenceIdList} ")
+    List<Conference> findByIdList(List<String> conferenceIdList);
 }

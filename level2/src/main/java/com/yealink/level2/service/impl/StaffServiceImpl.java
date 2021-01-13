@@ -77,7 +77,7 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public Boolean isStaffExist(@Valid Staff staff) {
-        return staffMapper.findIdByMobile(staff.getMobile())!=null?true:false;
+        return staffMapper.findIdByMobile(staff.getMobile()) != null;
     }
 
     @Override
