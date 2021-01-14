@@ -387,7 +387,7 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
     private boolean conflictDetection(List<Schedule> scheduleListExist, List<Schedule> scheduleListUnderDetection) {
         boolean result = false;
         int j = 0, i = 0;
-        while (i <= scheduleListUnderDetection.size() - 1&&j <= scheduleListExist.size()-2) {
+        while (i <= scheduleListUnderDetection.size() - 1 && j <= scheduleListExist.size() - 2) {
             if (getYMDHMTimeStamp(scheduleListUnderDetection.get(i).getStartTime()) < getYMDHMTimeStamp(scheduleListExist.get(j).getEndTime())) {
                 result = false;
                 break;
@@ -396,7 +396,7 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
                 j += 1;
                 continue;
             }
-            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(i).getEndTime()) >  getYMDHMTimeStamp(scheduleListExist.get(j + 1).getStartTime())) {
+            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(i).getEndTime()) > getYMDHMTimeStamp(scheduleListExist.get(j + 1).getStartTime())) {
                 result = false;
                 break;
             }
