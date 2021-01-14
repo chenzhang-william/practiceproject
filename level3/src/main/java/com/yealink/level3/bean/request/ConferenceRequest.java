@@ -44,6 +44,8 @@ public class ConferenceRequest {
 
     private String newConferenceNo;
 
+    private String conferenceRoom;
+
     @NotNull(message = "手机号不能为空",groups = {
             ConferenceInsert.class,ConferenceDelete.class,ConferenceUpdate.class,
             RuleUpdate.class,

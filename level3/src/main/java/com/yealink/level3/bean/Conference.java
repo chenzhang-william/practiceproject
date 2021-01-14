@@ -30,6 +30,8 @@ public class Conference {
     @NotNull(message = "会议号")
     private String conferenceNo;
 
+    private String conferenceRoom;
+
     private String ruleId;
 
     private String startTime;

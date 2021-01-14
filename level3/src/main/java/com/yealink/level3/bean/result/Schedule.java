@@ -1,6 +1,7 @@
 package com.yealink.level3.bean.result;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
  * @date 2021/1/6 17:45
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Schedule {

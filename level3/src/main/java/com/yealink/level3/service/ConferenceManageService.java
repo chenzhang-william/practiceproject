@@ -58,4 +58,6 @@ public interface ConferenceManageService {
     List<Schedule> cycleByYearMonth(Conference conference, ConferenceRule conferenceRule);
 
     List<Schedule> scheduleSort(List<Schedule> scheduleList);
+
+    boolean conferenceRoomDetection(Conference conference, ConferenceRule conferenceRule);
 }

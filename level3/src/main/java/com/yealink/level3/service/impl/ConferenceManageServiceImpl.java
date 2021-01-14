@@ -154,22 +154,22 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
         List<Conference> conferenceList = conferenceMapper.findByIdList(conferenceIdList);
 
         List<String> ruleIdList = new ArrayList<>();
-        for(Conference s: conferenceList){
+        for (Conference s : conferenceList) {
             ruleIdList.add(s.getRuleId());
         }
 
         List<ConferenceRule> ruleList = conferenceRuleMapper.findByIdList(ruleIdList);
-        HashMap<ConferenceRule,Conference> ruleMap= new HashMap<>();
-        for(ConferenceRule rule:ruleList){
-            ruleMap.put(rule,findConferenceByRuleId(conferenceList,rule.getId()));
+        HashMap<ConferenceRule, Conference> ruleMap = new HashMap<>();
+        for (ConferenceRule rule : ruleList) {
+            ruleMap.put(rule, findConferenceByRuleId(conferenceList, rule.getId()));
         }
         return ruleMap;
     }
 
-    private Conference findConferenceByRuleId(List<Conference> conferenceList,String id) {
+    private Conference findConferenceByRuleId(List<Conference> conferenceList, String id) {
         Conference result = new Conference();
-        for(Conference c:conferenceList){
-            if(c.getRuleId().equals(id)){
+        for (Conference c : conferenceList) {
+            if (c.getRuleId().equals(id)) {
                 result = c;
             }
         }
@@ -371,6 +371,45 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
         ScheduleComparator scheduleComparator = new ScheduleComparator();
         scheduleList.sort(scheduleComparator);
         return scheduleList;
+    }
+
+    @Override
+    public boolean conferenceRoomDetection(Conference conference, ConferenceRule conferenceRule) {
+        List<Schedule> scheduleListExist = findSchedule(conferenceMapper.findIdByConferenceRoom(conference.getConferenceRoom()));
+        List<Schedule> scheduleListUnderDetection = scheduleSort(getScheduleByCycleRule(new HashMap<ConferenceRule, Conference>() {{
+            put(conferenceRule, conference);
+        }}));
+
+        return conflictDetection(createVirtualInterspace(scheduleListExist), scheduleListUnderDetection);
+
+    }
+
+    private boolean conflictDetection(List<Schedule> scheduleListExist, List<Schedule> scheduleListUnderDetection) {
+        boolean result = false;
+        int j = 0, i = 0;
+        while (i <= scheduleListUnderDetection.size() - 1&&j <= scheduleListExist.size()-2) {
+            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(i).getStartTime()) < getYMDHMTimeStamp(scheduleListExist.get(j).getEndTime())) {
+                result = false;
+                break;
+            }
+            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(i).getStartTime()) >= getYMDHMTimeStamp(scheduleListExist.get(j + 1).getStartTime())) {
+                j += 1;
+                continue;
+            }
+            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(i).getEndTime()) >  getYMDHMTimeStamp(scheduleListExist.get(j + 1).getStartTime())) {
+                result = false;
+                break;
+            }
+            result = true;
+            i += 1;
+        }
+        return result;
+    }
+
+    private List<Schedule> createVirtualInterspace(List<Schedule> scheduleListExist) {
+        scheduleListExist.add(0, Schedule.builder().endTime("2000-01-01 00:00").build());
+        scheduleListExist.add(Schedule.builder().startTime("2030-01-01 00:00").build());
+        return scheduleListExist;
     }
 
 

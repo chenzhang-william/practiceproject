@@ -41,4 +41,6 @@ public interface ConferenceMapper {
 
     @Select("select title,conference_no,rule_id,start_time,end_time from conference where id in #{conferenceIdList} ")
     List<Conference> findByIdList(List<String> conferenceIdList);
+
+    List<String> findIdByConferenceRoom(String conferenceRoom);
 }

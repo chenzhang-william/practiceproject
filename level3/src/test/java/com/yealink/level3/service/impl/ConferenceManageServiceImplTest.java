@@ -135,7 +135,7 @@ class ConferenceManageServiceImplTest {
     }
 
     @Test
-    void findScheduleOfStaffTest(){
+    void findScheduleTest(){
         HashMap<String,Conference> conferenceTable = conferenceTable();
         HashMap<String,ConferenceRule> ruleTable = ruleTable();
         List<String> idList = new ArrayList<>();
@@ -165,6 +165,72 @@ class ConferenceManageServiceImplTest {
         assertEquals(10,conferenceManageService.findSchedule(idList).size());
     }
 
+    @Test
+    void conferenceRoomDetectionFailTest(){
+        HashMap<String,Conference> conferenceTable = conferenceTable();
+        HashMap<String,ConferenceRule> ruleTable = ruleTable();
+        List<String> idList = new ArrayList<>();
+        idList.add("000");
+        idList.add("100");
+        idList.add("200");
+
+        List<Conference> conferenceList = new ArrayList<>();
+        conferenceList.add(conferenceTable.get("singleConference"));
+        conferenceList.add(conferenceTable.get("cycleByDay"));
+        conferenceList.add(conferenceTable.get("cycleByWeek"));
+        when(mockConferenceMapper.findByIdList(idList)).thenReturn(conferenceList);
+
+        List<String> ruleIdList = new ArrayList<>();
+        for(Conference s: conferenceList){
+            ruleIdList.add(s.getRuleId());
+        }
+        List<ConferenceRule> ruleList = new ArrayList<>();
+        ruleList.add(ruleTable.get("singleConference"));
+        ruleList.add(ruleTable.get("cycleByDay"));
+        ruleList.add(ruleTable.get("cycleByWeek"));
+        when(mockConferenceRuleMapper.findByIdList(ruleIdList)).thenReturn(ruleList);
+
+        Conference conflictConference = conferenceTable.get("conflict");
+        conflictConference.setConferenceRoom("test");
+        when(mockConferenceMapper.findIdByConferenceRoom("test")).thenReturn(idList);
+
+        assertEquals(false,conferenceManageService.conferenceRoomDetection(conflictConference,ruleTable.get("conflict")));
+
+
+    }
+
+    @Test
+    void conferenceRoomDetectionSuccessTest(){
+        HashMap<String,Conference> conferenceTable = conferenceTable();
+        HashMap<String,ConferenceRule> ruleTable = ruleTable();
+        List<String> idList = new ArrayList<>();
+        idList.add("000");
+        idList.add("100");
+        idList.add("200");
+
+        List<Conference> conferenceList = new ArrayList<>();
+        conferenceList.add(conferenceTable.get("singleConference"));
+        conferenceList.add(conferenceTable.get("cycleByDay"));
+        conferenceList.add(conferenceTable.get("cycleByWeek"));
+        when(mockConferenceMapper.findByIdList(idList)).thenReturn(conferenceList);
+
+        List<String> ruleIdList = new ArrayList<>();
+        for(Conference s: conferenceList){
+            ruleIdList.add(s.getRuleId());
+        }
+        List<ConferenceRule> ruleList = new ArrayList<>();
+        ruleList.add(ruleTable.get("singleConference"));
+        ruleList.add(ruleTable.get("cycleByDay"));
+        ruleList.add(ruleTable.get("cycleByWeek"));
+        when(mockConferenceRuleMapper.findByIdList(ruleIdList)).thenReturn(ruleList);
+
+
+        Conference noConflictConference = conferenceTable.get("noConflict");
+        noConflictConference.setConferenceRoom("test");
+        when(mockConferenceMapper.findIdByConferenceRoom("test")).thenReturn(idList);
+        assertEquals(true,conferenceManageService.conferenceRoomDetection(noConflictConference,ruleTable.get("noConflict")));
+    }
+
     public HashMap<String,Conference> conferenceTable(){
         HashMap<String,Conference> conferenceTable = new HashMap<>();
         conferenceTable.put("singleConference",Conference.builder().id("000").title("singleConference").conferenceNo("000").ruleId("000").startTime("00:00").endTime("00:10").build());
@@ -174,6 +240,8 @@ class ConferenceManageServiceImplTest {
         conferenceTable.put("cycleByMonthWeek",Conference.builder().id("310").title("cycleByMonthWeek").conferenceNo("310").ruleId("310").startTime("03:10").endTime("03:20").build());
         conferenceTable.put("cycleByYearDay",Conference.builder().id("400").title("cycleByYearDay").conferenceNo("400").ruleId("400").startTime("04:00").endTime("04:10").build());
         conferenceTable.put("cycleByYearWeek",Conference.builder().id("410").title("cycleByYearWeek").conferenceNo("410").ruleId("410").startTime("04:10").endTime("04:20").build());
+        conferenceTable.put("conflict",Conference.builder().startTime("01:00").endTime("01:05").build());
+        conferenceTable.put("noConflict",Conference.builder().startTime("00:50").endTime("01:00").build());
         return conferenceTable;
     }
 
@@ -187,6 +255,8 @@ class ConferenceManageServiceImplTest {
         ruleTable.put("cycleByMonthWeek",ConferenceRule.builder().id("310").type(31).gap(1).ordinalWeek(2).week("monday").startDay(getYMDTimeStamp("2021-01-01")).endDay(getYMDTimeStamp("2021-05-01")).build());
         ruleTable.put("cycleByYearDay",ConferenceRule.builder().id("400").type(40).gap(1).ordinalMonth(1).day(20).startDay(getYMDTimeStamp("2021-01-01")).endDay(getYMDTimeStamp("2025-01-21")).build());
         ruleTable.put("cycleByYearWeek",ConferenceRule.builder().id("410").type(41).gap(1).ordinalMonth(1).ordinalWeek(2).week("sunday").startDay(getYMDTimeStamp("2021-01-01")).endDay(getYMDTimeStamp("2025-01-06")).build());
+        ruleTable.put("conflict",ConferenceRule.builder().type(1).gap(1).startDay(getYMDTimeStamp("2021-01-05")).endDay(getYMDTimeStamp("2021-01-06")).build());
+        ruleTable.put("noConflict",ConferenceRule.builder().type(0).gap(1).startDay(getYMDTimeStamp("2021-01-05")).endDay(getYMDTimeStamp("2021-01-20")).build());
         return ruleTable;
     }
 
