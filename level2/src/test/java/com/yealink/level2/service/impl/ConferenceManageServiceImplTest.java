@@ -5,16 +5,12 @@ import com.yealink.level2.bean.ConferenceRule;
 import com.yealink.level2.bean.result.Schedule;
 import com.yealink.level2.domain.ConferenceMapper;
 import com.yealink.level2.domain.ConferenceRuleMapper;
-import com.yealink.level2.service.ConferenceManageService;
-import com.yealink.level2.util.ScheduleComparator;
 import org.junit.jupiter.api.*;
 
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
 
@@ -166,7 +162,7 @@ class ConferenceManageServiceImplTest {
 
 
 
-        assertEquals(10,conferenceManageService.findScheduleOfStaff(idList).size());
+        assertEquals(10,conferenceManageService.findSchedule(idList).size());
     }
 
     public HashMap<String,Conference> conferenceTable(){

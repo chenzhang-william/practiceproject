@@ -230,7 +230,7 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         List<String> conferenceIdList = conferenceParticipantService.findConferenceIdList(conferenceRequest.getMobile());
         //2.查出所有rule的idList
         //3.算出所有的会议包含title，No，时间，日期，加入list
-        List<Schedule> scheduleList = conferenceManageService.findScheduleOfStaff(conferenceIdList);
+        List<Schedule> scheduleList = conferenceManageService.findSchedule(conferenceIdList);
         //4.排序
 
         return Result.success(scheduleList);

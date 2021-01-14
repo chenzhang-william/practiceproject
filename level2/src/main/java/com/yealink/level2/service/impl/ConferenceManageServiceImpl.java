@@ -112,11 +112,15 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
     }
 
     @Override
-    public List<Schedule> findScheduleOfStaff(List<String> conferenceIdList) {
-        List<Schedule> scheduleList = new ArrayList<>();
-        //for避免查数据库
+    public List<Schedule> findSchedule(List<String> conferenceIdList) {
+
         HashMap<ConferenceRule, Conference> ruleMap = getConferenceRuleConferenceHashMap(conferenceIdList);
 
+        return scheduleSort(getScheduleByCycleRule(ruleMap));
+    }
+
+    public List<Schedule> getScheduleByCycleRule(HashMap<ConferenceRule, Conference> ruleMap) {
+        List<Schedule> scheduleList = new ArrayList<>();
         for (ConferenceRule rule : ruleMap.keySet()) {
             switch (rule.getType()) {
                 case 0:
@@ -143,7 +147,7 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
 
             }
         }
-        return scheduleSort(scheduleList);
+        return scheduleList;
     }
 
     private HashMap<ConferenceRule, Conference> getConferenceRuleConferenceHashMap(List<String> conferenceIdList) {
