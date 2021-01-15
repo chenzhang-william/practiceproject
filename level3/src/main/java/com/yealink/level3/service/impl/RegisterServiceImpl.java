@@ -5,6 +5,7 @@ import com.yealink.level3.service.*;
 import com.yealink.level3.bean.result.ErrorCode;
 import com.yealink.level3.bean.request.PersonalRequest;
 import com.yealink.level3.bean.result.Result;
+import com.yealink.level3.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,11 +78,11 @@ public class RegisterServiceImpl implements RegisterService {
 
         staffService.bindStaffEnterprise(enterprise, staff);
 
-        addRoleRelation(staffId, "创建者");
+        addRoleRelation(staffId, Constants.ENTERPRISE_CREATOR_ROLE);
 
         String depId = addDep(personalRequest.getEnterpriseName(), enterprise.getId());
 
-        addDepRelation(staffId, depId, "boss");
+        addDepRelation(staffId, depId, Constants.ENTERPRISE_CREATOR_POSITION);
         return Result.success();
     }
 

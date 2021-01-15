@@ -9,6 +9,7 @@ import com.yealink.level3.domain.ConferenceRuleMapper;
 import com.yealink.level3.service.ConferenceManageService;
 import com.yealink.level3.service.ConferenceParticipantService;
 import com.yealink.level3.service.StaffService;
+import com.yealink.level3.util.Constants;
 import com.yealink.level3.util.ScheduleComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,7 +66,7 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
         conferenceParticipant.setConferenceId(conferenceMapper.findIdByNo(conferenceNo));
         conferenceParticipant.setParticipantId(staffService.findIdByMobile(mobile));
         conferenceParticipant = conferenceParticipantService.findParticipant(conferenceNo, mobile);
-        return conferenceParticipant.getRole() == 1;
+        return conferenceParticipant.getRole() == Constants.CONFERENCE_CREATOR_ROLE;
     }
 
     @Override
@@ -376,7 +377,7 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
     @Override
     public boolean conferenceRoomDetection(Conference conference, ConferenceRule conferenceRule) {
         List<Schedule> scheduleListExist = checkOccupancyOfConferenceRoom(conference.getConferenceRoom());
-        List<Schedule> scheduleListUnderDetection = scheduleSort(getScheduleByCycleRule(new HashMap<ConferenceRule, Conference>() {{
+        List<Schedule> scheduleListUnderDetection = scheduleSort(getScheduleByCycleRule(new HashMap<>() {{
             put(conferenceRule, conference);
         }}));
 
@@ -391,22 +392,22 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
 
     private boolean conflictDetection(List<Schedule> scheduleListExist, List<Schedule> scheduleListUnderDetection) {
         boolean result = false;
-        int j = 0, i = 0;
-        while (i <= scheduleListUnderDetection.size() - 1 && j <= scheduleListExist.size() - 2) {
-            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(i).getStartTime()) < getYMDHMTimeStamp(scheduleListExist.get(j).getEndTime())) {
+        int existIndex = 0, detectionIndex = 0;
+        while (detectionIndex <= scheduleListUnderDetection.size() - 1 && existIndex <= scheduleListExist.size() - 2) {
+            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(detectionIndex).getStartTime()) < getYMDHMTimeStamp(scheduleListExist.get(existIndex).getEndTime())) {
                 result = false;
                 break;
             }
-            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(i).getStartTime()) >= getYMDHMTimeStamp(scheduleListExist.get(j + 1).getStartTime())) {
-                j += 1;
+            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(detectionIndex).getStartTime()) >= getYMDHMTimeStamp(scheduleListExist.get(existIndex + 1).getStartTime())) {
+                existIndex += 1;
                 continue;
             }
-            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(i).getEndTime()) > getYMDHMTimeStamp(scheduleListExist.get(j + 1).getStartTime())) {
+            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(detectionIndex).getEndTime()) > getYMDHMTimeStamp(scheduleListExist.get(existIndex + 1).getStartTime())) {
                 result = false;
                 break;
             }
             result = true;
-            i += 1;
+            detectionIndex += 1;
         }
         return result;
     }
