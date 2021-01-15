@@ -375,13 +375,18 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
 
     @Override
     public boolean conferenceRoomDetection(Conference conference, ConferenceRule conferenceRule) {
-        List<Schedule> scheduleListExist = findSchedule(conferenceMapper.findIdByConferenceRoom(conference.getConferenceRoom()));
+        List<Schedule> scheduleListExist = checkOccupancyOfConferenceRoom(conference.getConferenceRoom());
         List<Schedule> scheduleListUnderDetection = scheduleSort(getScheduleByCycleRule(new HashMap<ConferenceRule, Conference>() {{
             put(conferenceRule, conference);
         }}));
 
         return conflictDetection(createVirtualInterspace(scheduleListExist), scheduleListUnderDetection);
 
+    }
+
+    @Override
+    public List<Schedule> checkOccupancyOfConferenceRoom(String conferenceRoom) {
+        return findSchedule(conferenceMapper.findIdByConferenceRoom(conferenceRoom));
     }
 
     private boolean conflictDetection(List<Schedule> scheduleListExist, List<Schedule> scheduleListUnderDetection) {

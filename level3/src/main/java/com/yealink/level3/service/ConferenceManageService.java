@@ -60,4 +60,6 @@ public interface ConferenceManageService {
     List<Schedule> scheduleSort(List<Schedule> scheduleList);
 
     boolean conferenceRoomDetection(Conference conference, ConferenceRule conferenceRule);
+
+    List<Schedule> checkOccupancyOfConferenceRoom(String conferenceRoom);
 }

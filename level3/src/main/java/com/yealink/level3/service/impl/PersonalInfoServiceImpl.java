@@ -37,8 +37,7 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
     @Override
     public Result updateStaff(PersonalRequest personalRequest) {
-        Staff staff = new Staff();
-        staff.setMobile(personalRequest.getMobile());
+        Staff staff = getStaff(personalRequest);
 
         if (!staffService.isStaffExist(staff)) {
             return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
@@ -46,6 +45,14 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
         Staff oldStaff = staffService.findStaffByMobile(staff);
 
+        staffValuation(personalRequest, staff);
+
+        staffService.update(oldStaff, staff);
+        return Result.success();
+
+    }
+
+    private void staffValuation(PersonalRequest personalRequest, Staff staff) {
         if (personalRequest.getNewMobile() != null) {
             staff.setMobile(personalRequest.getNewMobile());
         }
@@ -53,10 +60,6 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
             staff.setGender(staffService.genderTransfer(personalRequest.getGender()));
         staff.setEmail(personalRequest.getEmail());
         staff.setName(personalRequest.getName());
-
-        staffService.update(oldStaff, staff);
-        return Result.success();
-
     }
 
     @Override
@@ -69,10 +72,8 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
     @Override
     public Result updateEnterpriseId(PersonalRequest personalRequest) {
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(personalRequest.getEnterpriseNo());
-        Account account = new Account();
-        account.setUsername(personalRequest.getUsername());
+        Enterprise enterprise = getEnterprise(personalRequest);
+        Account account = getAccount(personalRequest);
         if (!accountService.isAccountExist(account.getUsername())) {
             return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
         }
@@ -83,10 +84,8 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
     @Override
     public Result updateStaffId(PersonalRequest personalRequest) {
-        Staff staff = new Staff();
-        staff.setMobile(personalRequest.getMobile());
-        Account account = new Account();
-        account.setUsername(personalRequest.getUsername());
+        Staff staff = getStaff(personalRequest);
+        Account account = getAccount(personalRequest);
         if (!accountService.isAccountExist(account.getUsername())) {
             return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
         }
@@ -97,27 +96,35 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
     @Override
     public Result updateAccount(PersonalRequest personalRequest) {
-        Account account = new Account();
-        account.setUsername(personalRequest.getUsername());
+        Account account = getAccount(personalRequest);
 
         if (!accountService.isAccountExist(account.getUsername())) {
             return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
         }
 
         Account oldAccount = accountService.findAccountByUsername(account);
-        if (personalRequest.getNewUsername() != null) {
-            account.setUsername(personalRequest.getNewUsername());
-        }
-        account.setPassword(personalRequest.getPassword());
+        accountValuation(personalRequest, account);
 
         accountService.update(oldAccount, account);
         return Result.success();
     }
 
+    private Account getAccount(PersonalRequest personalRequest) {
+        Account account = new Account();
+        account.setUsername(personalRequest.getUsername());
+        return account;
+    }
+
+    private void accountValuation(PersonalRequest personalRequest, Account account) {
+        if (personalRequest.getNewUsername() != null) {
+            account.setUsername(personalRequest.getNewUsername());
+        }
+        account.setPassword(personalRequest.getPassword());
+    }
+
     @Override
     public Result getAllAccounts(PersonalRequest personalRequest) {
-        Staff staff = new Staff();
-        staff.setMobile(personalRequest.getMobile());
+        Staff staff = getStaff(personalRequest);
         if (!staffService.isStaffExist(staff)) {
             return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
         }
@@ -127,8 +134,7 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
     @Override
     public Result deleteAccount(PersonalRequest personalRequest) {
-        Account account = new Account();
-        account.setUsername(personalRequest.getUsername());
+        Account account = getAccount(personalRequest);
         Account accountVerify = accountService.findAccountByUsername(account);
         if (accountVerify == null) {
             return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
@@ -142,15 +148,19 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
     @Override
     public Result personalInfo(PersonalRequest personalRequest) {
+        Staff staff = getStaff(personalRequest);
+        return Result.success(staffService.findStaffByMobile(staff));
+    }
+
+    private Staff getStaff(PersonalRequest personalRequest) {
         Staff staff = new Staff();
         staff.setMobile(personalRequest.getMobile());
-        return Result.success(staffService.findStaffByMobile(staff));
+        return staff;
     }
 
     @Override
     public Result findRoleOfStaff(PersonalRequest personalRequest) {
-        Staff staff = new Staff();
-        staff.setMobile(personalRequest.getMobile());
+        Staff staff = getStaff(personalRequest);
         if (!staffService.isStaffExist(staff)) {
             return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
         }
@@ -159,20 +169,33 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
     @Override
     public Result enterpriseInfo(PersonalRequest personalRequest) {
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(personalRequest.getEnterpriseNo());
+        Enterprise enterprise = getEnterprise(personalRequest);
         return Result.success(enterpriseService.findEnterpriseByNo(enterprise));
     }
 
     @Override
     public Result findTree(PersonalRequest personalRequest) {
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(personalRequest.getEnterpriseNo());
+        Enterprise enterprise = getEnterprise(personalRequest);
         enterprise = enterpriseService.findEnterpriseByNo(enterprise);
 
         Department dep = new Department();
         dep.setName(enterprise.getName());
         dep.setEnterpriseId(enterprise.getId());
-        return Result.success(depManageService.getTree(depManageService.findDep(dep).getId()));
+        return Result.success(depManageService.getDepTree(depManageService.findDep(dep).getId()));
+    }
+
+    private Enterprise getEnterprise(PersonalRequest personalRequest) {
+        Enterprise enterprise = new Enterprise();
+        enterprise.setNo(personalRequest.getEnterpriseNo());
+        return enterprise;
+    }
+
+    @Override
+    public Result getPosition(PersonalRequest personalRequest) {
+        Staff staff = getStaff(personalRequest);
+        if(!staffService.isStaffExist(staff)){
+            return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
+        }
+        return Result.success(depManageService.getPosition(staff));
     }
 }

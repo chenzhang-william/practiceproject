@@ -33,4 +33,6 @@ public interface ConferenceInfoService {
     Result updateParticipant(ConferenceRequest conferenceRequest);
 
     Result findParticipantOfConference(ConferenceRequest conferenceRequest);
+
+    Result getOccupancyOfConferenceRoom(ConferenceRequest conferenceRequest);
 }

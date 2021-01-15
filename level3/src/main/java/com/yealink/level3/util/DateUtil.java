@@ -44,12 +44,12 @@ public class DateUtil {
     public static long getTimeStamp(String date,String formatStr){
         final SimpleDateFormat format = new SimpleDateFormat(formatStr);
 
-        long result = -1L;
+        long result;
 
         try {
             result = format.parse(date).getTime();
         } catch (ParseException e) {
-
+            result = new Date().getTime();
         }
         return result;
     }

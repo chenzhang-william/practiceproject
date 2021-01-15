@@ -76,4 +76,9 @@ public class ConferenceInfoController {
     public Result findParticipantOfConference(@RequestBody @Validated({ConferenceRequest.ConferenceNo.class}) ConferenceRequest conferenceRequest) {
         return conferenceInfoService.findParticipantOfConference(conferenceRequest);
     }
+
+    @PostMapping("/getOccupancyOfConferenceRoom")
+    public Result getOccupancyOfConferenceRoom(@RequestBody ConferenceRequest conferenceRequest){
+        return conferenceInfoService.getOccupancyOfConferenceRoom(conferenceRequest);
+    }
 }

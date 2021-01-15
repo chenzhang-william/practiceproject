@@ -31,4 +31,6 @@ public interface PersonalInfoService {
     Result enterpriseInfo(PersonalRequest personalRequest);
 
     Result findTree(PersonalRequest personalRequest);
+
+    Result getPosition(PersonalRequest personalRequest);
 }

@@ -27,7 +27,8 @@ public enum ErrorCode {
     PARTICIPANT_HAS_EXIST("2016","参会者已存在"),
     PARTICIPANT_IS_NOT_EXIST("2017","参会者不存在"),
     NO_PERMISSION("2014","无权限"),
-    ACCOUNT_HAS_EXIST("2002","账号已存在");
+    ACCOUNT_HAS_EXIST("2002","账号已存在"),
+    CONFERENCE_ROOM_CONFLICT("2019","会议室冲突");
 
 
     private String code;
@@ -37,16 +38,8 @@ public enum ErrorCode {
         return code;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public String getMsg() {
         return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
     }
 
     ErrorCode(String code, String msg) {

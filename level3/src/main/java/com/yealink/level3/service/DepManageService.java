@@ -41,7 +41,7 @@ public interface DepManageService {
 
     List getChildStaff(String id);
 
-    List getTree(String id);
+    List getDepTree(String id);
 
     boolean isDepExist(Department dep);
 

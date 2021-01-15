@@ -49,16 +49,19 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         if (conferenceManageService.isConferenceExist(conferenceRequest.getConferenceNo())) {
             return Result.failure(ErrorCode.CONFERENCE_HAS_EXIST);
         }
+
         Conference conference = new Conference();
-        conference.setConferenceNo(conferenceRequest.getConferenceNo());
-        conference.setTitle(conferenceRequest.getTitle());
-        if (!judgeTime(conferenceRequest)) return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
-        conference.setStartTime(conferenceRequest.getStartTime());
-        conference.setEndTime(conferenceRequest.getEndTime());
+        if (newConferenceValuation(conferenceRequest, conference)) {
+            return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
+        }
 
         ConferenceRule conferenceRule = new ConferenceRule();
-        if (ruleValuation(conferenceRule, conferenceRequest) != Result.success()){
+        if (newRuleValuation(conferenceRule, conferenceRequest)) {
             return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
+        }
+
+        if (conferenceRoomConflictDetection(conference, conferenceRule)) {
+            return Result.failure(ErrorCode.CONFERENCE_ROOM_CONFLICT);
         }
 
         conferenceManageService.addConference(conference, conferenceRule);
@@ -70,12 +73,30 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         return Result.success();
     }
 
-    private boolean judgeTime(ConferenceRequest conferenceRequest) {
-        return !(mergeYMDHMTimeStamp(conferenceRequest.getStartDay(), conferenceRequest.getStartTime())
-                >= mergeYMDHMTimeStamp(conferenceRequest.getEndDay(), conferenceRequest.getEndTime()));
+    private boolean conferenceRoomConflictDetection(Conference conference, ConferenceRule conferenceRule) {
+        if (conference.getConferenceRoom() != null) {
+            return !conferenceManageService.conferenceRoomDetection(conference, conferenceRule);
+        }
+        return false;
     }
 
-    private Result ruleValuation(ConferenceRule conferenceRule, ConferenceRequest conferenceRequest) {
+    private boolean newConferenceValuation(ConferenceRequest conferenceRequest, Conference conference) {
+        conference.setConferenceNo(conferenceRequest.getConferenceNo());
+        conference.setConferenceRoom(conferenceRequest.getConferenceRoom());
+        conference.setTitle(conferenceRequest.getTitle());
+        if (judgeTime(conferenceRequest)) {
+            return true;
+        }
+        conference.setStartTime(conferenceRequest.getStartTime());
+        conference.setEndTime(conferenceRequest.getEndTime());
+        return false;
+    }
+
+    private boolean judgeTime(ConferenceRequest conferenceRequest) {
+        return (mergeYMDHMTimeStamp(conferenceRequest.getStartDay(), conferenceRequest.getStartTime()) > mergeYMDHMTimeStamp(conferenceRequest.getEndDay(), conferenceRequest.getEndTime()));
+    }
+
+    private boolean newRuleValuation(ConferenceRule conferenceRule, ConferenceRequest conferenceRequest) {
 
         conferenceRule.setType(conferenceRequest.getType());
         conferenceRule.setGap(conferenceRequest.getGap());
@@ -86,10 +107,12 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         long startDay = getYMDTimeStamp(conferenceRequest.getStartDay());
         long endDay = getYMDTimeStamp(conferenceRequest.getEndDay());
 
-        if (startDay > endDay) return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
+        if (startDay > endDay) {
+            return true;
+        }
         conferenceRule.setStartDay(startDay);
         conferenceRule.setEndDay(endDay);
-        return Result.success();
+        return false;
     }
 
     private void addAdminParticipant(String mobile, String conferenceId) {
@@ -131,31 +154,39 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         conference.setConferenceNo(no);
         conference = conferenceManageService.findConferenceByNo(conference);
         //3.将新的不为空的信息封装进conference
-        conferenceValuation(conferenceRequest, conference);
-        //4.判断新的no不冲突，调用更新服务
+        if(conferenceValuation(conferenceRequest, conference)){
+            return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
+        }
+        //4.判断新的no和room不冲突，调用更新服务
         if (conferenceManageService.isConferenceExist(conference.getConferenceNo())) {
             return Result.failure(ErrorCode.CONFERENCE_HAS_EXIST);
         }
+        if (conferenceRoomConflictDetection(conference, conferenceManageService.findRuleByNo(conference))) {
+            return Result.failure(ErrorCode.CONFERENCE_ROOM_CONFLICT);
+        }
+
         conferenceManageService.updateConference(conference);
         return Result.success();
     }
 
-    private void conferenceValuation(ConferenceRequest conferenceRequest, Conference conference) {
+    private boolean conferenceValuation(ConferenceRequest conferenceRequest, Conference conference) {
         if (conferenceRequest.getNewConferenceNo() != null) {
             conference.setConferenceNo(conferenceRequest.getNewConferenceNo());
+        }
+        if (conferenceRequest.getConferenceRoom() != null) {
+            conference.setConferenceRoom(conferenceRequest.getConferenceRoom());
         }
         if (conferenceRequest.getTitle() != null) {
             conference.setTitle(conferenceRequest.getTitle());
         }
         if (conferenceRequest.getStartTime() != null && conferenceRequest.getEndTime() != null) {
-            String startDay = getYMDDate(conferenceManageService.findRuleByNo(conference).getStartDay());
-            long startTime = mergeYMDHMTimeStamp(startDay, conferenceRequest.getStartTime());
-            long endTime = mergeYMDHMTimeStamp(startDay, conferenceRequest.getEndTime());
-            if (startTime < endTime) {
-                conference.setStartTime(conferenceRequest.getStartTime());
-                conference.setEndTime(conferenceRequest.getEndTime());
+            if(judgeTime(conferenceRequest)){
+                return true;
             }
+            conference.setStartTime(conferenceRequest.getStartTime());
+            conference.setEndTime(conferenceRequest.getEndTime());
         }
+        return false;
     }
 
     @Override
@@ -168,7 +199,13 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
             //2.通过会议号获取oldRule
             ConferenceRule conferenceRule = conferenceManageService.findRuleByNo(conference);
             //3.将新的规则封装进rule
-            if (newRuleValuation(conferenceRequest, conferenceRule)) return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
+            if (RuleValuation(conferenceRequest, conferenceRule)) {
+                return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
+            }
+
+            if (conferenceRoomConflictDetection(conference, conferenceRule)) {
+                return Result.failure(ErrorCode.CONFERENCE_ROOM_CONFLICT);
+            }
             //4.调用更新服务
             conferenceManageService.updateRule(conferenceRule);
             return Result.success();
@@ -176,7 +213,7 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
 
     }
 
-    private boolean newRuleValuation(ConferenceRequest conferenceRequest, ConferenceRule conferenceRule) {
+    private boolean RuleValuation(ConferenceRequest conferenceRequest, ConferenceRule conferenceRule) {
         if (conferenceRequest.getType() != 0) {
             conferenceRule.setType(conferenceRequest.getType());
         }
@@ -318,5 +355,13 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
             return Result.failure(ErrorCode.CONFERENCE_IS_NOT_EXIST);
         }
         return Result.success(conferenceParticipantService.findParticipantIdList(conference.getConferenceNo()));
+    }
+
+    @Override
+    public Result getOccupancyOfConferenceRoom(ConferenceRequest conferenceRequest) {
+        if(conferenceRequest.getConferenceRoom() == null){
+            return Result.failure(ErrorCode.PARAM_IS_INVALID);
+        }
+        return Result.success(conferenceManageService.checkOccupancyOfConferenceRoom(conferenceRequest.getConferenceRoom()));
     }
 }

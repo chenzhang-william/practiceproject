@@ -74,4 +74,9 @@ public class PersonalInfoController {
     public Result findEnterprise(@RequestBody@Validated({PersonalRequest.EnterpriseName.class})PersonalRequest personalRequest){
         return personalInfoService.findEnterprise(personalRequest);
     }
+
+    @PostMapping("/getPosition")
+    public Result getPosition(@RequestBody @Validated({PersonalRequest.StaffSelect.class}) PersonalRequest personalRequest){
+        return personalInfoService.getPosition(personalRequest);
+    }
 }

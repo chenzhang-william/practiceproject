@@ -110,7 +110,7 @@ public class DepManageServiceImpl implements DepManageService {
         return staffDepRelationMapper.getStaffOfDep(id);
     }
 
-    public List getTree(String id) {
+    public List getDepTree(String id) {
         List childNode = new ArrayList<>();
         childNode.add(departmentMapper.findById(id));
         List<Staff> childStaff = getChildStaff(id);
@@ -120,7 +120,7 @@ public class DepManageServiceImpl implements DepManageService {
         }
         if (childDep != null) {
             for (Department dep : childDep) {
-                childNode.add(getTree(dep.getId()));
+                childNode.add(getDepTree(dep.getId()));
             }
         }
         return childNode;

@@ -40,6 +40,8 @@ public interface EnterpriseInfoService {
 
     Result updateStaffDepRelation(EnterpriseRequest enterpriseRequest);
 
+    Result findPositionOfStaff(EnterpriseRequest enterpriseRequest);
+
     Result findTree(EnterpriseRequest enterpriseRequest);
 
     Result updateStaffRoleRelation(EnterpriseRequest enterpriseRequest);

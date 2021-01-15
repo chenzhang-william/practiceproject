@@ -97,6 +97,11 @@ public class EnterpriseInfoController {
         return enterpriseInfoService.updateStaffDepRelation(enterpriseRequest);
     }
 
+    @PostMapping("findPositionOfStaff")
+    public Result findPositionOfStaff(@RequestBody @Validated({EnterpriseRequest.StaffSelect.class}) EnterpriseRequest enterpriseRequest){
+        return enterpriseInfoService.findPositionOfStaff(enterpriseRequest);
+    }
+
     @PostMapping("/findTree")
     public Result findTree(@RequestBody @Validated({EnterpriseRequest.EnterpriseSelect.class}) EnterpriseRequest enterpriseRequest) {
         return enterpriseInfoService.findTree(enterpriseRequest);

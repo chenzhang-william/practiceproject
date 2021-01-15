@@ -31,13 +31,13 @@ public class LoginServiceImpl implements LoginService {
 
         Account accountVerify = accountService.findAccountByUsername(account);
 
-        if(accountVerify!=null) {
+        if(accountVerify == null) {
             return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
         }
 
         account.setPassword(personalRequest.getPassword());
 
-        if(accountVerify.getPassword().equals(account.getPassword())) {
+        if (accountVerify.getPassword().equals(account.getPassword())) {
             return Result.failure(ErrorCode.PASSWORD_IS_WRONG);
         }
 

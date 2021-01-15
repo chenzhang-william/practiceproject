@@ -48,6 +48,12 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         return Result.success();
     }
 
+    private Enterprise getEnterprise(EnterpriseRequest enterpriseRequest) {
+        Enterprise enterprise = new Enterprise();
+        enterprise.setNo(enterpriseRequest.getEnterpriseNo());
+        return enterprise;
+    }
+
     @Override
     public Result deleteEnterprise(EnterpriseRequest enterpriseRequest) {
         Enterprise enterprise = getEnterprise(enterpriseRequest);
@@ -58,12 +64,6 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
 
         enterpriseService.delete(enterprise);
         return Result.success();
-    }
-
-    private Enterprise getEnterprise(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(enterpriseRequest.getEnterpriseNo());
-        return enterprise;
     }
 
     @Override
@@ -323,6 +323,17 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         return Result.success();
     }
 
+    @Override
+    public Result findPositionOfStaff(EnterpriseRequest enterpriseRequest) {
+        Staff staff = getStaff(enterpriseRequest);
+        staff = staffService.findStaffByMobile(staff);
+        Enterprise enterprise = getEnterprise(enterpriseRequest);
+        if(!staff.getEnterpriseId().equals(enterprise.getId())){
+            return Result.failure(ErrorCode.ENTERPRISE_MISMATCH);
+        }
+        return Result.success(depManageService.getPosition(staff));
+    }
+
     private StaffDepartmentRelation getStaffDepartmentRelation(Department dep, Staff staff) {
         StaffDepartmentRelation relation = new StaffDepartmentRelation();
         relation.setStaffId(staff.getId());
@@ -336,7 +347,7 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         Enterprise enterprise = getExistEnterprise(enterpriseRequest);
         dep.setName(enterprise.getName());
         dep.setEnterpriseId(enterprise.getId());
-        return Result.success(depManageService.getTree(depManageService.findDep(dep).getId()));
+        return Result.success(depManageService.getDepTree(depManageService.findDep(dep).getId()));
     }
 
     @Override

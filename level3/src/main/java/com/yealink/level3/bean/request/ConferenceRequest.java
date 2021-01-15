@@ -1,6 +1,7 @@
 package com.yealink.level3.bean.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
  * @date 2021/1/5 17:37
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConferenceRequest {
