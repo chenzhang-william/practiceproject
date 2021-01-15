@@ -12,7 +12,7 @@ public interface PersonalInfoService {
 
     Result updateStaff(PersonalRequest personalRequest);
 
-    Result findEnterprise(PersonalRequest personalRequest);
+    Result findEnterpriseByName(PersonalRequest personalRequest);
 
     Result updateEnterpriseId(PersonalRequest personalRequest);
 

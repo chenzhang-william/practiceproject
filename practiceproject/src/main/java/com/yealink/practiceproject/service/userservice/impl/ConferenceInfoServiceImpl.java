@@ -9,6 +9,7 @@ import com.yealink.practiceproject.service.domain.ConferenceManageService;
 import com.yealink.practiceproject.service.domain.ConferenceParticipantService;
 import com.yealink.practiceproject.service.domain.StaffService;
 import com.yealink.practiceproject.service.userservice.ConferenceInfoService;
+import com.yealink.practiceproject.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,12 +52,12 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         }
 
         Conference conference = new Conference();
-        if (newConferenceValuation(conferenceRequest, conference)) {
+        if (newConferenceAssignment(conferenceRequest, conference)) {
             return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
         }
 
         ConferenceRule conferenceRule = new ConferenceRule();
-        if (newRuleValuation(conferenceRule, conferenceRequest)) {
+        if (newRuleAssignment(conferenceRule, conferenceRequest)) {
             return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
         }
 
@@ -80,7 +81,7 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         return false;
     }
 
-    private boolean newConferenceValuation(ConferenceRequest conferenceRequest, Conference conference) {
+    private boolean newConferenceAssignment(ConferenceRequest conferenceRequest, Conference conference) {
         conference.setConferenceNo(conferenceRequest.getConferenceNo());
         conference.setConferenceRoom(conferenceRequest.getConferenceRoom());
         conference.setTitle(conferenceRequest.getTitle());
@@ -96,7 +97,7 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         return (mergeYMDHMTimeStamp(conferenceRequest.getStartDay(), conferenceRequest.getStartTime()) > mergeYMDHMTimeStamp(conferenceRequest.getEndDay(), conferenceRequest.getEndTime()));
     }
 
-    private boolean newRuleValuation(ConferenceRule conferenceRule, ConferenceRequest conferenceRequest) {
+    private boolean newRuleAssignment(ConferenceRule conferenceRule, ConferenceRequest conferenceRequest) {
 
         conferenceRule.setType(conferenceRequest.getType());
         conferenceRule.setGap(conferenceRequest.getGap());
@@ -119,8 +120,8 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         ConferenceParticipant conferenceParticipant = new ConferenceParticipant();
         conferenceParticipant.setConferenceId(conferenceId);
         conferenceParticipant.setParticipantId(staffService.findIdByMobile(mobile));
-        conferenceParticipant.setStatus(0);
-        conferenceParticipant.setRole(0);
+        conferenceParticipant.setStatus(Constants.CONFERENCE_PARTICIPANT_STATUS_OFF);
+        conferenceParticipant.setRole(Constants.CONFERENCE_ADMIN_ROLE);
         conferenceParticipantService.addParticipant(conferenceParticipant);
     }
 
@@ -154,7 +155,7 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         conference.setConferenceNo(no);
         conference = conferenceManageService.findConferenceByNo(conference);
         //3.将新的不为空的信息封装进conference
-        if(conferenceValuation(conferenceRequest, conference)){
+        if(conferenceAssignment(conferenceRequest, conference)){
             return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
         }
         //4.判断新的no和room不冲突，调用更新服务
@@ -169,7 +170,7 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         return Result.success();
     }
 
-    private boolean conferenceValuation(ConferenceRequest conferenceRequest, Conference conference) {
+    private boolean conferenceAssignment(ConferenceRequest conferenceRequest, Conference conference) {
         if (conferenceRequest.getNewConferenceNo() != null) {
             conference.setConferenceNo(conferenceRequest.getNewConferenceNo());
         }
@@ -193,27 +194,27 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
     public Result updateConferenceRule(ConferenceRequest conferenceRequest) {
         //1.判断是否是创建者，会议号和创建者是否吻合
         String no = conferenceRequest.getConferenceNo();
-        if (conferenceManageService.hasPermission(no, conferenceRequest.getMobile())) {
-            Conference conference = new Conference();
-            conference.setConferenceNo(conferenceRequest.getConferenceNo());
-            //2.通过会议号获取oldRule
-            ConferenceRule conferenceRule = conferenceManageService.findRuleByNo(conference);
-            //3.将新的规则封装进rule
-            if (RuleValuation(conferenceRequest, conferenceRule)) {
-                return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
-            }
+        if (!conferenceManageService.hasPermission(no, conferenceRequest.getMobile())) {
+            return Result.failure(ErrorCode.NO_PERMISSION);
+        }
+        Conference conference = new Conference();
+        conference.setConferenceNo(conferenceRequest.getConferenceNo());
+        //2.通过会议号获取oldRule
+        ConferenceRule conferenceRule = conferenceManageService.findRuleByNo(conference);
+        //3.将新的规则封装进rule
+        if (RuleAssignment(conferenceRequest, conferenceRule)) {
+            return Result.failure(ErrorCode.TIME_IS_ILLEGAL);
+        }
 
-            if (conferenceRoomConflictDetection(conference, conferenceRule)) {
-                return Result.failure(ErrorCode.CONFERENCE_ROOM_CONFLICT);
-            }
-            //4.调用更新服务
-            conferenceManageService.updateRule(conferenceRule);
-            return Result.success();
-        } else return Result.failure(ErrorCode.NO_PERMISSION);
-
+        if (conferenceRoomConflictDetection(conference, conferenceRule)) {
+            return Result.failure(ErrorCode.CONFERENCE_ROOM_CONFLICT);
+        }
+        //4.调用更新服务
+        conferenceManageService.updateRule(conferenceRule);
+        return Result.success();
     }
 
-    private boolean RuleValuation(ConferenceRequest conferenceRequest, ConferenceRule conferenceRule) {
+    private boolean RuleAssignment(ConferenceRequest conferenceRequest, ConferenceRule conferenceRule) {
         if (conferenceRequest.getType() != 0) {
             conferenceRule.setType(conferenceRequest.getType());
         }
@@ -234,13 +235,17 @@ public class ConferenceInfoServiceImpl implements ConferenceInfoService {
         }
         if (conferenceRequest.getStartDay() != null) {
             long startDay = getYMDTimeStamp(conferenceRequest.getStartDay());
-            if (startDay <= conferenceRule.getEndDay()) conferenceRule.setStartDay(startDay);
-            else return true;
+            if (startDay > conferenceRule.getEndDay()){
+                return true;
+            }
+            conferenceRule.setStartDay(startDay);
         }
         if (conferenceRequest.getEndDay() != null) {
             long endDay = getYMDTimeStamp(conferenceRequest.getEndDay());
-            if (endDay >= conferenceRule.getStartDay()) conferenceRule.setEndDay(endDay);
-            else return true;
+            if (endDay < conferenceRule.getStartDay()){
+                return true;
+            }
+            conferenceRule.setEndDay(endDay);
         }
         return false;
     }

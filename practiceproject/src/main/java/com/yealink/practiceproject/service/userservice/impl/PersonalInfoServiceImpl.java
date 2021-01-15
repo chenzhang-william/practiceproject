@@ -48,14 +48,14 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
         Staff oldStaff = staffService.findStaffByMobile(staff);
 
-        staffValuation(personalRequest, staff);
+        staffAssignment(personalRequest, staff);
 
         staffService.update(oldStaff, staff);
         return Result.success();
 
     }
 
-    private void staffValuation(PersonalRequest personalRequest, Staff staff) {
+    private void staffAssignment(PersonalRequest personalRequest, Staff staff) {
         if (personalRequest.getNewMobile() != null) {
             staff.setMobile(personalRequest.getNewMobile());
         }
@@ -66,7 +66,7 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
     }
 
     @Override
-    public Result findEnterprise(PersonalRequest personalRequest) {
+    public Result findEnterpriseByName(PersonalRequest personalRequest) {
         Enterprise enterprise = new Enterprise();
         enterprise.setName(personalRequest.getEnterpriseName());
         return Result.success(enterpriseService.findEnterpriseByName(enterprise));
@@ -106,7 +106,7 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
         }
 
         Account oldAccount = accountService.findAccountByUsername(account);
-        accountValuation(personalRequest, account);
+        accountAssignment(personalRequest, account);
 
         accountService.update(oldAccount, account);
         return Result.success();
@@ -118,7 +118,7 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
         return account;
     }
 
-    private void accountValuation(PersonalRequest personalRequest, Account account) {
+    private void accountAssignment(PersonalRequest personalRequest, Account account) {
         if (personalRequest.getNewUsername() != null) {
             account.setUsername(personalRequest.getNewUsername());
         }

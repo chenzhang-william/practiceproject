@@ -67,7 +67,7 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
         conferenceParticipant.setConferenceId(conferenceMapper.findIdByNo(conferenceNo));
         conferenceParticipant.setParticipantId(staffService.findIdByMobile(mobile));
         conferenceParticipant = conferenceParticipantService.findParticipant(conferenceNo, mobile);
-        return conferenceParticipant.getRole() == Constants.CONFERENCE_CREATOR_ROLE;
+        return conferenceParticipant.getRole() == Constants.CONFERENCE_CREATOR_ROLE||conferenceParticipant.getRole() == Constants.CONFERENCE_ADMIN_ROLE;
     }
 
     @Override

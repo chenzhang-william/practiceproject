@@ -51,12 +51,6 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         return Result.success();
     }
 
-    private Enterprise getEnterprise(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(enterpriseRequest.getEnterpriseNo());
-        return enterprise;
-    }
-
     @Override
     public Result deleteEnterprise(EnterpriseRequest enterpriseRequest) {
         Enterprise enterprise = getEnterprise(enterpriseRequest);
@@ -95,11 +89,6 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         return Result.success();
     }
 
-    private Account getAccount(EnterpriseRequest enterpriseRequest) {
-        Account account = new Account();
-        account.setUsername(enterpriseRequest.getUsername());
-        return account;
-    }
 
     @Override
     public Result addStaff(EnterpriseRequest enterpriseRequest) {
@@ -186,32 +175,6 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         return Result.success();
     }
 
-    private Department getDepartment(EnterpriseRequest enterpriseRequest, Enterprise enterprise) {
-        Department dep = new Department();
-        dep.setName(enterpriseRequest.getDepName());
-        dep.setEnterpriseId(enterprise.getId());
-        return dep;
-    }
-
-    private Enterprise getExistEnterprise(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = getEnterprise(enterpriseRequest);
-        enterprise = enterpriseService.findEnterpriseByNo(enterprise);
-        return enterprise;
-    }
-
-    private boolean setParentId(String parentDepName, Enterprise enterprise, Department dep) {
-        Department parentDep = new Department();
-        parentDep.setEnterpriseId(enterprise.getId());
-        if (parentDepName != null) {
-            parentDep.setName(parentDepName);
-            if (!depManageService.isDepExist(parentDep)) return true;
-        } else {
-            parentDep.setName(enterprise.getName());
-        }
-        dep.setParentId(depManageService.findDep(parentDep).getId());
-        return false;
-    }
-
     @Override
     public Result deleteDep(EnterpriseRequest enterpriseRequest) {
         Enterprise enterprise = getExistEnterprise(enterpriseRequest);
@@ -270,19 +233,6 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         return Result.success();
     }
 
-    private StaffDepartmentRelation getStaffDepartmentRelation(String position, Department dep, Staff staff) {
-        StaffDepartmentRelation relation = getStaffDepartmentRelation(dep, staff);
-        relation.setPosition(position);
-        return relation;
-    }
-
-    private Staff getStaff(EnterpriseRequest enterpriseRequest) {
-        Staff staff = new Staff();
-        staff.setMobile(enterpriseRequest.getMobile());
-        staff = staffService.findStaffByMobile(staff);
-        return staff;
-    }
-
     @Override
     public Result deleteStaffDepRelation(EnterpriseRequest enterpriseRequest) {
         Enterprise enterprise = getExistEnterprise(enterpriseRequest);
@@ -337,13 +287,6 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         return Result.success(depManageService.getPosition(staff));
     }
 
-    private StaffDepartmentRelation getStaffDepartmentRelation(Department dep, Staff staff) {
-        StaffDepartmentRelation relation = new StaffDepartmentRelation();
-        relation.setStaffId(staff.getId());
-        relation.setDepartmentId(dep.getId());
-        return relation;
-    }
-
     @Override
     public Result findTree(EnterpriseRequest enterpriseRequest) {
         Department dep = new Department();
@@ -374,12 +317,7 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         return Result.success();
     }
 
-    private StaffRoleRelation getStaffRoleRelation(Role role, Staff staff) {
-        StaffRoleRelation relation = new StaffRoleRelation();
-        relation.setStaffId(staff.getId());
-        relation.setRoleId(role.getId());
-        return relation;
-    }
+
 
     @Override
     public Result addStaffRoleRelation(EnterpriseRequest enterpriseRequest) {
@@ -425,4 +363,70 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         enterprise.setNo(enterpriseRequest.getEnterpriseNo());
         return Result.success(roleManageService.findStaffOfRoleInEnterprise(role, enterprise));
     }
+
+
+    private Staff getStaff(EnterpriseRequest enterpriseRequest) {
+        Staff staff = Staff.builder().mobile(enterpriseRequest.getMobile()).build();
+        staff = staffService.findStaffByMobile(staff);
+        return staff;
+    }
+
+    private Enterprise getEnterprise(EnterpriseRequest enterpriseRequest) {
+        Enterprise enterprise = Enterprise.builder().no(enterpriseRequest.getEnterpriseNo()).name(enterpriseRequest.getEnterpriseName()).build();
+        return enterprise;
+    }
+
+    private Account getAccount(EnterpriseRequest enterpriseRequest) {
+        Account account = Account.builder().username(enterpriseRequest.getUsername()).build();
+        return account;
+    }
+
+    private Department getDepartment(EnterpriseRequest enterpriseRequest, Enterprise enterprise) {
+        Department dep = new Department();
+        dep.setName(enterpriseRequest.getDepName());
+        dep.setEnterpriseId(enterprise.getId());
+        return dep;
+    }
+
+    private Enterprise getExistEnterprise(EnterpriseRequest enterpriseRequest) {
+        Enterprise enterprise = getEnterprise(enterpriseRequest);
+        enterprise = enterpriseService.findEnterpriseByNo(enterprise);
+        return enterprise;
+    }
+
+    private StaffDepartmentRelation getStaffDepartmentRelation(String position, Department dep, Staff staff) {
+        StaffDepartmentRelation relation = getStaffDepartmentRelation(dep, staff);
+        relation.setPosition(position);
+        return relation;
+    }
+
+    private StaffDepartmentRelation getStaffDepartmentRelation(Department dep, Staff staff) {
+        StaffDepartmentRelation relation = new StaffDepartmentRelation();
+        relation.setStaffId(staff.getId());
+        relation.setDepartmentId(dep.getId());
+        return relation;
+    }
+
+    private StaffRoleRelation getStaffRoleRelation(Role role, Staff staff) {
+        StaffRoleRelation relation = new StaffRoleRelation();
+        relation.setStaffId(staff.getId());
+        relation.setRoleId(role.getId());
+        return relation;
+    }
+
+    private boolean setParentId(String parentDepName, Enterprise enterprise, Department dep) {
+        Department parentDep = new Department();
+        parentDep.setEnterpriseId(enterprise.getId());
+        if (parentDepName != null) {
+            parentDep.setName(parentDepName);
+            if (!depManageService.isDepExist(parentDep)) {
+                return true;
+            }
+        } else {
+            parentDep.setName(enterprise.getName());
+        }
+        dep.setParentId(depManageService.findDep(parentDep).getId());
+        return false;
+    }
+
 }

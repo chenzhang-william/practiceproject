@@ -26,16 +26,21 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public Result login(PersonalRequest personalRequest) {
+        return verifyAccount(accountAssignment(personalRequest));
+    }
+
+    private Account accountAssignment(PersonalRequest personalRequest) {
         Account account = new Account();
         account.setUsername(personalRequest.getUsername());
+        account.setPassword(personalRequest.getPassword());
+        return account;
+    }
 
+    private Result verifyAccount(Account account) {
         Account accountVerify = accountService.findAccountByUsername(account);
-
         if(accountVerify == null) {
             return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
         }
-
-        account.setPassword(personalRequest.getPassword());
 
         if (accountVerify.getPassword().equals(account.getPassword())) {
             return Result.failure(ErrorCode.PASSWORD_IS_WRONG);

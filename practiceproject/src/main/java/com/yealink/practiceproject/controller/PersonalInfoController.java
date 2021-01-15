@@ -72,7 +72,7 @@ public class PersonalInfoController {
 
     @PostMapping("/findEnterprise")
     public Result findEnterprise(@RequestBody@Validated({PersonalRequest.EnterpriseName.class})PersonalRequest personalRequest){
-        return personalInfoService.findEnterprise(personalRequest);
+        return personalInfoService.findEnterpriseByName(personalRequest);
     }
 
     @PostMapping("/getPosition")

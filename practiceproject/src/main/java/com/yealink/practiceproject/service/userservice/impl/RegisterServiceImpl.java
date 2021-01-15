@@ -35,11 +35,9 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Override
     public Result accountRegister(PersonalRequest personalRequest) {
-        Account account = new Account();
-        account.setUsername(personalRequest.getUsername());
+        Account account = Account.builder().username(personalRequest.getUsername()).build();
 
-        Staff staff = new Staff();
-        staff.setMobile(personalRequest.getMobile());
+        Staff staff = Staff.builder().mobile(personalRequest.getMobile()).build();
 
         if (accountService.isAccountExist(account.getUsername())) {
             return Result.failure(ErrorCode.ACCOUNT_HAS_EXIST);
@@ -60,12 +58,9 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Override
     public Result enterpriseRegister(PersonalRequest personalRequest) {
-        Staff staff = new Staff();
-        staff.setMobile(personalRequest.getMobile());
+        Staff staff = Staff.builder().mobile(personalRequest.getMobile()).build();
 
-        Enterprise enterprise = new Enterprise();
-        enterprise.setNo(personalRequest.getEnterpriseNo());
-        enterprise.setName(personalRequest.getEnterpriseName());
+        Enterprise enterprise = Enterprise.builder().no(personalRequest.getEnterpriseNo()).name(personalRequest.getEnterpriseName()).build();
 
         if (!staffService.isStaffExist(staff)) {
             return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
@@ -84,6 +79,7 @@ public class RegisterServiceImpl implements RegisterService {
         String depId = addDep(personalRequest.getEnterpriseName(), enterprise.getId());
 
         addDepRelation(staffId, depId, Constants.ENTERPRISE_CREATOR_POSITION);
+
         return Result.success();
     }
 
