@@ -89,43 +89,6 @@ public class DateUtil {
         return calendar.get(Calendar.DAY_OF_WEEK);
     }
 
-    public static int[] weekTransferToInt(String week){
-        String[] weekdays = week.split(",");
-        int[] weekRule = new int[weekdays.length];
-        for(int i =0;i<weekdays.length;i++){
-            weekRule[i] =weekStringToInt(weekdays[i]);
-        }
-        return weekRule;
-    }
-
-
-    public static int weekStringToInt(String weekday){
-        int result =0;
-        switch (weekday) {
-            case "sunday":
-                result = 1;
-                break;
-            case "monday":
-                result = 2;
-                break;
-            case "tuesday":
-                result = 3;
-                break;
-            case "wednesday":
-                result = 4;
-                break;
-            case "thursday":
-                result = 5;
-                break;
-            case "friday":
-                result = 6;
-                break;
-            case "saturday":
-                result = 7;
-                break;
-        }
-        return result;
-    }
 
     public static int getDayOfMonth(long date){
         Calendar calendar = Calendar.getInstance();

@@ -2,7 +2,7 @@ package com.yealink.practiceproject.controller;
 
 import com.yealink.practiceproject.bean.request.ConferenceRequest;
 import com.yealink.practiceproject.bean.result.Result;
-import com.yealink.practiceproject.service.ConferenceInfoService;
+import com.yealink.practiceproject.service.userservice.ConferenceInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;

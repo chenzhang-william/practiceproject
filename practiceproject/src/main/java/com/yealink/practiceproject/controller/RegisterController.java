@@ -1,6 +1,6 @@
 package com.yealink.practiceproject.controller;
 
-import com.yealink.practiceproject.service.RegisterService;
+import com.yealink.practiceproject.service.userservice.RegisterService;
 import com.yealink.practiceproject.bean.request.PersonalRequest;
 import com.yealink.practiceproject.bean.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
