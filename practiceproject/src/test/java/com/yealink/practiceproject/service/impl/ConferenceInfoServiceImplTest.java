@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.reset;
@@ -50,5 +51,6 @@ class ConferenceInfoServiceImplTest {
         when(mockConferenceManageService.isConferenceExist("1")).thenReturn(false);
         when(mockConferenceMapper.update(any(Conference.class))).thenReturn(1);
         conferenceInfoService.updateConferenceInfo(conferenceRequest);
+        assertEquals("123",conference.getConferenceNo());
     }
 }
