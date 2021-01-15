@@ -11,7 +11,7 @@
  Target Server Version : 50732
  File Encoding         : 65001
 
- Date: 05/01/2021 17:09:00
+ Date: 15/01/2021 15:27:37
 */
 
 SET NAMES utf8mb4;
@@ -47,10 +47,11 @@ INSERT INTO `account` VALUES ('d3fc87da4f1a11ebb2f7e0d55ed6780a', 'bossOfTest', 
 DROP TABLE IF EXISTS `conference`;
 CREATE TABLE `conference`  (
   `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '主键',
-  `start_time` bigint(20) UNSIGNED NULL DEFAULT NULL,
-  `end_time` bigint(20) UNSIGNED NULL DEFAULT NULL,
+  `start_time` time(0) NULL DEFAULT NULL,
+  `end_time` time(0) NULL DEFAULT NULL,
   `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `conference_no` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '会议号码',
+  `conference_room` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `create_time` bigint(20) UNSIGNED NULL DEFAULT NULL,
   `modify_time` bigint(20) UNSIGNED NULL DEFAULT NULL,
   `rule_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
@@ -61,6 +62,24 @@ CREATE TABLE `conference`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '会议预约信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Records of conference
+-- ----------------------------
+INSERT INTO `conference` VALUES ('2096082c518011eb9b67e0d55ed6780a', '11:00:00', '13:00:00', '123123', '123123', NULL, 1610089633486, 1610089633486, '2094cc21518011eb9b67e0d55ed6780a');
+INSERT INTO `conference` VALUES ('20a2aab6518011eb9b67e0d55ed6780a', '10:00:00', '12:00:00', '123123', '1231234', NULL, 1610089633569, 1610089633569, '20a267d6518011eb9b67e0d55ed6780a');
+INSERT INTO `conference` VALUES ('2264a49953a811eba0cce0d55ed6780a', '11:00:00', '13:00:00', '123123', '123123', NULL, 1610326723258, 1610326723258, '2262d12553a811eba0cce0d55ed6780a');
+INSERT INTO `conference` VALUES ('2269c30553a811eba0cce0d55ed6780a', '10:00:00', '12:00:00', '123123', '1231234', NULL, 1610326723292, 1610326723292, '226985fd53a811eba0cce0d55ed6780a');
+INSERT INTO `conference` VALUES ('4dbc0a2b519611eb9b67e0d55ed6780a', '11:00:00', '13:00:00', '123123', '123123', NULL, 1610099158219, 1610099158219, '4dba97c4519611eb9b67e0d55ed6780a');
+INSERT INTO `conference` VALUES ('4dc949c0519611eb9b67e0d55ed6780a', '10:00:00', '12:00:00', '123123', '1231234', NULL, 1610099158305, 1610099158305, '4dc8328d519611eb9b67e0d55ed6780a');
+INSERT INTO `conference` VALUES ('a73e0c5d519511eb9b67e0d55ed6780a', '11:00:00', '13:00:00', '123123', '123123', NULL, 1610098878884, 1610098878884, 'a73aeede519511eb9b67e0d55ed6780a');
+INSERT INTO `conference` VALUES ('a772852c519511eb9b67e0d55ed6780a', '10:00:00', '12:00:00', '123123', '1231234', NULL, 1610098879228, 1610098879228, 'a77194ca519511eb9b67e0d55ed6780a');
+INSERT INTO `conference` VALUES ('ac7b65ff519611eb9b67e0d55ed6780a', '11:00:00', '13:00:00', '123123', '123123', NULL, 1610099317183, 1610099317183, 'ac7a2f8f519611eb9b67e0d55ed6780a');
+INSERT INTO `conference` VALUES ('ac8709b8519611eb9b67e0d55ed6780a', '10:00:00', '12:00:00', '123123', '1231234', NULL, 1610099317260, 1610099317260, 'ac86c2cf519611eb9b67e0d55ed6780a');
+INSERT INTO `conference` VALUES ('b95735fb516111eb9b67e0d55ed6780a', '11:00:00', '13:00:00', '123123', '123123', NULL, 1610076575271, 1610076575271, 'b9554d1e516111eb9b67e0d55ed6780a');
+INSERT INTO `conference` VALUES ('b96273d2516111eb9b67e0d55ed6780a', '10:00:00', '12:00:00', '123123', '1231234', NULL, 1610076575345, 1610076575345, 'b9622ea4516111eb9b67e0d55ed6780a');
+INSERT INTO `conference` VALUES ('ce1e97da53dc11eba0cce0d55ed6780a', '11:00:00', '13:00:00', '123123', '123123', NULL, 1610349345176, 1610349345176, 'ce1d4cc353dc11eba0cce0d55ed6780a');
+INSERT INTO `conference` VALUES ('ce2711fc53dc11eba0cce0d55ed6780a', '10:00:00', '12:00:00', '123123', '1231234', NULL, 1610349345232, 1610349345232, 'ce26c7ff53dc11eba0cce0d55ed6780a');
+
+-- ----------------------------
 -- Table structure for conference_participant
 -- ----------------------------
 DROP TABLE IF EXISTS `conference_participant`;
@@ -68,9 +87,10 @@ CREATE TABLE `conference_participant`  (
   `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '主键',
   `conference_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'conference表主键',
   `participant_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '参会者id',
-  `status` tinyint(3) UNSIGNED NULL DEFAULT NULL,
+  `status` tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '0：未知，1：不在会议中，2：在此会议中',
   `create_time` bigint(20) UNSIGNED NULL DEFAULT NULL,
   `modify_time` bigint(20) UNSIGNED NULL DEFAULT NULL,
+  `role` tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '0：未知，1：创建者，2：管理员，3：参会人员',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_conference_plan_id`(`conference_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '会议预约计划参会者信息' ROW_FORMAT = Dynamic;
@@ -81,18 +101,36 @@ CREATE TABLE `conference_participant`  (
 DROP TABLE IF EXISTS `conference_rule`;
 CREATE TABLE `conference_rule`  (
   `id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '主键',
-  `cycle_typle` smallint(6) NULL DEFAULT NULL COMMENT '周期类型：\n0：单次\n1：按天\n2：按周\n30：按月（按天），31：按月（按周）\n40：按年（按天），41：按年（按月）',
+  `type` tinyint(3) UNSIGNED NULL DEFAULT NULL,
   `gap` tinyint(3) UNSIGNED NULL DEFAULT NULL,
   `start_day` bigint(20) UNSIGNED NULL DEFAULT NULL,
   `end_day` bigint(20) UNSIGNED NULL DEFAULT NULL COMMENT '结束日期',
   `create_time` bigint(20) UNSIGNED NULL DEFAULT NULL COMMENT '创建时间',
   `modify_time` bigint(20) UNSIGNED NULL DEFAULT NULL COMMENT '修改时间',
-  `week` tinyint(4) NULL DEFAULT NULL COMMENT '一周中的具体日期',
+  `week` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `day` tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '天数',
   `ordinal_week` tinyint(3) UNSIGNED NULL DEFAULT NULL,
   `ordinal_month` tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '月份序数',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of conference_rule
+-- ----------------------------
+INSERT INTO `conference_rule` VALUES ('2094cc21518011eb9b67e0d55ed6780a', 1, 1, 1610035200000, 1610899200000, 0, 0, NULL, 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('20a267d6518011eb9b67e0d55ed6780a', 2, 1, 1610035200000, 1612108800000, 0, 0, 'thursday,saturday', 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('2262d12553a811eba0cce0d55ed6780a', 1, 1, 1610035200000, 1610899200000, 0, 0, NULL, 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('226985fd53a811eba0cce0d55ed6780a', 2, 1, 1610035200000, 1612108800000, 0, 0, 'thursday,saturday', 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('4dba97c4519611eb9b67e0d55ed6780a', 1, 1, 1610035200000, 1610899200000, 0, 0, NULL, 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('4dc8328d519611eb9b67e0d55ed6780a', 2, 1, 1610035200000, 1612108800000, 0, 0, 'thursday,saturday', 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('a73aeede519511eb9b67e0d55ed6780a', 1, 1, 1610035200000, 1610899200000, 0, 0, NULL, 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('a77194ca519511eb9b67e0d55ed6780a', 2, 1, 1610035200000, 1612108800000, 0, 0, 'thursday,saturday', 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('ac7a2f8f519611eb9b67e0d55ed6780a', 1, 1, 1610035200000, 1610899200000, 0, 0, NULL, 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('ac86c2cf519611eb9b67e0d55ed6780a', 2, 1, 1610035200000, 1612108800000, 0, 0, 'thursday,saturday', 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('b9554d1e516111eb9b67e0d55ed6780a', 1, 1, 1610035200000, 1610899200000, 0, 0, NULL, 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('b9622ea4516111eb9b67e0d55ed6780a', 2, 1, 1610035200000, 1612108800000, 0, 0, 'thursday,saturday', 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('ce1d4cc353dc11eba0cce0d55ed6780a', 1, 1, 1610035200000, 1610899200000, 0, 0, NULL, 0, 0, 0);
+INSERT INTO `conference_rule` VALUES ('ce26c7ff53dc11eba0cce0d55ed6780a', 2, 1, 1610035200000, 1612108800000, 0, 0, 'thursday,saturday', 0, 0, 0);
 
 -- ----------------------------
 -- Table structure for department
