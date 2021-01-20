@@ -25,7 +25,7 @@ public interface ConferenceMapper {
     @Update("update conference set " +
             "title = #{title},conference_no = #{conferenceNo},conference_room = #{conferenceRoom},rule_id = #{ruleId},start_time = #{startTime},end_time = #{endTime},modify_time = #{modifyTime} " +
             "where id = #{id}")
-    int update(Conference Conference);
+    int update(Conference conference);
 
     @Select("select id from conference where conference_no = #{conferenceNo} ")
     String findIdByNo(String conferenceNo);

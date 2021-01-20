@@ -33,12 +33,12 @@ public class EnterpriseInfoController {
     }
 
     @PostMapping("/bindStaffEnterprise")
-    public Result BindStaffEnterprise(@RequestBody @Validated({EnterpriseRequest.EnterpriseSelect.class, EnterpriseRequest.StaffUpdate.class}) EnterpriseRequest enterpriseRequest) {
+    public Result bindStaffEnterprise(@RequestBody @Validated({EnterpriseRequest.EnterpriseSelect.class, EnterpriseRequest.StaffUpdate.class}) EnterpriseRequest enterpriseRequest) {
         return enterpriseInfoService.bindStaffEnterprise(enterpriseRequest);
     }
 
     @PostMapping("/bindAccountEnterprise")
-    public Result BindAccountEnterprise(@RequestBody @Validated({EnterpriseRequest.EnterpriseSelect.class, EnterpriseRequest.AccountUpdate.class}) EnterpriseRequest enterpriseRequest) {
+    public Result bindAccountEnterprise(@RequestBody @Validated({EnterpriseRequest.EnterpriseSelect.class, EnterpriseRequest.AccountUpdate.class}) EnterpriseRequest enterpriseRequest) {
         return enterpriseInfoService.bindAccountEnterprise(enterpriseRequest);
     }
 
@@ -98,7 +98,7 @@ public class EnterpriseInfoController {
     }
 
     @PostMapping("findPositionOfStaff")
-    public Result findPositionOfStaff(@RequestBody @Validated({EnterpriseRequest.StaffSelect.class}) EnterpriseRequest enterpriseRequest){
+    public Result findPositionOfStaff(@RequestBody @Validated({EnterpriseRequest.StaffSelect.class}) EnterpriseRequest enterpriseRequest) {
         return enterpriseInfoService.findPositionOfStaff(enterpriseRequest);
     }
 

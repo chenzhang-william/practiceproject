@@ -1,7 +1,6 @@
 package com.yealink.practiceproject.service.domain;
 
 import com.yealink.practiceproject.bean.Department;
-import com.yealink.practiceproject.bean.Enterprise;
 import com.yealink.practiceproject.bean.Staff;
 import com.yealink.practiceproject.bean.StaffDepartmentRelation;
 
@@ -35,13 +34,9 @@ public interface DepManageService {
 
     List<Map<String, String>> getPosition(@Valid Staff staff);
 
-    List<Department> findDepOfEnterprise(@Valid Enterprise enterprise);
+    List<Department> findDepOfEnterprise(String id);
 
-    List getChildDep(String parentId);
-
-    List getChildStaff(String id);
-
-    List getDepTree(String id);
+    List getDepTree(String depId, String enterpriseId);
 
     boolean isDepExist(Department dep);
 

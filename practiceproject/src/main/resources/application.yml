@@ -1,8 +1,21 @@
+server:
+  port: 8081
 spring:
   # 数据库相关
   datasource:
+
+    hikari:
+      connection-test-query: SELECT 1 FROM DUAL
+      connection-timeout: 600000
+      maximum-pool-size: 500
+      max-lifetime: 1800000
+      minimum-idle: 20
+      validation-timeout: 3000
+      idle-timeout: 60000
+      connection-init-sql: SET NAMES utf8mb4
+
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ylyun?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&useSSL=true
+    url: jdbc:mysql://10.70.3.19:3306/ylyun?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&useSSL=true
     username: root
     password:
   jpa:
@@ -13,4 +26,6 @@ spring:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true  # 开启驼峰命名
+
+
 

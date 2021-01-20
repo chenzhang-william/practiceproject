@@ -1,16 +1,18 @@
 package com.yealink.practiceproject.service.userservice.impl;
 
 import com.yealink.practiceproject.bean.*;
-import com.yealink.practiceproject.bean.result.ErrorCode;
 import com.yealink.practiceproject.bean.request.PersonalRequest;
+import com.yealink.practiceproject.bean.result.ErrorCode;
 import com.yealink.practiceproject.bean.result.Result;
 import com.yealink.practiceproject.service.domain.*;
 import com.yealink.practiceproject.service.userservice.RegisterService;
-import com.yealink.practiceproject.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+
+import static com.yealink.practiceproject.util.ConstantPool.Role.ENTERPRISE_CREATOR_POSITION;
+import static com.yealink.practiceproject.util.ConstantPool.Role.ENTERPRISE_CREATOR_ROLE;
 
 /**
  * @author zhangchen
@@ -74,11 +76,11 @@ public class RegisterServiceImpl implements RegisterService {
 
         staffService.bindStaffEnterprise(enterprise, staff);
 
-        addRoleRelation(staffId, Constants.ENTERPRISE_CREATOR_ROLE);
+        addRoleRelation(staffId, ENTERPRISE_CREATOR_ROLE);
 
         String depId = addDep(personalRequest.getEnterpriseName(), enterprise.getId());
 
-        addDepRelation(staffId, depId, Constants.ENTERPRISE_CREATOR_POSITION);
+        addDepRelation(staffId, depId, ENTERPRISE_CREATOR_POSITION);
 
         return Result.success();
     }
@@ -100,8 +102,7 @@ public class RegisterServiceImpl implements RegisterService {
     }
 
     private void addRoleRelation(String staffId, String roleName) {
-        Role role = new Role();
-        role.setName(roleName);
+        Role role = Role.builder().name(roleName).build();
         StaffRoleRelation staffRoleRelation = new StaffRoleRelation();
         staffRoleRelation.setStaffId(staffId);
         staffRoleRelation.setRoleId(roleManageService.findRoleByName(role).getId());

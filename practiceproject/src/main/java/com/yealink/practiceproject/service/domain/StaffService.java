@@ -23,6 +23,8 @@ public interface StaffService {
 
     List<Staff> findStaffByEnterpriseNo(@Valid Enterprise enterprise);
 
+    List<Staff> findStaffByEnterpriseId(String enterpriseId);
+
     List<Staff> findStaffOfRole(String id);
 
     Boolean isStaffExist(@Valid Staff staff);

@@ -78,7 +78,7 @@ public class ConferenceInfoController {
     }
 
     @PostMapping("/getOccupancyOfConferenceRoom")
-    public Result getOccupancyOfConferenceRoom(@RequestBody ConferenceRequest conferenceRequest){
+    public Result getOccupancyOfConferenceRoom(@RequestBody ConferenceRequest conferenceRequest) {
         return conferenceInfoService.getOccupancyOfConferenceRoom(conferenceRequest);
     }
 }

@@ -4,8 +4,8 @@ import com.yealink.practiceproject.bean.Conference;
 import com.yealink.practiceproject.bean.ConferenceRule;
 import com.yealink.practiceproject.bean.result.Schedule;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhangchen
@@ -41,7 +41,7 @@ public interface ConferenceManageService {
 
     List<Schedule> findSchedule(List<String> conferenceIdList);
 
-    List<Schedule> getScheduleByCycleRule(HashMap<ConferenceRule, Conference> ruleMap);
+    List<Schedule> getScheduleByCycleRule(Map<ConferenceRule, Conference> ruleMap);
 
     List<Schedule> singleConference(Conference conference, ConferenceRule conferenceRule);
 

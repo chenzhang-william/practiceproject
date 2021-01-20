@@ -55,4 +55,7 @@ public interface StaffMapper {
 
     @Update("update staff set enterprise_id = '' where mobile =#{mobile}")
     int unbindEnterprise(String mobile);
+
+    @Select("select id, enterprise_id, name, gender, mobile, email from staff where enterprise_id = #{enterpriseId}")
+    List<Staff> findStaffByEnterpriseId(String enterpriseId);
 }

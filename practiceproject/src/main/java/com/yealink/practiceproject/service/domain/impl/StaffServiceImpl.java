@@ -35,7 +35,7 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public void update(@Valid Staff oldStaff,@Valid Staff newStaff) {
+    public void update(@Valid Staff oldStaff, @Valid Staff newStaff) {
         Staff staff = findStaffByMobile(oldStaff);
         newStaff.setId(staff.getId());
         newStaff.setModifyTime(new Date().getTime());
@@ -49,10 +49,10 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public void bindStaffEnterprise(@Valid Enterprise enterprise, @Valid Staff staff){
+    public void bindStaffEnterprise(@Valid Enterprise enterprise, @Valid Staff staff) {
         Staff newStaff = new Staff();
         newStaff.setEnterpriseId(enterpriseService.findEnterpriseByNo(enterprise).getId());
-        update(staff,newStaff);
+        update(staff, newStaff);
     }
 
     @Override
@@ -68,6 +68,12 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public List<Staff> findStaffByEnterpriseNo(@Valid Enterprise enterprise) {
         return staffMapper.findStaffByEnterpriseNo(enterprise.getNo());
+    }
+
+    @Override
+    public List<Staff> findStaffByEnterpriseId(String enterpriseId) {
+        return staffMapper.findStaffByEnterpriseId(enterpriseId);
+
     }
 
     @Override

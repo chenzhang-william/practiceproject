@@ -52,4 +52,7 @@ public interface DepartmentMapper {
 
     @Select("select id,name,enterprise_id,parent_id from department where name = #{name} and enterprise_id = #{enterpriseId}")
     Department findDep(String name, String enterpriseId);
+
+    @Select("select id,name,enterprise_id,parent_id from department where enterprise_id = #{id}")
+    List<Department> findDepOfEnterprise(String id);
 }

@@ -1,11 +1,11 @@
 package com.yealink.practiceproject.service.userservice.impl;
 
 import com.yealink.practiceproject.bean.Account;
+import com.yealink.practiceproject.bean.request.PersonalRequest;
+import com.yealink.practiceproject.bean.result.ErrorCode;
+import com.yealink.practiceproject.bean.result.Result;
 import com.yealink.practiceproject.service.domain.AccountService;
 import com.yealink.practiceproject.service.userservice.LoginService;
-import com.yealink.practiceproject.bean.result.ErrorCode;
-import com.yealink.practiceproject.bean.request.PersonalRequest;
-import com.yealink.practiceproject.bean.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,12 +37,12 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private Result verifyAccount(Account account) {
-        Account accountVerify = accountService.findAccountByUsername(account);
-        if(accountVerify == null) {
+
+        if (!accountService.isAccountExist(account.getUsername())) {
             return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
         }
-
-        if (accountVerify.getPassword().equals(account.getPassword())) {
+        Account accountVerify = accountService.findAccountByUsername(account);
+        if (!accountVerify.getPassword().equals(account.getPassword())) {
             return Result.failure(ErrorCode.PASSWORD_IS_WRONG);
         }
 

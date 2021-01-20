@@ -5,7 +5,10 @@ import com.yealink.practiceproject.bean.result.Result;
 import com.yealink.practiceproject.service.userservice.PersonalInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author zhangchen
@@ -20,7 +23,7 @@ public class PersonalInfoController {
     private PersonalInfoService personalInfoService;
 
     @PostMapping("/updateStaff")
-    public Result UpdateStaff(@RequestBody @Validated({PersonalRequest.StaffUpdate.class}) PersonalRequest personalRequest) {
+    public Result updateStaff(@RequestBody @Validated({PersonalRequest.StaffUpdate.class}) PersonalRequest personalRequest) {
         return personalInfoService.updateStaff(personalRequest);
     }
 
@@ -66,17 +69,17 @@ public class PersonalInfoController {
     }
 
     @PostMapping("/findTree")
-    public Result findTree(@RequestBody @Validated({PersonalRequest.EnterpriseSelect.class})PersonalRequest personalRequest){
+    public Result findTree(@RequestBody @Validated({PersonalRequest.EnterpriseSelect.class}) PersonalRequest personalRequest) {
         return personalInfoService.findTree(personalRequest);
     }
 
     @PostMapping("/findEnterprise")
-    public Result findEnterprise(@RequestBody@Validated({PersonalRequest.EnterpriseName.class})PersonalRequest personalRequest){
+    public Result findEnterprise(@RequestBody @Validated({PersonalRequest.EnterpriseName.class}) PersonalRequest personalRequest) {
         return personalInfoService.findEnterpriseByName(personalRequest);
     }
 
     @PostMapping("/getPosition")
-    public Result getPosition(@RequestBody @Validated({PersonalRequest.StaffSelect.class}) PersonalRequest personalRequest){
+    public Result getPosition(@RequestBody @Validated({PersonalRequest.StaffSelect.class}) PersonalRequest personalRequest) {
         return personalInfoService.getPosition(personalRequest);
     }
 }

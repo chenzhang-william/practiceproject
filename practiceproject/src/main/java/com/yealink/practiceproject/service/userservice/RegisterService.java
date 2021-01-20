@@ -15,7 +15,4 @@ public interface RegisterService {
     Result enterpriseRegister(PersonalRequest personalRequest);
 
 
-
-
-
 }

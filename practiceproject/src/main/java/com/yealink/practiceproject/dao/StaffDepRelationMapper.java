@@ -50,4 +50,7 @@ public interface StaffDepRelationMapper {
 
     @Select("select id,staff_id,department_id,position from staff_department_relation where staff_id = #{staffId} and department_id = #{departmentId}")
     StaffDepartmentRelation findRelation(String staffId, String departmentId);
+
+    @Select("select id,staff_id,department_id,position from staff_department_relation where department_id = #{depId}")
+    List<StaffDepartmentRelation> findRelationByDepId(String depId);
 }

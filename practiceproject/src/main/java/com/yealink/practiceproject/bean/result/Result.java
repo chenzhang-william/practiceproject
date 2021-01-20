@@ -22,20 +22,20 @@ public class Result {
 
     private Object data;
 
-    public static Result success(){
+    public static Result success() {
         Result result = new Result();
         result.setSuccess(true);
         return result;
     }
 
-    public static Result success(Object data){
+    public static Result success(Object data) {
         Result result = new Result();
         result.setSuccess(true);
         result.setData(data);
         return result;
     }
 
-    public static Result failure(ErrorCode errorCode){
+    public static Result failure(ErrorCode errorCode) {
         Result result = new Result();
         result.setSuccess(false);
         result.setCode(errorCode.getCode());
@@ -43,7 +43,7 @@ public class Result {
         return result;
     }
 
-    public static Result failure(ErrorCode errorCode, Object data){
+    public static Result failure(ErrorCode errorCode, Object data) {
         Result result = new Result();
         result.setSuccess(false);
         result.setCode(errorCode.getCode());

@@ -14,8 +14,8 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 /**
  * @author zhangchen
@@ -35,14 +35,16 @@ class ConferenceInfoServiceImplTest {
     ConferenceInfoServiceImpl conferenceInfoService;
 
     @BeforeAll
-    public void init(){
+    public void init() {
         MockitoAnnotations.initMocks(this);
     }
+
     @AfterEach
-    public void clearTestData(){
+    public void clearTestData() {
         reset(mockConferenceMapper);
         reset(mockConferenceManageService);
     }
+
     @Test
     void updateConferenceInfo() {
         ConferenceRequest conferenceRequest = ConferenceRequest.builder().conferenceNo("1").newConferenceNo("123").mobile("1").build();
@@ -52,6 +54,6 @@ class ConferenceInfoServiceImplTest {
         when(mockConferenceManageService.isConferenceExist("1")).thenReturn(false);
         when(mockConferenceMapper.update(any(Conference.class))).thenReturn(1);
         conferenceInfoService.updateConferenceInfo(conferenceRequest);
-        assertEquals("123",conference.getConferenceNo());
+        assertEquals("123", conference.getConferenceNo());
     }
 }

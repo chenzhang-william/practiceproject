@@ -1,7 +1,6 @@
 package com.yealink.practiceproject.service.domain.impl;
 
 import com.yealink.practiceproject.bean.Department;
-import com.yealink.practiceproject.bean.Enterprise;
 import com.yealink.practiceproject.bean.Staff;
 import com.yealink.practiceproject.bean.StaffDepartmentRelation;
 import com.yealink.practiceproject.dao.DepartmentMapper;
@@ -96,34 +95,71 @@ public class DepManageServiceImpl implements DepManageService {
 
     //和下面的查找组织架构树一起修改
     @Override
-    public List<Department> findDepOfEnterprise(@Valid Enterprise enterprise) {
-        return null;
+    public List<Department> findDepOfEnterprise(String id) {
+        return departmentMapper.findDepOfEnterprise(id);
     }
 
-    @Override
-    public List<Department> getChildDep(String parentId) {
-        return departmentMapper.findByParentId(parentId);
+    public List getDepTree(String depId, String enterpriseId) {
+        //获取公司的员工表，员工部门关系表，部门表
+        List<Staff> staffList = staffService.findStaffByEnterpriseId(enterpriseId);
+        List<Department> depList = findDepOfEnterprise(enterpriseId);
+        List<StaffDepartmentRelation> depRelationList = getStaffDepartmentRelations(depList);
+
+        return getChildNodeList(depId, staffList, depRelationList, depList);
     }
 
-    @Override
-    public List<Staff> getChildStaff(String id) {
-        return staffDepRelationMapper.getStaffOfDep(id);
-    }
+    private List<StaffDepartmentRelation> getStaffDepartmentRelations(List<Department> depList) {
+        List<StaffDepartmentRelation> depRelationList = new ArrayList<>();
 
-    public List getDepTree(String id) {
-        List childNode = new ArrayList<>();
-        childNode.add(departmentMapper.findById(id));
-        List<Staff> childStaff = getChildStaff(id);
-        List<Department> childDep = getChildDep(id);
-        if (childStaff != null) {
-            childNode.add(childStaff);
+        for (Department dep : depList) {
+            depRelationList.addAll(staffDepRelationMapper.findRelationByDepId(dep.getId()));
         }
-        if (childDep != null) {
-            for (Department dep : childDep) {
-                childNode.add(getDepTree(dep.getId()));
+
+        return depRelationList;
+    }
+
+    private List getChildNodeList(String depId, List<Staff> staffList, List<StaffDepartmentRelation> depRelationList, List<Department> depList) {
+        List childNode = new ArrayList<>();
+        //获取该部门信息
+        getDepInfo(depId, depList, childNode);
+        //获取子员工
+        getChildStaff(depId, staffList, depRelationList, childNode);
+        //获取子部门的组织架构
+        getChildTree(depId, staffList, depRelationList, depList, childNode);
+
+        return childNode;
+    }
+
+    private void getChildTree(String depId, List<Staff> staffList, List<StaffDepartmentRelation> depRelationList, List<Department> depList, List childNode) {
+        for (Department dep : depList) {
+            if (dep.getParentId() == null) {
+                continue;
+            }
+            if (dep.getParentId().equals(depId)) {
+                childNode.add(getChildNodeList(dep.getId(), staffList, depRelationList, depList));
             }
         }
-        return childNode;
+    }
+
+    private void getChildStaff(String depId, List<Staff> staffList, List<StaffDepartmentRelation> depRelationList, List childNode) {
+        for (StaffDepartmentRelation relation : depRelationList) {
+            if (relation.getDepartmentId().equals(depId)) {
+                for (Staff staff : staffList) {
+                    if (staff.getId().equals(relation.getStaffId())) {
+                        childNode.add(staff);
+                    }
+                }
+            }
+        }
+    }
+
+    private void getDepInfo(String depId, List<Department> depList, List childNode) {
+        for (Department dep : depList) {
+            if (dep.getId().equals(depId)) {
+                childNode.add(dep);
+                break;
+            }
+        }
     }
 
     @Override

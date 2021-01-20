@@ -281,7 +281,7 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         Staff staff = getStaff(enterpriseRequest);
         staff = staffService.findStaffByMobile(staff);
         Enterprise enterprise = getEnterprise(enterpriseRequest);
-        if(!staff.getEnterpriseId().equals(enterprise.getId())){
+        if (!staff.getEnterpriseId().equals(enterprise.getId())) {
             return Result.failure(ErrorCode.ENTERPRISE_MISMATCH);
         }
         return Result.success(depManageService.getPosition(staff));
@@ -293,7 +293,7 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         Enterprise enterprise = getExistEnterprise(enterpriseRequest);
         dep.setName(enterprise.getName());
         dep.setEnterpriseId(enterprise.getId());
-        return Result.success(depManageService.getDepTree(depManageService.findDep(dep).getId()));
+        return Result.success(depManageService.getDepTree(depManageService.findDep(dep).getId(), enterprise.getId()));
     }
 
     @Override
@@ -316,7 +316,6 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
         roleManageService.updateStaffRoleRelation(oldRelation, relation);
         return Result.success();
     }
-
 
 
     @Override
@@ -372,13 +371,11 @@ public class EnterpriseInfoServiceImpl implements EnterpriseInfoService {
     }
 
     private Enterprise getEnterprise(EnterpriseRequest enterpriseRequest) {
-        Enterprise enterprise = Enterprise.builder().no(enterpriseRequest.getEnterpriseNo()).name(enterpriseRequest.getEnterpriseName()).build();
-        return enterprise;
+        return Enterprise.builder().no(enterpriseRequest.getEnterpriseNo()).name(enterpriseRequest.getEnterpriseName()).build();
     }
 
     private Account getAccount(EnterpriseRequest enterpriseRequest) {
-        Account account = Account.builder().username(enterpriseRequest.getUsername()).build();
-        return account;
+        return Account.builder().username(enterpriseRequest.getUsername()).build();
     }
 
     private Department getDepartment(EnterpriseRequest enterpriseRequest, Enterprise enterprise) {

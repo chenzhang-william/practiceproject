@@ -9,7 +9,6 @@ import com.yealink.practiceproject.dao.ConferenceRuleMapper;
 import com.yealink.practiceproject.service.domain.ConferenceManageService;
 import com.yealink.practiceproject.service.domain.ConferenceParticipantService;
 import com.yealink.practiceproject.service.domain.StaffService;
-import com.yealink.practiceproject.util.Constants;
 import com.yealink.practiceproject.util.DataConversion;
 import com.yealink.practiceproject.util.ScheduleComparator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,9 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
 
+import static com.yealink.practiceproject.util.ConstantPool.CycleType.*;
+import static com.yealink.practiceproject.util.ConstantPool.Role.CONFERENCE_ADMIN_ROLE;
+import static com.yealink.practiceproject.util.ConstantPool.Role.CONFERENCE_CREATOR_ROLE;
 import static com.yealink.practiceproject.util.DateUtil.*;
 
 /**
@@ -67,7 +69,7 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
         conferenceParticipant.setConferenceId(conferenceMapper.findIdByNo(conferenceNo));
         conferenceParticipant.setParticipantId(staffService.findIdByMobile(mobile));
         conferenceParticipant = conferenceParticipantService.findParticipant(conferenceNo, mobile);
-        return conferenceParticipant.getRole() == Constants.CONFERENCE_CREATOR_ROLE||conferenceParticipant.getRole() == Constants.CONFERENCE_ADMIN_ROLE;
+        return conferenceParticipant.getRole() == CONFERENCE_CREATOR_ROLE || conferenceParticipant.getRole() == CONFERENCE_ADMIN_ROLE;
     }
 
     @Override
@@ -121,30 +123,32 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
         return scheduleSort(getScheduleByCycleRule(ruleMap));
     }
 
-    public List<Schedule> getScheduleByCycleRule(HashMap<ConferenceRule, Conference> ruleMap) {
+    public List<Schedule> getScheduleByCycleRule(Map<ConferenceRule, Conference> ruleMap) {
         List<Schedule> scheduleList = new ArrayList<>();
-        for (ConferenceRule rule : ruleMap.keySet()) {
-            switch (rule.getType()) {
-                case Constants.CYCLE_TYPE_SINGLE:
-                    scheduleList.addAll(singleConference(ruleMap.get(rule), rule));
+        for (Map.Entry<ConferenceRule, Conference> entry : ruleMap.entrySet()) {
+            switch (entry.getKey().getType()) {
+                case CYCLE_TYPE_SINGLE:
+                    scheduleList.addAll(singleConference(entry.getValue(), entry.getKey()));
                     break;
-                case Constants.CYCLE_TYPE_BY_DAY:
-                    scheduleList.addAll(cycleByDay(ruleMap.get(rule), rule));
+                case CYCLE_TYPE_BY_DAY:
+                    scheduleList.addAll(cycleByDay(entry.getValue(), entry.getKey()));
                     break;
-                case Constants.CYCLE_TYPE_BY_WEEK:
-                    scheduleList.addAll(cycleByWeek(ruleMap.get(rule), rule));
+                case CYCLE_TYPE_BY_WEEK:
+                    scheduleList.addAll(cycleByWeek(entry.getValue(), entry.getKey()));
                     break;
-                case Constants.CYCLE_TYPE_BY_MONTH_DAY:
-                    scheduleList.addAll(cycleByMonthDay(ruleMap.get(rule), rule));
+                case CYCLE_TYPE_BY_MONTH_DAY:
+                    scheduleList.addAll(cycleByMonthDay(entry.getValue(), entry.getKey()));
                     break;
-                case Constants.CYCLE_TYPE_BY_MONTH_WEEK:
-                    scheduleList.addAll(cycleByMonthWeek(ruleMap.get(rule), rule));
+                case CYCLE_TYPE_BY_MONTH_WEEK:
+                    scheduleList.addAll(cycleByMonthWeek(entry.getValue(), entry.getKey()));
                     break;
-                case Constants.CYCLE_TYPE_BY_YEAR_DAY:
-                    scheduleList.addAll(cycleByYearDay(ruleMap.get(rule), rule));
+                case CYCLE_TYPE_BY_YEAR_DAY:
+                    scheduleList.addAll(cycleByYearDay(entry.getValue(), entry.getKey()));
                     break;
-                case Constants.CYCLE_TYPE_BY_YEAR_WEEK:
-                    scheduleList.addAll(cycleByYearMonth(ruleMap.get(rule), rule));
+                case CYCLE_TYPE_BY_YEAR_WEEK:
+                    scheduleList.addAll(cycleByYearMonth(entry.getValue(), entry.getKey()));
+                    break;
+                default:
                     break;
             }
         }
@@ -377,9 +381,9 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
     @Override
     public boolean conferenceRoomDetection(Conference conference, ConferenceRule conferenceRule) {
         List<Schedule> scheduleListExist = checkOccupancyOfConferenceRoom(conference.getConferenceRoom());
-        List<Schedule> scheduleListUnderDetection = scheduleSort(getScheduleByCycleRule(new HashMap<>() {{
-            put(conferenceRule, conference);
-        }}));
+        HashMap<ConferenceRule, Conference> map = new HashMap<>();
+        map.put(conferenceRule, conference);
+        List<Schedule> scheduleListUnderDetection = scheduleSort(getScheduleByCycleRule(map));
 
         return conflictDetection(createVirtualInterspace(scheduleListExist), scheduleListUnderDetection);
 
@@ -391,25 +395,22 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
     }
 
     private boolean conflictDetection(List<Schedule> scheduleListExist, List<Schedule> scheduleListUnderDetection) {
-        boolean result = false;
-        int existIndex = 0, detectionIndex = 0;
+        int existIndex = 0;
+        int detectionIndex = 0;
         while (detectionIndex <= scheduleListUnderDetection.size() - 1 && existIndex <= scheduleListExist.size() - 2) {
             if (getYMDHMTimeStamp(scheduleListUnderDetection.get(detectionIndex).getStartTime()) < getYMDHMTimeStamp(scheduleListExist.get(existIndex).getEndTime())) {
-                result = false;
-                break;
+                return false;
             }
-            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(detectionIndex).getStartTime()) >= getYMDHMTimeStamp(scheduleListExist.get(existIndex + 1).getStartTime())) {
+            if (getYMDHMTimeStamp(scheduleListUnderDetection.get(detectionIndex).getStartTime()) > getYMDHMTimeStamp(scheduleListExist.get(existIndex + 1).getStartTime())) {
                 existIndex += 1;
                 continue;
             }
             if (getYMDHMTimeStamp(scheduleListUnderDetection.get(detectionIndex).getEndTime()) > getYMDHMTimeStamp(scheduleListExist.get(existIndex + 1).getStartTime())) {
-                result = false;
-                break;
+                return false;
             }
-            result = true;
             detectionIndex += 1;
         }
-        return result;
+        return true;
     }
 
     private List<Schedule> createVirtualInterspace(List<Schedule> scheduleListExist) {

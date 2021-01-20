@@ -138,10 +138,10 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
     @Override
     public Result deleteAccount(PersonalRequest personalRequest) {
         Account account = getAccount(personalRequest);
-        Account accountVerify = accountService.findAccountByUsername(account);
-        if (accountVerify == null) {
+        if (!accountService.isAccountExist(personalRequest.getUsername())) {
             return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
         }
+        Account accountVerify = accountService.findAccountByUsername(account);
         if (!accountVerify.getPassword().equals(personalRequest.getPassword())) {
             return Result.failure(ErrorCode.PASSWORD_IS_WRONG);
         }
@@ -184,7 +184,7 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
         Department dep = new Department();
         dep.setName(enterprise.getName());
         dep.setEnterpriseId(enterprise.getId());
-        return Result.success(depManageService.getDepTree(depManageService.findDep(dep).getId()));
+        return Result.success(depManageService.getDepTree(depManageService.findDep(dep).getId(), enterprise.getId()));
     }
 
     private Enterprise getEnterprise(PersonalRequest personalRequest) {
@@ -196,7 +196,7 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
     @Override
     public Result getPosition(PersonalRequest personalRequest) {
         Staff staff = getStaff(personalRequest);
-        if(!staffService.isStaffExist(staff)){
+        if (!staffService.isStaffExist(staff)) {
             return Result.failure(ErrorCode.STAFF_IS_NOT_EXIST);
         }
         return Result.success(depManageService.getPosition(staff));

@@ -2,7 +2,6 @@ package com.yealink.practiceproject.service.domain.impl;
 
 
 import com.yealink.practiceproject.bean.Account;
-
 import com.yealink.practiceproject.bean.Enterprise;
 import com.yealink.practiceproject.bean.Staff;
 import com.yealink.practiceproject.dao.AccountMapper;
@@ -83,8 +82,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean isAccountExist(@Valid String username) {
-        boolean result = accountMapper.findIdByUsername(username) != null ? true : false;
-        return result;
+        return accountMapper.findIdByUsername(username) != null;
     }
 
     @Override

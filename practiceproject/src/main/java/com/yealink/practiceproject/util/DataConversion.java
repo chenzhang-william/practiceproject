@@ -7,17 +7,21 @@ package com.yealink.practiceproject.util;
  */
 public class DataConversion {
 
-    public static int[] weekTransferToInt(String week){
+    private DataConversion() throws IllegalAccessException {
+        throw new IllegalAccessException("Utillity class");
+    }
+
+    public static int[] weekTransferToInt(String week) {
         String[] weekdays = week.split(",");
         int[] weekRule = new int[weekdays.length];
-        for(int i =0;i<weekdays.length;i++){
-            weekRule[i] =weekStringToInt(weekdays[i]);
+        for (int i = 0; i < weekdays.length; i++) {
+            weekRule[i] = weekStringToInt(weekdays[i]);
         }
         return weekRule;
     }
 
-    public static int weekStringToInt(String weekday){
-        int result =0;
+    public static int weekStringToInt(String weekday) {
+        int result = 0;
         switch (weekday) {
             case "sunday":
                 result = 1;
@@ -40,12 +44,14 @@ public class DataConversion {
             case "saturday":
                 result = 7;
                 break;
+            default:
+                break;
         }
         return result;
     }
 
     public static int genderTransfer(String gender) {
-        switch (gender){
+        switch (gender) {
             case "男":
                 return 1;
             case "女":
@@ -54,7 +60,6 @@ public class DataConversion {
                 return 0;
         }
     }
-
 
 
 }
