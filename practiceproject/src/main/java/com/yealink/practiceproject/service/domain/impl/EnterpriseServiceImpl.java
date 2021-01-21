@@ -23,9 +23,12 @@ public class EnterpriseServiceImpl implements EnterpriseService {
 
     @Override
     public void add(@Valid Enterprise enterprise) {
+
         long now = new Date().getTime();
+
         enterprise.setCreateTime(now);
         enterprise.setModifyTime(now);
+
         enterpriseMapper.add(enterprise);
     }
 
@@ -36,8 +39,10 @@ public class EnterpriseServiceImpl implements EnterpriseService {
 
     @Override
     public void update(@Valid Enterprise oldEnterprise, @Valid Enterprise newEnterprise) {
+
         newEnterprise.setId(findEnterpriseByNo(oldEnterprise).getId());
         newEnterprise.setModifyTime(new Date().getTime());
+
         enterpriseMapper.update(newEnterprise);
     }
 
@@ -52,8 +57,8 @@ public class EnterpriseServiceImpl implements EnterpriseService {
     }
 
     @Override
-    public boolean isEnterpriseExist(@Valid Enterprise enterprise) {
-        return enterpriseMapper.findIdByNo(enterprise.getNo()) != null;
+    public boolean isEnterpriseExist(String no) {
+        return enterpriseMapper.findIdByNo(no) != null;
     }
 
 

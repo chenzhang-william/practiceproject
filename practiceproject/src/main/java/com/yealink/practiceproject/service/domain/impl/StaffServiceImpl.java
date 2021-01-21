@@ -28,17 +28,23 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public void add(@Valid Staff staff) {
+
         long now = new Date().getTime();
+
         staff.setCreateTime(now);
         staff.setModifyTime(now);
+
         staffMapper.add(staff);
     }
 
     @Override
     public void update(@Valid Staff oldStaff, @Valid Staff newStaff) {
+
         Staff staff = findStaffByMobile(oldStaff);
+
         newStaff.setId(staff.getId());
         newStaff.setModifyTime(new Date().getTime());
+
         staffMapper.update(newStaff);
     }
 
@@ -50,8 +56,11 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public void bindStaffEnterprise(@Valid Enterprise enterprise, @Valid Staff staff) {
+
         Staff newStaff = new Staff();
+
         newStaff.setEnterpriseId(enterpriseService.findEnterpriseByNo(enterprise).getId());
+
         update(staff, newStaff);
     }
 
@@ -82,8 +91,8 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public Boolean isStaffExist(@Valid Staff staff) {
-        return staffMapper.findIdByMobile(staff.getMobile()) != null;
+    public Boolean isStaffExist(String mobile) {
+        return staffMapper.findIdByMobile(mobile) != null;
     }
 
     @Override

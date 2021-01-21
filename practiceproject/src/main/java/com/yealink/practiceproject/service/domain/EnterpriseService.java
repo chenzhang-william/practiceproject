@@ -18,5 +18,5 @@ public interface EnterpriseService {
 
     @NotNull(message = "企业不存在") Enterprise findEnterpriseByNo(@Valid Enterprise enterprise);
 
-    boolean isEnterpriseExist(@Valid Enterprise enterprise);
+    boolean isEnterpriseExist(String no);
 }

@@ -155,9 +155,9 @@ class StaffServiceImplTest {
     public void isStaffExistTest() {
         when(mockStaff.getMobile()).thenReturn("1");
         when(mockStaffMapper.findIdByMobile("1")).thenReturn(null);
-        assertEquals(false, mockStaffService.isStaffExist(mockStaff));
+        assertEquals(false, mockStaffService.isStaffExist(mockStaff.getMobile()));
         when(mockStaffMapper.findIdByMobile("1")).thenReturn("1");
-        assertEquals(true, mockStaffService.isStaffExist(mockStaff));
+        assertEquals(true, mockStaffService.isStaffExist(mockStaff.getMobile()));
     }
 
     @Test

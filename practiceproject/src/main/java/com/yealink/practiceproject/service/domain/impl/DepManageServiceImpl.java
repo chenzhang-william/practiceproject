@@ -39,17 +39,22 @@ public class DepManageServiceImpl implements DepManageService {
     //部门的企业字段为必要字段
     @Override
     public void addDep(@Valid Department dep) {
+
         long now = new Date().getTime();
+
         dep.setCreateTime(now);
         dep.setModifyTime(now);
+
         departmentMapper.add(dep);
     }
 
     @Override
     public void addStaffDepRelation(@Valid StaffDepartmentRelation staffDepartmentRelation) {
         long now = new Date().getTime();
+
         staffDepartmentRelation.setCreateTime(now);
         staffDepartmentRelation.setModifyTime(now);
+
         staffDepRelationMapper.add(staffDepartmentRelation);
     }
 
@@ -67,15 +72,19 @@ public class DepManageServiceImpl implements DepManageService {
 
     @Override
     public void updateDep(@Valid Department oldDep, @Valid Department newDep) {
+
         newDep.setId(findDep(oldDep).getId());
         newDep.setModifyTime(new Date().getTime());
+
         departmentMapper.update(newDep);
     }
 
     @Override
     public void updateStaffDepRelation(@Valid StaffDepartmentRelation oldRelation, @Valid StaffDepartmentRelation newRelation) {
+
         newRelation.setId(findRelation(oldRelation).getId());
         newRelation.setModifyTime(new Date().getTime());
+
         staffDepRelationMapper.update(newRelation);
     }
 
@@ -102,13 +111,16 @@ public class DepManageServiceImpl implements DepManageService {
     public List getDepTree(String depId, String enterpriseId) {
         //获取公司的员工表，员工部门关系表，部门表
         List<Staff> staffList = staffService.findStaffByEnterpriseId(enterpriseId);
+
         List<Department> depList = findDepOfEnterprise(enterpriseId);
+
         List<StaffDepartmentRelation> depRelationList = getStaffDepartmentRelations(depList);
 
         return getChildNodeList(depId, staffList, depRelationList, depList);
     }
 
     private List<StaffDepartmentRelation> getStaffDepartmentRelations(List<Department> depList) {
+
         List<StaffDepartmentRelation> depRelationList = new ArrayList<>();
 
         for (Department dep : depList) {
@@ -119,6 +131,7 @@ public class DepManageServiceImpl implements DepManageService {
     }
 
     private List getChildNodeList(String depId, List<Staff> staffList, List<StaffDepartmentRelation> depRelationList, List<Department> depList) {
+
         List childNode = new ArrayList<>();
         //获取该部门信息
         getDepInfo(depId, depList, childNode);
@@ -131,10 +144,13 @@ public class DepManageServiceImpl implements DepManageService {
     }
 
     private void getChildTree(String depId, List<Staff> staffList, List<StaffDepartmentRelation> depRelationList, List<Department> depList, List childNode) {
+
         for (Department dep : depList) {
+
             if (dep.getParentId() == null) {
                 continue;
             }
+
             if (dep.getParentId().equals(depId)) {
                 childNode.add(getChildNodeList(dep.getId(), staffList, depRelationList, depList));
             }
@@ -142,9 +158,13 @@ public class DepManageServiceImpl implements DepManageService {
     }
 
     private void getChildStaff(String depId, List<Staff> staffList, List<StaffDepartmentRelation> depRelationList, List childNode) {
+
         for (StaffDepartmentRelation relation : depRelationList) {
+
             if (relation.getDepartmentId().equals(depId)) {
+
                 for (Staff staff : staffList) {
+
                     if (staff.getId().equals(relation.getStaffId())) {
                         childNode.add(staff);
                     }
@@ -154,7 +174,9 @@ public class DepManageServiceImpl implements DepManageService {
     }
 
     private void getDepInfo(String depId, List<Department> depList, List childNode) {
+
         for (Department dep : depList) {
+
             if (dep.getId().equals(depId)) {
                 childNode.add(dep);
                 break;

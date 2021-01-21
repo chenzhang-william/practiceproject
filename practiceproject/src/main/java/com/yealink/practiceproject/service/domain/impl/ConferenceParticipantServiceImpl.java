@@ -33,9 +33,12 @@ public class ConferenceParticipantServiceImpl implements ConferenceParticipantSe
 
     @Override
     public void addParticipant(ConferenceParticipant conferenceParticipant) {
+
         long now = new Date().getTime();
+
         conferenceParticipant.setCreateTime(now);
         conferenceParticipant.setModifyTime(now);
+
         conferenceParticipantMapper.add(conferenceParticipant);
 
     }
@@ -62,7 +65,9 @@ public class ConferenceParticipantServiceImpl implements ConferenceParticipantSe
 
     @Override
     public void updateParticipant(ConferenceParticipant conferenceParticipant) {
+
         conferenceParticipant.setModifyTime(new Date().getTime());
+
         conferenceParticipantMapper.update(conferenceParticipant);
     }
 
@@ -74,9 +79,12 @@ public class ConferenceParticipantServiceImpl implements ConferenceParticipantSe
 
     @Override
     public ConferenceParticipant findParticipant(String conferenceNo, String mobile) {
-        ConferenceParticipant conferenceParticipant = new ConferenceParticipant();
-        conferenceParticipant.setConferenceId(conferenceMapper.findIdByNo(conferenceNo));
-        conferenceParticipant.setParticipantId(staffService.findIdByMobile(mobile));
-        return conferenceParticipantMapper.find(conferenceParticipant);
+
+        return conferenceParticipantMapper.find(
+                ConferenceParticipant
+                        .builder()
+                        .conferenceId(conferenceMapper.findIdByNo(conferenceNo))
+                        .participantId(staffService.findIdByMobile(mobile))
+                        .build());
     }
 }

@@ -30,9 +30,12 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private Account accountAssignment(PersonalRequest personalRequest) {
+
         Account account = new Account();
+
         account.setUsername(personalRequest.getUsername());
         account.setPassword(personalRequest.getPassword());
+
         return account;
     }
 
@@ -41,7 +44,9 @@ public class LoginServiceImpl implements LoginService {
         if (!accountService.isAccountExist(account.getUsername())) {
             return Result.failure(ErrorCode.ACCOUNT_IS_NOT_EXIST);
         }
+
         Account accountVerify = accountService.findAccountByUsername(account);
+
         if (!accountVerify.getPassword().equals(account.getPassword())) {
             return Result.failure(ErrorCode.PASSWORD_IS_WRONG);
         }

@@ -32,37 +32,42 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void add(@Valid Account account) {
+
         long now = new Date().getTime();
+
         account.setCreateTime(now);
         account.setModifyTime(now);
+
         accountMapper.add(account);
     }
+
 
     @Override
     public void delete(@Valid Account account) {
         accountMapper.delete(findAccountByUsername(account).getId());
     }
 
+
     @Override
     public void update(@Valid Account oldAccount, @Valid Account newAccount) {
+
         newAccount.setId(findAccountByUsername(oldAccount).getId());
         newAccount.setModifyTime(new Date().getTime());
+
         accountMapper.update(newAccount);
     }
 
 
     @Override
     public void bindAccountEnterprise(@Valid Enterprise enterprise, @Valid Account account) {
-        Account newAccount = new Account();
-        newAccount.setEnterpriseId(enterpriseService.findEnterpriseByNo(enterprise).getId());
-        update(account, newAccount);
+
+        update(account, Account.builder().enterpriseId(enterpriseService.findEnterpriseByNo(enterprise).getId()).build());
     }
 
     @Override
     public void bindAccountStaff(@Valid Staff staff, @Valid Account account) {
-        Account newAccount = new Account();
-        newAccount.setStaffId(staffService.findStaffByMobile(staff).getId());
-        update(account, newAccount);
+
+        update(account, Account.builder().staffId(staffService.findStaffByMobile(staff).getId()).build());
     }
 
     @Override

@@ -37,9 +37,12 @@ public class RoleManageServiceImpl implements RoleManageService {
 
     @Override
     public void addStaffRoleRelation(@Valid StaffRoleRelation staffRoleRelation) {
+
         long now = new Date().getTime();
+
         staffRoleRelation.setCreateTime(now);
         staffRoleRelation.setModifyTime(now);
+
         staffRoleRelationMapper.add(staffRoleRelation);
     }
 
@@ -50,8 +53,10 @@ public class RoleManageServiceImpl implements RoleManageService {
 
     @Override
     public void updateStaffRoleRelation(@Valid StaffRoleRelation oldRelation, @Valid StaffRoleRelation newRelation) {
+
         newRelation.setId(findRelation(oldRelation).getId());
         newRelation.setModifyTime(new Date().getTime());
+
         staffRoleRelationMapper.update(newRelation);
     }
 
@@ -73,9 +78,13 @@ public class RoleManageServiceImpl implements RoleManageService {
     //查找一个企业中某个角色的员工列表
     @Override
     public @NotNull(message = "该企业无角色关系") List<Staff> findStaffOfRoleInEnterprise(@Valid Role role, @Valid Enterprise enterprise) {
+
         List<Staff> staffsInEnterprise = staffService.findStaffByEnterpriseNo(enterprise);
+
         List<Staff> staffsOfRole = findStaffOfRole(role);
+
         staffsInEnterprise.retainAll(staffsOfRole);
+
         return staffsInEnterprise;
     }
 

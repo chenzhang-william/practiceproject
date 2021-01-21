@@ -27,7 +27,7 @@ public interface StaffService {
 
     List<Staff> findStaffOfRole(String id);
 
-    Boolean isStaffExist(@Valid Staff staff);
+    Boolean isStaffExist(String mobile);
 
     void unbindEnterprise(@Valid Staff staff);
 
