@@ -10,7 +10,6 @@ import com.yealink.practiceproject.service.domain.ConferenceManageService;
 import com.yealink.practiceproject.service.domain.ConferenceParticipantService;
 import com.yealink.practiceproject.service.domain.StaffService;
 import com.yealink.practiceproject.util.DataConversion;
-import com.yealink.practiceproject.util.ScheduleComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -443,7 +442,7 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
     @Override
     public List<Schedule> scheduleSort(List<Schedule> scheduleList) {
 
-        scheduleList.sort(new ScheduleComparator());
+        scheduleList.sort(Schedule::compareByTime);
 
         return scheduleList;
     }
@@ -453,8 +452,8 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
 
         List<Schedule> scheduleListExist = checkOccupancyOfConferenceRoom(conference.getConferenceRoom());
 
-        Map<ConferenceRule,Conference> map = new HashMap<>();
-        map.put(conferenceRule,conference);
+        Map<ConferenceRule, Conference> map = new HashMap<>();
+        map.put(conferenceRule, conference);
 
         List<Schedule> scheduleListUnderDetection = scheduleSort(getScheduleByCycleRule(map));
 

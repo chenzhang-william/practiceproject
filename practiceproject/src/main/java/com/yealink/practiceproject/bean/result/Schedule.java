@@ -26,4 +26,11 @@ public class Schedule {
     private String endTime;
 
 
+    public static int compareByTime(Schedule a, Schedule b) {
+
+        int num = a.getStartTime().compareTo(b.getStartTime());
+        num = num == 0 ? a.getEndTime().compareTo(b.getEndTime()) : num;
+
+        return num;
+    }
 }
