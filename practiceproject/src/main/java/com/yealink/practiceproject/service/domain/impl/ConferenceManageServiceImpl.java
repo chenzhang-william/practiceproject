@@ -8,7 +8,6 @@ import com.yealink.practiceproject.dao.ConferenceMapper;
 import com.yealink.practiceproject.dao.ConferenceRuleMapper;
 import com.yealink.practiceproject.service.domain.ConferenceManageService;
 import com.yealink.practiceproject.service.domain.ConferenceParticipantService;
-import com.yealink.practiceproject.service.domain.StaffService;
 import com.yealink.practiceproject.util.DataConversion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,8 +37,6 @@ public class ConferenceManageServiceImpl implements ConferenceManageService {
     private ConferenceRuleMapper conferenceRuleMapper;
     @Autowired
     private ConferenceParticipantService conferenceParticipantService;
-    @Autowired
-    private StaffService staffService;
 
     @Override
     public boolean isConferenceExist(String conferenceNo) {
